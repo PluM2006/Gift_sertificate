@@ -1,13 +1,12 @@
 package ru.clevertec.ecl.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -20,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
-public class GiftCertificate {
+public class Certificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +30,11 @@ public class GiftCertificate {
     private BigDecimal price;
     private Integer duration;
     @Column(name = "create_date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "certificate_tag",
@@ -42,22 +42,13 @@ public class GiftCertificate {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     @ToString.Exclude
-    private Set<Tag> tagList;
-
-    public void addTag(Tag tag){
-        this.tagList.add(tag);
-        tag.getGiftCertificates().add(this);
-    }
-    public void remove(Tag tag){
-        this.tagList.remove(tag);
-        tag.getGiftCertificates().remove(this);
-    }
+    private Set<Tag> tags;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GiftCertificate that = (GiftCertificate) o;
+        Certificate that = (Certificate) o;
         return Objects.equals(name, that.name) && Objects.equals(description, that.description);
     }
 

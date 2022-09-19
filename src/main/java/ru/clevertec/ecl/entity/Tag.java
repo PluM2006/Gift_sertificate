@@ -1,10 +1,10 @@
 package ru.clevertec.ecl.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,9 +22,10 @@ public class Tag {
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;
-    @ManyToMany(mappedBy = "tagList", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
-    private Set<GiftCertificate> giftCertificates;
+    private Set<Certificate> certificates;
 
     @Override
     public boolean equals(Object o) {
