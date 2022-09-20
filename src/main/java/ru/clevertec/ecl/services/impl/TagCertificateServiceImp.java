@@ -10,6 +10,7 @@ import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
 
 import java.awt.print.Pageable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,12 +20,8 @@ public class TagCertificateServiceImp implements TagService {
 
     private final TagRepository tagRepository;
 
-    public void addTags(Set<Tag> tagList) {
-        tagList.forEach(tag -> {
-            if (tag.getId() == null) {
-                tag.setId(tagRepository.save(tag).getId());
-            }
-        });
+    public void saveTags(Set<Tag> tags) {
+        checkNullTags(tags).forEach(tag -> tag.setId(tagRepository.save(tag).getId()));
     }
 
     @Override
@@ -55,8 +52,11 @@ public class TagCertificateServiceImp implements TagService {
                             return true;
                         }
                 ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
-
         return false;
-
     }
+
+    private Set<Tag> checkNullTags(Set<Tag> tagList){
+        return (tagList==null)? new HashSet<>() : tagList;
+    }
+
 }

@@ -27,7 +27,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
-        tagCertificateServiceImp.addTags(certificate.getTags());
+        tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(certificate.getCreateDate());
         return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
@@ -37,7 +37,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO update(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
-        tagCertificateServiceImp.addTags(certificate.getTags());
+        tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setLastUpdateDate(LocalDateTime.now());
         return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
     }
