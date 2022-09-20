@@ -11,7 +11,7 @@ public interface CertificateService {
 
     CertificateDTO update(CertificateDTO certificateDTO);
 
-    CertificateDTO findById(String id);
+    CertificateDTO findById(Long id);
 
     List<CertificateDTO> findAll(Pageable pageable);
 

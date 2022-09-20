@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;

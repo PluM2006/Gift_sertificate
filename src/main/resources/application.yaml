@@ -7,3 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  main:
+    allow-circular-references: true
+server:
+  servlet:
+    context-path: "/api/v1"
+

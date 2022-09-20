@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
+import ru.clevertec.ecl.mapper.CycleAvoidingMappingContext;
+import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
 
@@ -19,6 +21,7 @@ import java.util.Set;
 public class TagCertificateServiceImp implements TagService {
 
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
 
     public void saveTags(Set<Tag> tags) {
         checkNullTags(tags).forEach(tag -> tag.setId(tagRepository.save(tag).getId()));
@@ -35,8 +38,10 @@ public class TagCertificateServiceImp implements TagService {
     }
 
     @Override
-    public TagDTO findById(String id) {
-        return null;
+    public TagDTO findById(Long id) {
+        return tagRepository.findById(id)
+                .map(tag -> tagMapper.toTagDTO(tag, new CycleAvoidingMappingContext()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override

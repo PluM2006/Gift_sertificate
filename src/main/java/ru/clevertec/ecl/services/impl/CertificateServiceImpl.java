@@ -8,12 +8,14 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.mapper.CertificateMapper;
+import ru.clevertec.ecl.mapper.CycleAvoidingMappingContext;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.CertificateService;
 
 import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,25 +28,27 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
+        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO, new CycleAvoidingMappingContext());
         tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(certificate.getCreateDate());
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
+        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate), new CycleAvoidingMappingContext());
     }
 
     @Transactional
     @Override
     public CertificateDTO update(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
+        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO, new CycleAvoidingMappingContext());
         tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
+        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate),new CycleAvoidingMappingContext());
     }
 
     @Override
-    public CertificateDTO findById(String id) {
-        return null;
+    public CertificateDTO findById(Long id) {
+        return certificateRepository.findById(id)
+                .map((Certificate certificate) -> certificateMapper.toGiftCertificateDTO(certificate, new CycleAvoidingMappingContext()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override

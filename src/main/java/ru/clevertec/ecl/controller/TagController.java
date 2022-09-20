@@ -2,10 +2,8 @@ package ru.clevertec.ecl.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.services.TagService;
 
 @RestController
@@ -20,5 +18,10 @@ public class TagController {
         return tagService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id){
+        return ResponseEntity.ok(tagService.findById(id));
     }
 }

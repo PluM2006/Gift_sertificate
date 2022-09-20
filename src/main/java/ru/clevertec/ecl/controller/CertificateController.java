@@ -31,5 +31,9 @@ public class CertificateController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<CertificateDTO> getByID(@PathVariable Long id){
+        return ResponseEntity.ok(certificateService.findById(id));
+    }
 
 }

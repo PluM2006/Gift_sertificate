@@ -11,7 +11,7 @@ public interface TagService {
 
     TagDTO update(TagDTO tagDTO);
 
-    TagDTO findById(String id);
+    TagDTO findById(Long id);
 
     List<TagDTO> findAll(Pageable pageable);
 
