@@ -28,26 +28,26 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO, new CycleAvoidingMappingContext());
+        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
         tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(certificate.getCreateDate());
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate), new CycleAvoidingMappingContext());
+        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
     }
 
     @Transactional
     @Override
     public CertificateDTO update(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO, new CycleAvoidingMappingContext());
+        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
         tagCertificateServiceImp.saveTags(certificate.getTags());
         certificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate),new CycleAvoidingMappingContext());
+        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
     }
 
     @Override
     public CertificateDTO findById(Long id) {
         return certificateRepository.findById(id)
-                .map((Certificate certificate) -> certificateMapper.toGiftCertificateDTO(certificate, new CycleAvoidingMappingContext()))
+                .map((Certificate certificate) -> certificateMapper.toGiftCertificateDTO(certificate))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

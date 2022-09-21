@@ -40,7 +40,7 @@ public class TagCertificateServiceImp implements TagService {
     @Override
     public TagDTO findById(Long id) {
         return tagRepository.findById(id)
-                .map(tag -> tagMapper.toTagDTO(tag, new CycleAvoidingMappingContext()))
+                .map(tag -> tagMapper.toTagDTO(tag))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
