@@ -4,10 +4,13 @@ import ru.clevertec.ecl.dto.TagDTO;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Set;
 
 public interface TagService {
 
     TagDTO save(TagDTO tagDTO);
+
+    void saveAll(Set<TagDTO> tags);
 
     TagDTO update(TagDTO tagDTO);
 

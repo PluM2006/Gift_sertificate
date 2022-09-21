@@ -14,14 +14,14 @@ public class TagController {
     private final TagService tagService;
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTag(@PathVariable Long id){
+    public ResponseEntity<?> deleteTag(@PathVariable Long id) {
         return tagService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id){
+    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
 }

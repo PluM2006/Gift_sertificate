@@ -1,7 +1,5 @@
 package ru.clevertec.ecl.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +15,5 @@ public class CertificateDTO {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    @JsonManagedReference
     private Set<TagDTO> tags;
 }

@@ -5,8 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.TagDTO;
-import ru.clevertec.ecl.entity.Tag;
-import ru.clevertec.ecl.mapper.CycleAvoidingMappingContext;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
@@ -23,8 +21,9 @@ public class TagCertificateServiceImp implements TagService {
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
-    public void saveTags(Set<Tag> tags) {
-        checkNullTags(tags).forEach(tag -> tag.setId(tagRepository.save(tag).getId()));
+    @Override
+    public void saveAll(Set<TagDTO> tags) {
+        checkNullTags(tags).forEach(tag -> tag.setId(tagRepository.save(tagMapper.toTag(tag)).getId()));
     }
 
     @Override
@@ -40,7 +39,7 @@ public class TagCertificateServiceImp implements TagService {
     @Override
     public TagDTO findById(Long id) {
         return tagRepository.findById(id)
-                .map(tag -> tagMapper.toTagDTO(tag))
+                .map(tagMapper::toTagDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -56,12 +55,13 @@ public class TagCertificateServiceImp implements TagService {
                             tagRepository.delete(tag);
                             return true;
                         }
-                ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
+                ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ;
         return false;
     }
 
-    private Set<Tag> checkNullTags(Set<Tag> tagList){
-        return (tagList==null)? new HashSet<>() : tagList;
+    private Set<TagDTO> checkNullTags(Set<TagDTO> tagList) {
+        return (tagList == null) ? new HashSet<>() : tagList;
     }
 
 }

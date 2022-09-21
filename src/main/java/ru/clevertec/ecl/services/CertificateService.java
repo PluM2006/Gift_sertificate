@@ -9,7 +9,7 @@ public interface CertificateService {
 
     CertificateDTO save(CertificateDTO certificateDTO);
 
-    CertificateDTO update(CertificateDTO certificateDTO);
+    CertificateDTO update(Long id, CertificateDTO certificateDTO);
 
     CertificateDTO findById(Long id);
 

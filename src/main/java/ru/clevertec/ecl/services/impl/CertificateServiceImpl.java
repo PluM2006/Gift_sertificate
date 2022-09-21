@@ -6,30 +6,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.mapper.CertificateMapper;
-import ru.clevertec.ecl.mapper.CycleAvoidingMappingContext;
+import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.CertificateService;
+import ru.clevertec.ecl.services.TagService;
 
 import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRepository certificateRepository;
-    private final TagCertificateServiceImp tagCertificateServiceImp;
+    private final TagService tagCertificateServiceImp;
     private final CertificateMapper certificateMapper;
+    private final TagMapper tagMapper;
 
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
-        tagCertificateServiceImp.saveTags(certificate.getTags());
+        tagCertificateServiceImp.saveAll(certificateDTO.getTags());
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(certificate.getCreateDate());
         return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
@@ -37,17 +39,28 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Transactional
     @Override
-    public CertificateDTO update(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
-        tagCertificateServiceImp.saveTags(certificate.getTags());
-        certificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
+    public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
+        return certificateMapper.toGiftCertificateDTO(certificateRepository
+                .findById(id)
+                .map(c -> certificateRepository.save(dtoToSave(certificateDTO, c)))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
+    private Certificate dtoToSave(CertificateDTO certificateDTO, Certificate certificate){
+        certificate.setName(certificateDTO.getName());
+        certificate.setDuration(certificateDTO.getDuration());
+        certificate.setPrice(certificateDTO.getPrice());
+        certificate.setDescription(certificateDTO.getDescription());
+        for (TagDTO tagDTO : certificateDTO.getTags()) {
+            certificate.addTag(tagMapper.toTag(tagDTO));
+
+        }
+        return certificate;
+    }
     @Override
     public CertificateDTO findById(Long id) {
         return certificateRepository.findById(id)
-                .map((Certificate certificate) -> certificateMapper.toGiftCertificateDTO(certificate))
+                .map(certificateMapper::toGiftCertificateDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

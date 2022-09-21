@@ -16,23 +16,26 @@ public class CertificateController {
 
     @PostMapping
     public ResponseEntity<CertificateDTO> addCertificate(
-            @RequestBody CertificateDTO certificateDTO){
+            @RequestBody CertificateDTO certificateDTO) {
         return ResponseEntity.ok(certificateService.save(certificateDTO));
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<CertificateDTO> updateCertificate(
             @PathVariable Long id,
-            @RequestBody CertificateDTO certificateDTO){
-        return ResponseEntity.ok(certificateService.update(/*id,*/ certificateDTO));
+            @RequestBody CertificateDTO certificateDTO) {
+        return ResponseEntity.ok(certificateService.update(id, certificateDTO));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCertificate(@PathVariable Long id){
+    public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
         return certificateService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<CertificateDTO> getByID(@PathVariable Long id){
+    public ResponseEntity<CertificateDTO> getByID(@PathVariable Long id) {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 

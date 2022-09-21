@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +11,5 @@ public class TagDTO {
 
     private Long id;
     private String name;
-    @JsonBackReference
     private Set<CertificateDTO> certificates;
 }

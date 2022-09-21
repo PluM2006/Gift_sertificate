@@ -1,10 +1,12 @@
 package ru.clevertec.ecl.mapper;
 
-import org.mapstruct.*;
-import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.entity.Certificate;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import ru.clevertec.ecl.annatation.CertificateWithoutTags;
 import ru.clevertec.ecl.annatation.TagWithoutCertificates;
+import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.entity.Certificate;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = TagMapper.class)
 public interface CertificateMapper {

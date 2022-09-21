@@ -1,8 +1,6 @@
 package ru.clevertec.ecl.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -37,7 +35,7 @@ public class Certificate {
     @Column(name = "last_update_date")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "certificate_tag",
             joinColumns = @JoinColumn(name = "certificate_id"),
@@ -45,6 +43,16 @@ public class Certificate {
     )
     @ToString.Exclude
     private Set<Tag> tags;
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.getCertificates().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+        tag.getCertificates().remove(this);
+    }
 
     @Override
     public boolean equals(Object o) {
