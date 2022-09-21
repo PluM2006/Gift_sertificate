@@ -8,6 +8,8 @@ import ru.clevertec.ecl.annatation.TagWithoutCertificates;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
 
+import java.util.Set;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = CertificateMapper.class)
 public interface TagMapper {
 
@@ -18,5 +20,10 @@ public interface TagMapper {
     @Mapping(target = "certificates", ignore = true)
     TagDTO toTagDTOWithoutCertificate(Tag tag);
 
-    Tag toTag (TagDTO tagDTO);
+    Tag toTag(TagDTO tagDTO);
+
+    Set<Tag> toTagSet(Set<TagDTO> tagDTOSets);
+
+    Set<TagDTO> toTagDTOSet(Set<Tag> tagSets);
+
 }

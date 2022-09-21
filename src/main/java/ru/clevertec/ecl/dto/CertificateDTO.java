@@ -16,4 +16,5 @@ public class CertificateDTO {
     private BigDecimal price;
     private Integer duration;
     private Set<TagDTO> tags;
+
 }

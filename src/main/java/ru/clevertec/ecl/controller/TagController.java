@@ -24,4 +24,5 @@ public class TagController {
     public ResponseEntity<TagDTO> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
+
 }

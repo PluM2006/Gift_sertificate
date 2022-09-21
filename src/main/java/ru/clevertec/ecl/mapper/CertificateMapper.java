@@ -11,7 +11,6 @@ import ru.clevertec.ecl.entity.Certificate;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = TagMapper.class)
 public interface CertificateMapper {
 
-
     @Mapping(target = "tags", qualifiedBy = TagWithoutCertificates.class)
     CertificateDTO toGiftCertificateDTO(Certificate certificate);
 
@@ -19,6 +18,6 @@ public interface CertificateMapper {
     @Mapping(target = "tags", ignore = true)
     CertificateDTO toGiftCertificateDTOWithoutTag(Certificate certificate);
 
-
     Certificate toGiftCertificate(CertificateDTO giftCertificate);
+
 }

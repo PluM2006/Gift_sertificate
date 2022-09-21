@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.annatation;
 
-
 import org.mapstruct.Qualifier;
 
 import java.lang.annotation.ElementType;

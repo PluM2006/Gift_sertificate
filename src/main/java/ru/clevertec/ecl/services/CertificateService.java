@@ -16,4 +16,5 @@ public interface CertificateService {
     List<CertificateDTO> findAll(Pageable pageable);
 
     boolean delete(Long id);
+
 }

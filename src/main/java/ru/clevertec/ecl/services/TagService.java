@@ -10,7 +10,7 @@ public interface TagService {
 
     TagDTO save(TagDTO tagDTO);
 
-    void saveAll(Set<TagDTO> tags);
+    Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet);
 
     TagDTO update(TagDTO tagDTO);
 
@@ -19,4 +19,5 @@ public interface TagService {
     List<TagDTO> findAll(Pageable pageable);
 
     boolean delete(Long id);
+
 }

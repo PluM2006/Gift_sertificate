@@ -13,7 +13,6 @@ public class CertificateController {
 
     private final CertificateService certificateService;
 
-
     @PostMapping
     public ResponseEntity<CertificateDTO> addCertificate(
             @RequestBody CertificateDTO certificateDTO) {

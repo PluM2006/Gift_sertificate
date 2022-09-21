@@ -16,19 +16,25 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class TagCertificateServiceImp implements TagService {
+public class TagServiceImp implements TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
     @Override
-    public void saveAll(Set<TagDTO> tags) {
-        checkNullTags(tags).forEach(tag -> tag.setId(tagRepository.save(tagMapper.toTag(tag)).getId()));
+    public TagDTO save(TagDTO tagDTO) {
+        return null;
     }
 
     @Override
-    public TagDTO save(TagDTO tagDTO) {
-        return null;
+    public Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet) {
+        Set<TagDTO> result = new HashSet<>();
+        for (TagDTO tagDTO : tagDTOSet) {
+            result.add(tagRepository.findByName(tagDTO.getName())
+                    .map(tagMapper::toTagDTO)
+                    .orElseGet(() -> tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(tagDTO)))));
+        }
+        return result;
     }
 
     @Override
