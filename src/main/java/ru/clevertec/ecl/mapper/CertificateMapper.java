@@ -5,8 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.clevertec.ecl.annatation.CertificateWithoutTags;
 import ru.clevertec.ecl.annatation.TagWithoutCertificates;
-import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.entity.Certificate;
+import ru.clevertec.ecl.dmain.dto.CertificateDTO;
+import ru.clevertec.ecl.dmain.entity.Certificate;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = TagMapper.class)
 public interface CertificateMapper {
@@ -19,5 +21,7 @@ public interface CertificateMapper {
     CertificateDTO toGiftCertificateDTOWithoutTag(Certificate certificate);
 
     Certificate toGiftCertificate(CertificateDTO giftCertificate);
+
+    List<CertificateDTO> toCertificateDTOList(List<Certificate> certificates);
 
 }

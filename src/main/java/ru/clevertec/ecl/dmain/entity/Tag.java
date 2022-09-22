@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.entity;
+package ru.clevertec.ecl.dmain.entity;
 
 import lombok.*;
 import org.hibernate.annotations.OnDelete;

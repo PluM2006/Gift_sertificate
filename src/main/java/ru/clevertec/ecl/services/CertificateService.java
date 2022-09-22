@@ -1,8 +1,8 @@
 package ru.clevertec.ecl.services;
 
-import ru.clevertec.ecl.dto.CertificateDTO;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 public interface CertificateService {
@@ -14,6 +14,10 @@ public interface CertificateService {
     CertificateDTO findById(Long id);
 
     List<CertificateDTO> findAll(Pageable pageable);
+
+    List<CertificateDTO> findByTagOrDescription(String tagName, String description);
+
+    List<CertificateDTO> findAllB(Pageable pageable);
 
     boolean delete(Long id);
 

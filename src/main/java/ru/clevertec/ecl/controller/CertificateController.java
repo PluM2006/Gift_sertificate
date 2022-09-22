@@ -1,15 +1,15 @@
 package ru.clevertec.ecl.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 import ru.clevertec.ecl.services.CertificateService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/certificate")
@@ -44,5 +44,16 @@ public class CertificateController {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<CertificateDTO>> getAllCertificate(Pageable pageable) {
+        return ResponseEntity.ok(certificateService.findAll(pageable));
+    }
+
+    @GetMapping("/tag")
+    public ResponseEntity<List<CertificateDTO>> getAllCertificate(
+            @RequestParam(required = false) String tagName,
+            @RequestParam(required = false) String description) {
+        return ResponseEntity.ok(certificateService.findByTagOrDescription(tagName, description));
+    }
 
 }

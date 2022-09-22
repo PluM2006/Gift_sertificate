@@ -3,7 +3,7 @@ package ru.clevertec.ecl.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.services.TagService;
 
 @RestController

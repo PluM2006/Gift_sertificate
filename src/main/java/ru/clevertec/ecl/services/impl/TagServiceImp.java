@@ -1,15 +1,15 @@
 package ru.clevertec.ecl.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
 
-import java.awt.print.Pageable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
