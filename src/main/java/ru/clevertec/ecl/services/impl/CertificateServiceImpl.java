@@ -29,10 +29,16 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
+
         Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
-        certificate.setCreateDate(LocalDateTime.now());
-        certificate.setLastUpdateDate(certificate.getCreateDate());
-        certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
+        if (!certificateRepository.existsByName(certificateDTO.getName())) {
+            certificate.setCreateDate(LocalDateTime.now());
+            certificate.setLastUpdateDate(certificate.getCreateDate());
+            certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -41,8 +47,8 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
         return certificateMapper.toGiftCertificateDTO(certificateRepository
                 .findById(id)
-                .map(certificate -> certificateRepository.save(CertificatedtoToUpdate(certificateDTO, certificate)))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+                .map(certificate -> certificateRepository.save(certificatedtoToUpdate(certificateDTO, certificate)))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "id=" + id)));
     }
 
     @Override
@@ -68,7 +74,7 @@ public class CertificateServiceImpl implements CertificateService {
         return false;
     }
 
-    private Certificate CertificatedtoToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
+    private Certificate certificatedtoToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
         certificate.setName(certificateDTO.getName());
         certificate.setDuration(certificateDTO.getDuration());
         certificate.setPrice(certificateDTO.getPrice());

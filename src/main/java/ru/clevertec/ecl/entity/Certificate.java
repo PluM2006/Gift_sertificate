@@ -2,9 +2,11 @@ package ru.clevertec.ecl.entity;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -43,16 +45,6 @@ public class Certificate {
     )
     @ToString.Exclude
     private Set<Tag> tags;
-
-    public void addTag(Tag tag) {
-        tags.add(tag);
-        tag.getCertificates().add(this);
-    }
-
-    public void removeTag(Tag tag) {
-        tags.remove(tag);
-        tag.getCertificates().remove(this);
-    }
 
     @Override
     public boolean equals(Object o) {
