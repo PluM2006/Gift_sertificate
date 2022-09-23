@@ -15,10 +15,11 @@ public interface CertificateService {
 
     List<CertificateDTO> findAll(Pageable pageable);
 
-    List<CertificateDTO> findByTagOrDescription(String tagName, String description);
+    List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description, String[] sort);
 
     List<CertificateDTO> findAllB(Pageable pageable);
 
     boolean delete(Long id);
 
+    CertificateDTO findByName(String name);
 }
