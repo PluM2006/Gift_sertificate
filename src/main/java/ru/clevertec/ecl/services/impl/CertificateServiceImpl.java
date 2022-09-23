@@ -28,7 +28,6 @@ public class CertificateServiceImpl implements CertificateService {
     private final TagService tagService;
     private final CertificateMapper certificateMapper;
     private final TagMapper tagMapper;
-    private final String DESCRIPTION = "description";
 
     @Transactional
     @Override
