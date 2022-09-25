@@ -22,8 +22,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CertificateServiceImpl implements CertificateService {
 
+    private static final String ASC = "asc";
+    private static final String DESC = "desc";
+    private static final String SPLITERATOR = ",";
     private final CertificateRepository certificateRepository;
     private final TagService tagService;
     private final CertificateMapper certificateMapper;
@@ -32,16 +36,15 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
-
         Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
+        LocalDateTime now = LocalDateTime.now();
         if (!certificateRepository.existsByName(certificateDTO.getName())) {
-            certificate.setCreateDate(LocalDateTime.now());
-            certificate.setLastUpdateDate(certificate.getCreateDate());
+            certificate.setCreateDate(now);
+            certificate.setLastUpdateDate(now);
             certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);// TODO: 23.09.22  
         }
-
         return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -62,11 +65,6 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findAllB(Pageable pageable) {
-        return null;
-    }
-
-    @Override
     public List<CertificateDTO> findAll(Pageable pageable) {
         return certificateMapper.toCertificateDTOList(certificateRepository
                 .findAll(pageable).getContent());
@@ -74,7 +72,6 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description, String[] sort) {
-
         return certificateMapper
                 .toCertificateDTOList(certificateRepository.findByTagNameDescription(
                         tagName,
@@ -82,77 +79,60 @@ public class CertificateServiceImpl implements CertificateService {
                         PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), getSort(sort))));
     }
 
-    private Sort getSort(String[] sort) {
-        List<Sort.Order> orders = new ArrayList<>();
-        if (sort[0].contains(",")) {
-            for (String s : sort) {
-                String[] _sort = s.split(",");
-                orders.add(new Sort.Order(getSort(_sort[1]), sort[0]));
-
-            }
-        } else {
-            orders.add(new Sort.Order(getSort(sort[1]), sort[0]));
-        }
-
-        return Sort.by(orders);
-    }
-
-    private Sort.Direction getSort(String direction) {
-        if (direction.equals("asc")) {
-            return Sort.Direction.ASC;
-        } else {
-            if (direction.equals("desc")) {
-                return Sort.Direction.DESC;
-            }
-        }
-        return Sort.Direction.ASC;
-    }
-//    @Override
-//    public List<CertificateDTO> findByTagOrDescription(String tagName, String description) {
-//        return certificateMapper.toCertificateDTOList(certificateRepository
-//                .findAll(certificateToExample(tagName, description)));
-//
-//    }
-
-//    private Example<Certificate> certificateToExample(String tagName, String description){
-//        Set<Tag> tagSet = new HashSet<>();
-//        tagSet.add(Tag.builder().name(tagName).build());
-//        ExampleMatcher employeeMatcher = ExampleMatcher.matchingAny()
-//                .withIgnoreNullValues()
-//                .withMatcher("tags.name", ExampleMatcher.GenericPropertyMatchers.exact());
-//                ;
-//        return Example.of(Certificate.builder().tags(tagSet).description(description).build(), employeeMatcher);
-
-//    }
-
-//    @Override
-//    public List<CertificateDTO> findAllB(Pageable pageable) {
-//        return null;
-//    }
-
+    @Transactional
     @Override
     public boolean delete(Long id) {
-        certificateRepository.findById(id)
+        return certificateRepository.findById(id)
                 .map(certificate ->
                 {
                     certificateRepository.delete(certificate);
                     return true;
                 }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return false;
     }
 
     @Override
     public CertificateDTO findByName(String name) {
-        return null;
+        return certificateRepository.findByName(name)
+                .map(certificateMapper::toGiftCertificateDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
+        certificate.setLastUpdateDate(LocalDateTime.now());
         certificate.setName(certificateDTO.getName());
         certificate.setDuration(certificateDTO.getDuration());
         certificate.setPrice(certificateDTO.getPrice());
         certificate.setDescription(certificateDTO.getDescription());
         certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
         return certificate;
+    }
+
+    private Sort getSort(String[] sort) {
+        List<Sort.Order> orders = new ArrayList<>();
+        try {
+            if (sort[0].contains(SPLITERATOR)) {
+                for (String s : sort) {
+                    String[] _sort = s.split(SPLITERATOR);
+                    orders.add(new Sort.Order(getSort(_sort[1]), sort[0]));
+                }
+            } else {
+                orders.add(new Sort.Order(getSort(sort[1]), sort[0]));
+            }
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return Sort.by(orders);
+    }
+
+    private Sort.Direction getSort(String direction) {
+        if (direction.equalsIgnoreCase(ASC)) {
+            return Sort.Direction.ASC;
+        } else {
+            if (direction.equalsIgnoreCase(DESC)) {
+                return Sort.Direction.DESC;
+            }
+        }
+        return Sort.Direction.ASC;
     }
 
 }

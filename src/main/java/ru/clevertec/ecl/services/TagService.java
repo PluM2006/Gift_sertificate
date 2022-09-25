@@ -12,11 +12,11 @@ public interface TagService {
 
     Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet);
 
-    TagDTO update(TagDTO tagDTO);
+    TagDTO update(Long id, TagDTO tagDTO);
 
-    TagDTO findById(Long id);
+    TagDTO getById(Long id);
 
-    List<TagDTO> findAll(Pageable pageable);
+    List<TagDTO> getAllTags(Pageable pageable);
 
     boolean delete(Long id);
 

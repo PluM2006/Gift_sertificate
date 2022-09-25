@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/certificate")
+@RequestMapping("/certificates")
 @RequiredArgsConstructor
 @Validated
 public class CertificateController {
@@ -36,32 +36,27 @@ public class CertificateController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
         return certificateService.delete(id)
-                ? ResponseEntity.noContent().build()
+                ? ResponseEntity.ok("delete certificate with id = "+id)
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CertificateDTO> getById(@PathVariable Long id) {
+    @GetMapping(params = "id")
+    public ResponseEntity<CertificateDTO> getById(
+            @RequestParam(required = false) Long id) {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<CertificateDTO> getByName(@PathVariable String name) {
+    @GetMapping(params = "name")
+    public ResponseEntity<CertificateDTO> getByName(@RequestParam String name) {
         return ResponseEntity.ok(certificateService.findByName(name));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CertificateDTO>> getAllCertificate(@PageableDefault(value = 20) Pageable pageable) {
-        return ResponseEntity.ok(certificateService.findAll(pageable));
-    }
-
-    @GetMapping("/tag")
-    public ResponseEntity<List<CertificateDTO>> getCertificateTagNameOrDescription(
+    @GetMapping()
+    public ResponseEntity<List<CertificateDTO>> getCertificateByTagNameOrDescription(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String description,
-            @RequestParam(defaultValue = "name,desc") String[] sort) {
-
+            @RequestParam(required = false, defaultValue = "name,desc") String[] sort) {
         return ResponseEntity.ok(certificateService.findByTagOrDescription(pageable, tagName, description, sort));
     }
 

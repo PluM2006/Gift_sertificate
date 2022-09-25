@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.mapper.TagMapper;
@@ -16,16 +17,23 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TagServiceImp implements TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
+    @Transactional
     @Override
     public TagDTO save(TagDTO tagDTO) {
-        return null;
+        if (!tagRepository.existsByName(tagDTO.getName())) {
+            return tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(tagDTO)));
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name exists = " + tagDTO.getName()); // TODO: 23.09.22
+        }
     }
 
+    @Transactional
     @Override
     public Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet) {
         Set<TagDTO> result = new HashSet<>();
@@ -37,37 +45,37 @@ public class TagServiceImp implements TagService {
         return result;
     }
 
+    @Transactional
     @Override
-    public TagDTO update(TagDTO tagDTO) {
-        return null;
+    public TagDTO update(Long id, TagDTO tagDTO) {
+        // TODO: 23.09.22 отлавить duplicate
+        return tagMapper.toTagDTO(tagRepository
+                .findById(id)
+                .map(tag -> tagRepository.save(tagMapper.toTag(tagDTO)))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "id=" + id)));
     }
 
     @Override
-    public TagDTO findById(Long id) {
+    public TagDTO getById(Long id) {
         return tagRepository.findById(id)
                 .map(tagMapper::toTagDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public List<TagDTO> findAll(Pageable pageable) {
-        return null;
+    public List<TagDTO> getAllTags(Pageable pageable) {
+        return tagMapper.toTagDTOList(
+                tagRepository.findAll(pageable).getContent());
     }
 
+    @Transactional
     @Override
     public boolean delete(Long id) {
-        tagRepository.findById(id)
+        return tagRepository.findById(id)
                 .map(tag -> {
-                            tagRepository.delete(tag);
-                            return true;
-                        }
-                ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        ;
-        return false;
-    }
-
-    private Set<TagDTO> checkNullTags(Set<TagDTO> tagList) {
-        return (tagList == null) ? new HashSet<>() : tagList;
+                    tagRepository.delete(tag);
+                    return true;
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }

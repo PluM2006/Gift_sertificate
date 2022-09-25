@@ -3,11 +3,13 @@ package ru.clevertec.ecl.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
 import ru.clevertec.ecl.annatation.CertificateWithoutTags;
 import ru.clevertec.ecl.annatation.TagWithoutCertificates;
 import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.dmain.entity.Tag;
 
+import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = CertificateMapper.class)
@@ -24,6 +26,6 @@ public interface TagMapper {
 
     Set<Tag> toTagSet(Set<TagDTO> tagDTOSets);
 
-    Set<TagDTO> toTagDTOSet(Set<Tag> tagSets);
+    List<TagDTO> toTagDTOList(List<Tag> tagSets);
 
 }

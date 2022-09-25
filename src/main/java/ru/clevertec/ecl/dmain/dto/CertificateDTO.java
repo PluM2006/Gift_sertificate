@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -17,6 +18,8 @@ public class CertificateDTO {
     private String description;
     private BigDecimal price;
     private Integer duration;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
     private Set<TagDTO> tags;
 
 }
