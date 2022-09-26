@@ -12,12 +12,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.dmain.entity.Certificate;
 import ru.clevertec.ecl.dmain.entity.Tag;
 import ru.clevertec.ecl.mapper.CertificateMapper;
-import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 
 import java.math.BigDecimal;
@@ -26,20 +26,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-//@ExtendWith(CertificateResolver.class)
-//@ExtendWith(CertificateDtoResolver.class)
 class CertificateServiceImplTest {
+
     @InjectMocks
     private CertificateServiceImpl certificateService;
     @Mock
     private CertificateRepository certificateRepository;
-    @Mock
-    private TagServiceImp tagService;
-    @Mock
-    private TagMapper tagMapper;
     @Mock
     private CertificateMapper certificateMapper;
     private CertificateDTO certificateDTO;
@@ -48,29 +46,17 @@ class CertificateServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        certificateDTO = CertificateDTO.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new HashSet<>())
-                .build();
-        certificate = Certificate.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new HashSet<>())
-                .build();
+        certificate = getCertificate();
+        certificateDTO = getCertificateDTO();
         pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
     }
 
     @Test
     void save() {
-        given(certificateRepository.existsByName(certificateDTO.getName())).willReturn(false);
-        given(certificateRepository.save(Mockito.any(Certificate.class))).willReturn(certificate);
-        given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
-        given(certificateMapper.toCertificate(certificateDTO)).willReturn(certificate);
+        given(certificateRepository.existsByName(any())).willReturn(false);
+        given(certificateRepository.save(any())).willReturn(certificate);
+        given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
+        given(certificateMapper.toCertificate(any())).willReturn(certificate);
         CertificateDTO saveCertificateDTO = certificateService.save(certificateDTO);
         Assertions.assertThat(saveCertificateDTO).isNotNull();
 //        Assertions.assertThat(saveCertificateDTO.getLastUpdateDate()).isNotNull();
@@ -79,9 +65,9 @@ class CertificateServiceImplTest {
 
     @Test
     void update() {
-        given(certificateRepository.save(certificate)).willReturn(certificate);
-        given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
-        given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
+        given(certificateRepository.save(any())).willReturn(certificate);
+        given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
+        given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
         certificateDTO.setName("Certificate 2");
         CertificateDTO update = certificateService.update(1L, certificateDTO);
         System.out.println(update);
@@ -139,13 +125,25 @@ class CertificateServiceImplTest {
         List<CertificateDTO> certificateDTOList = new ArrayList<>();
         certificateDTOList.add(certificateDTO);
         given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
-        given(certificateRepository.findByTagNameDescription("New Tag", "The best", pageable)).willReturn(certificateList);
+        given(certificateRepository.findByTagNameDescription(any(), any(), any())).willReturn(certificateList);
         List<CertificateDTO> byTagOrDescription = certificateService.findByTagOrDescription(pageable, tagDTO.getName(), "The best", new String[]{"name, desc"});
         Assertions.assertThat(byTagOrDescription).isNotNull();
     }
 
     @Test
+    void findByTagOrDescriptionOrderNegative() {
+        TagDTO tagDTO = TagDTO.builder()
+                .id(1L)
+                .name("New Tag").build();
+        org.junit.jupiter.api.Assertions.assertThrows(ResponseStatusException.class,
+                () -> certificateService.findByTagOrDescription(pageable, tagDTO.getName(), "The best", new String[]{"name "}));
+    }
+
+    @Test
     void delete() {
+        given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
+        certificateService.delete(1L);
+        verify(certificateRepository, times(1)).delete(Mockito.any(Certificate.class));
     }
 
     @Test
@@ -156,4 +154,25 @@ class CertificateServiceImplTest {
         Assertions.assertThat(byName).isNotNull();
         org.junit.jupiter.api.Assertions.assertEquals(byName.getName(), "Certificate 1");
     }
+
+    private Certificate getCertificate() {
+        return Certificate.builder()
+                .id(1L)
+                .name("Certificate 1")
+                .description("The best certificate")
+                .price(BigDecimal.valueOf(20))
+                .tags(new HashSet<>())
+                .build();
+    }
+
+    private CertificateDTO getCertificateDTO() {
+        return CertificateDTO.builder()
+                .id(1L)
+                .name("Certificate 1")
+                .description("The best certificate")
+                .price(BigDecimal.valueOf(20))
+                .tags(new HashSet<>())
+                .build();
+    }
+
 }

@@ -17,10 +17,9 @@ import ru.clevertec.ecl.dmain.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,14 +38,8 @@ class TagServiceImpTest {
 
     @BeforeEach
     void setUp() {
-        tagDTO = TagDTO.builder()
-                .id(1L)
-                .name("tag")
-                .build();
-        tag = Tag.builder()
-                .id(1L)
-                .name("tag")
-                .build();
+        tagDTO = getTagDTO();
+        tag = getTag();
     }
 
     @Test
@@ -68,7 +61,20 @@ class TagServiceImpTest {
     }
 
     @Test
-    void saveAll() {
+    void saveAllWhenSetNotNull() {
+        given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
+        given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
+        Set<TagDTO> tagDTOSet = new HashSet<>();
+        tagDTOSet.add(tagDTO);
+        Set<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
+        Assertions.assertThat(tagDTOs).isNotNull();
+        Assertions.assertThat(tagDTOs.size()).isEqualTo(1);
+    }
+
+    @Test
+    void saveAllWhenSetNull() {
+        Set<TagDTO> tagDTOs = tagService.saveAll(null);
+        Assertions.assertThat(tagDTOs).isNotNull();
     }
 
     @Test
@@ -118,6 +124,20 @@ class TagServiceImpTest {
         given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
         tagService.delete(1L);
         verify(tagRepository, times(1)).delete(Mockito.any(Tag.class));
+    }
+
+    private TagDTO getTagDTO() {
+        return TagDTO.builder()
+                .id(1L)
+                .name("tag")
+                .build();
+    }
+
+    private Tag getTag() {
+        return Tag.builder()
+                .id(1L)
+                .name("tag")
+                .build();
     }
 
 }
