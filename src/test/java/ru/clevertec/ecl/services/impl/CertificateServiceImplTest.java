@@ -16,8 +16,6 @@ import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 import ru.clevertec.ecl.dmain.dto.TagDTO;
 import ru.clevertec.ecl.dmain.entity.Certificate;
 import ru.clevertec.ecl.dmain.entity.Tag;
-import ru.clevertec.ecl.exctention.CertificateDtoResolver;
-import ru.clevertec.ecl.exctention.CertificateResolver;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
@@ -69,23 +67,26 @@ class CertificateServiceImplTest {
 
     @Test
     void save() {
-        given(certificateMapper.toCertificate(Mockito.any(CertificateDTO.class))).willReturn(certificate);
-        given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
-        given(certificateRepository.save(certificate)).willReturn(certificate);
-        Certificate save = certificateRepository.save(certificate);
-        System.out.println(save);
-
-//        given(tagMapper.toTagSet(Mockito.anySet())).willReturn(Mockito.anySet());
-//        given(tagService.saveAll(certificateDTO.getTags())).willReturn(Mockito.anySet());
+        given(certificateRepository.existsByName(certificateDTO.getName())).willReturn(false);
+        given(certificateRepository.save(Mockito.any(Certificate.class))).willReturn(certificate);
+        given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
+        given(certificateMapper.toCertificate(certificateDTO)).willReturn(certificate);
         CertificateDTO saveCertificateDTO = certificateService.save(certificateDTO);
-        System.out.println(saveCertificateDTO);
         Assertions.assertThat(saveCertificateDTO).isNotNull();
-        Assertions.assertThat(saveCertificateDTO.getLastUpdateDate()).isNotNull();
-        Assertions.assertThat(saveCertificateDTO.getCreateDate()).isNotNull();
+//        Assertions.assertThat(saveCertificateDTO.getLastUpdateDate()).isNotNull();
+//        Assertions.assertThat(saveCertificateDTO.getCreateDate()).isNotNull();
     }
 
     @Test
     void update() {
+        given(certificateRepository.save(certificate)).willReturn(certificate);
+        given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
+        given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
+        certificateDTO.setName("Certificate 2");
+        CertificateDTO update = certificateService.update(1L, certificateDTO);
+        System.out.println(update);
+        Assertions.assertThat(update).isNotNull();
+        org.junit.jupiter.api.Assertions.assertEquals(certificateDTO.getName(), "Certificate 2");
     }
 
     @Test
