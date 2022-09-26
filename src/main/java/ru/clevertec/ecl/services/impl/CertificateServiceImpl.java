@@ -36,7 +36,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
-        Certificate certificate = certificateMapper.toGiftCertificate(certificateDTO);
+        Certificate certificate = certificateMapper.toCertificate(certificateDTO);
         LocalDateTime now = LocalDateTime.now();
         if (!certificateRepository.existsByName(certificateDTO.getName())) {
             certificate.setCreateDate(now);
@@ -45,13 +45,13 @@ public class CertificateServiceImpl implements CertificateService {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);// TODO: 23.09.22  
         }
-        return certificateMapper.toGiftCertificateDTO(certificateRepository.save(certificate));
+        return certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     }
 
     @Transactional
     @Override
     public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
-        return certificateMapper.toGiftCertificateDTO(certificateRepository
+        return certificateMapper.toCertificateDTO(certificateRepository
                 .findById(id)
                 .map(certificate -> certificateRepository.save(certificationToUpdate(certificateDTO, certificate)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "id=" + id)));
@@ -60,7 +60,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO findById(Long id) {
         return certificateRepository.findById(id)
-                .map(certificateMapper::toGiftCertificateDTO)
+                .map(certificateMapper::toCertificateDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -93,7 +93,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO findByName(String name) {
         return certificateRepository.findByName(name)
-                .map(certificateMapper::toGiftCertificateDTO)
+                .map(certificateMapper::toCertificateDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -119,7 +119,7 @@ public class CertificateServiceImpl implements CertificateService {
                 orders.add(new Sort.Order(getSort(sort[1]), sort[0]));
             }
         } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sort parameter is bad");
         }
         return Sort.by(orders);
     }

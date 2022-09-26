@@ -37,6 +37,9 @@ public class TagServiceImp implements TagService {
     @Override
     public Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet) {
         Set<TagDTO> result = new HashSet<>();
+        if (tagDTOSet ==null){
+            return result;
+        }
         for (TagDTO tagDTO : tagDTOSet) {
             result.add(tagRepository.findByName(tagDTO.getName())
                     .map(tagMapper::toTagDTO)

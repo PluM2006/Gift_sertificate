@@ -14,13 +14,13 @@ import java.util.List;
 public interface CertificateMapper {
 
     @Mapping(target = "tags", qualifiedBy = TagWithoutCertificates.class)
-    CertificateDTO toGiftCertificateDTO(Certificate certificate);
+    CertificateDTO toCertificateDTO(Certificate certificate);
 
     @CertificateWithoutTags
     @Mapping(target = "tags", ignore = true)
-    CertificateDTO toGiftCertificateDTOWithoutTag(Certificate certificate);
+    CertificateDTO toCertificateDTOWithoutTag(Certificate certificate);
 
-    Certificate toGiftCertificate(CertificateDTO giftCertificate);
+    Certificate toCertificate(CertificateDTO giftCertificate);
 
     List<CertificateDTO> toCertificateDTOList(List<Certificate> certificates);
 

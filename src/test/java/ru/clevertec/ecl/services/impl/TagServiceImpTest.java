@@ -88,7 +88,6 @@ class TagServiceImpTest {
         given(tagMapper.toTagDTO(tag)).willReturn(tagDTO);
         given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
         TagDTO byId = tagService.getById(1L);
-        System.out.println(byId);
         Assertions.assertThat(byId).isNotNull();
     }
 
