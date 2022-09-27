@@ -14,5 +14,4 @@ public class TagDTO {
     @NotNull
     private String name;
     private Set<CertificateDTO> certificates;
-
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dmain.dto.TagDTO;
+import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
@@ -29,7 +30,7 @@ public class TagServiceImp implements TagService {
         if (!tagRepository.existsByName(tagDTO.getName())) {
             return tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(tagDTO)));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name exists = " + tagDTO.getName()); // TODO: 23.09.22
+            throw new NotFoundException("Tag", "name", tagDTO.getName(), HttpStatus.NOT_FOUND, 404);
         }
     }
 
@@ -55,14 +56,14 @@ public class TagServiceImp implements TagService {
         return tagMapper.toTagDTO(tagRepository
                 .findById(id)
                 .map(tag -> tagRepository.save(tagMapper.toTag(tagDTO)))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "id=" + id)));
+                .orElseThrow(() -> new NotFoundException("Tag", "id", id, HttpStatus.NOT_FOUND, 404)));
     }
 
     @Override
     public TagDTO getById(Long id) {
         return tagRepository.findById(id)
                 .map(tagMapper::toTagDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Tag", "id", id, HttpStatus.NOT_FOUND, 404));
     }
 
     @Override
@@ -78,7 +79,7 @@ public class TagServiceImp implements TagService {
                 .map(tag -> {
                     tagRepository.delete(tag);
                     return true;
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                }).orElseThrow(() -> new NotFoundException("Tag", "id", id, HttpStatus.NOT_FOUND, 404));
     }
 
 }

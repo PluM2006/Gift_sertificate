@@ -29,14 +29,14 @@ public class CertificateController {
     @PutMapping("/{id}")
     public ResponseEntity<CertificateDTO> updateCertificate(
             @PathVariable Long id,
-            @RequestBody CertificateDTO certificateDTO) {
+            @Valid @RequestBody CertificateDTO certificateDTO) {
         return ResponseEntity.ok(certificateService.update(id, certificateDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
         return certificateService.delete(id)
-                ? ResponseEntity.ok("delete certificate with id = "+id)
+                ? ResponseEntity.ok("delete certificate with id = " + id)
                 : ResponseEntity.notFound().build();
     }
 
@@ -59,5 +59,4 @@ public class CertificateController {
             @RequestParam(required = false, defaultValue = "name,desc") String[] sort) {
         return ResponseEntity.ok(certificateService.findByTagOrDescription(pageable, tagName, description, sort));
     }
-
 }

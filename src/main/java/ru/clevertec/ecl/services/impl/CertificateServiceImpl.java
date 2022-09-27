@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 import ru.clevertec.ecl.dmain.entity.Certificate;
+import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
@@ -24,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CertificateServiceImpl implements CertificateService {
-
     private static final String ASC = "asc";
     private static final String DESC = "desc";
     private static final String SPLITERATOR = ",";
@@ -38,13 +38,9 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO save(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toCertificate(certificateDTO);
         LocalDateTime now = LocalDateTime.now();
-        if (!certificateRepository.existsByName(certificateDTO.getName())) {
-            certificate.setCreateDate(now);
-            certificate.setLastUpdateDate(now);
-            certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);// TODO: 23.09.22  
-        }
+        certificate.setCreateDate(now);
+        certificate.setLastUpdateDate(now);
+        certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
         return certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -54,14 +50,14 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateMapper.toCertificateDTO(certificateRepository
                 .findById(id)
                 .map(certificate -> certificateRepository.save(certificationToUpdate(certificateDTO, certificate)))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "id=" + id)));
+                .orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404)));
     }
 
     @Override
     public CertificateDTO findById(Long id) {
         return certificateRepository.findById(id)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404));
     }
 
     @Override
@@ -87,14 +83,14 @@ public class CertificateServiceImpl implements CertificateService {
                 {
                     certificateRepository.delete(certificate);
                     return true;
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                }).orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404));
     }
 
     @Override
     public CertificateDTO findByName(String name) {
         return certificateRepository.findByName(name)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Certificate", "name", name, HttpStatus.NOT_FOUND, 404));
     }
 
     private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
@@ -134,5 +130,4 @@ public class CertificateServiceImpl implements CertificateService {
         }
         return Sort.Direction.ASC;
     }
-
 }

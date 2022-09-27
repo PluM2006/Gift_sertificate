@@ -7,14 +7,11 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import ru.clevertec.ecl.dmain.dto.CertificateDTO;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 
 public class CertificateDtoResolver implements ParameterResolver {
-
     public static final List<CertificateDTO> CertificateDTOs = Arrays.asList(
             CertificateDTO.builder()
                     .id(1L)
@@ -41,12 +38,11 @@ public class CertificateDtoResolver implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-               return parameterContext.getParameter().getType() == CertificateDTO.class;
+        return parameterContext.getParameter().getType() == CertificateDTO.class;
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-
         return CertificateDTO.builder()
                 .id(1L)
                 .name("Certificate 1")

@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImpTest {
-
     @InjectMocks
     private TagServiceImp tagService;
     @Mock
@@ -139,5 +138,4 @@ class TagServiceImpTest {
                 .name("tag")
                 .build();
     }
-
 }

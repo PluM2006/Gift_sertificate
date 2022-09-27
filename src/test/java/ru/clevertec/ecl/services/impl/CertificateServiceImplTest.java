@@ -33,7 +33,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceImplTest {
-
     @InjectMocks
     private CertificateServiceImpl certificateService;
     @Mock
@@ -174,5 +173,4 @@ class CertificateServiceImplTest {
                 .tags(new HashSet<>())
                 .build();
     }
-
 }

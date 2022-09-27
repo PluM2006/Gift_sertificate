@@ -30,7 +30,7 @@ public class TagController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTag(@PathVariable Long id) {
         return tagService.delete(id)
-                ? ResponseEntity.ok("delete tag with id = "+id)
+                ? ResponseEntity.ok("delete tag with id = " + id)
                 : ResponseEntity.badRequest().build();
     }
 
@@ -43,5 +43,4 @@ public class TagController {
     public ResponseEntity<List<TagDTO>> getTags(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(tagService.getAllTags(pageable));
     }
-
 }
