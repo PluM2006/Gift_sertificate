@@ -29,7 +29,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<?> handlerNoSuchElementException(NoSuchElementException exc, HttpServletResponse response){
+    public ResponseEntity<?> handlerNoSuchElementException(NoSuchElementException exc, HttpServletResponse response) {
         return null;
     }
 
@@ -70,5 +70,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 apiErrorDTO, new HttpHeaders(), apiErrorDTO.getStatus());
     }
+
 }
 

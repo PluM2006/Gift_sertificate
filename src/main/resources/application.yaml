@@ -11,6 +11,10 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   main:
     allow-circular-references: true
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
 server:
   servlet:
     context-path: "/api/v1"

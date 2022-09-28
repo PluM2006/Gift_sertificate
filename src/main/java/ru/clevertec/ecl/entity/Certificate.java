@@ -9,11 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Entity
-
 @Data
 @EqualsAndHashCode(of = "name")
 @Builder
@@ -41,7 +38,7 @@ public class Certificate {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "certificate_tag",
             joinColumns = @JoinColumn(name = "certificate_id"),
@@ -50,6 +47,5 @@ public class Certificate {
     @ToString.Exclude
     @Builder.Default
     private List<Tag> tags = new ArrayList<>();
-
 
 }

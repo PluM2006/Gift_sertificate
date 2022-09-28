@@ -6,7 +6,6 @@ import ru.clevertec.ecl.entity.Tag;
 
 import java.util.Optional;
 
-@Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
     Optional<Tag> findByName(String name);

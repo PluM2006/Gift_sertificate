@@ -59,10 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description) {
         return certificateMapper
-                .toCertificateDTOList(certificateRepository.findByTagNameDescription(
-                        tagName,
-                        description,
-                        pageable));
+                .toCertificateDTOList(certificateRepository.findByTagNameDescription(tagName, description, pageable));
     }
 
     @Transactional
@@ -91,4 +88,5 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setTags(tagMapper.toTagList(tagService.saveAll(certificateDTO.getTags())));
         return certificate;
     }
+
 }

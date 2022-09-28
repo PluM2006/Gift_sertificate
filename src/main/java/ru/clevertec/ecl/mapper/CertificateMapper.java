@@ -1,13 +1,16 @@
 package ru.clevertec.ecl.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Mapper( imports = {LocalDateTime.class},
+@Mapper(imports = {LocalDateTime.class},
         componentModel = "spring",
         nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT
@@ -21,4 +24,5 @@ public interface CertificateMapper {
     Certificate toCertificate(CertificateDTO giftCertificate);
 
     List<CertificateDTO> toCertificateDTOList(List<Certificate> certificates);
+
 }
