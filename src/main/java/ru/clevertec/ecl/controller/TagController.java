@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.ecl.dmain.dto.TagDTO;
+import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.services.TagService;
 
 import java.util.List;

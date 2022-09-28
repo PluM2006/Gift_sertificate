@@ -1,41 +1,46 @@
-package ru.clevertec.ecl.dmain.entity;
+package ru.clevertec.ecl.entity;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "gift_certificate")
-@Getter
-@Setter
-@ToString
+
+@Data
+@EqualsAndHashCode(of = "name")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "gift_certificate")
 @DynamicUpdate
 public class Certificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false)
+
+    @Column
     private String name;
     private String description;
     private BigDecimal price;
     private Integer duration;
-    @Column(name = "create_date")
+
+    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createDate;
-    @Column(name = "last_update_date")
+
+    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "certificate_tag",
@@ -43,19 +48,8 @@ public class Certificate {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     @ToString.Exclude
-    private Set<Tag> tags;
+    @Builder.Default
+    private List<Tag> tags = new ArrayList<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Certificate that = (Certificate) o;
-        return Objects.equals(name, that.name) && Objects.equals(description, that.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description);
-    }
 
 }

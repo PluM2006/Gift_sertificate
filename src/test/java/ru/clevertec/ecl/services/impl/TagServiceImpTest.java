@@ -12,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
-import ru.clevertec.ecl.dmain.dto.TagDTO;
-import ru.clevertec.ecl.dmain.entity.Tag;
+import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 

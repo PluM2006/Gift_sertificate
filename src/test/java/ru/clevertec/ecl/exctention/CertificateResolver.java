@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import ru.clevertec.ecl.dmain.entity.Certificate;
+import ru.clevertec.ecl.entity.Certificate;
 
 import java.math.BigDecimal;
 import java.util.HashSet;

@@ -6,7 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.ecl.dmain.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.services.CertificateService;
 
 import javax.validation.Valid;

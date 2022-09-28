@@ -13,10 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.server.ResponseStatusException;
-import ru.clevertec.ecl.dmain.dto.CertificateDTO;
-import ru.clevertec.ecl.dmain.dto.TagDTO;
-import ru.clevertec.ecl.dmain.entity.Certificate;
-import ru.clevertec.ecl.dmain.entity.Tag;
+import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.entity.Certificate;
+import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 

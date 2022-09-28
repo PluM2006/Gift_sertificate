@@ -5,8 +5,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.clevertec.ecl.annatation.CertificateWithoutTags;
 import ru.clevertec.ecl.annatation.TagWithoutCertificates;
-import ru.clevertec.ecl.dmain.dto.CertificateDTO;
-import ru.clevertec.ecl.dmain.entity.Certificate;
+import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.entity.Certificate;
 
 import java.util.List;
 

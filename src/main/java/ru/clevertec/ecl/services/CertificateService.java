@@ -1,7 +1,7 @@
 package ru.clevertec.ecl.services;
 
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dmain.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.CertificateDTO;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import ru.clevertec.ecl.dmain.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.CertificateDTO;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class CertificateDtoResolver implements ParameterResolver {
+
     public static final List<CertificateDTO> CertificateDTOs = Arrays.asList(
             CertificateDTO.builder()
                     .id(1L)
