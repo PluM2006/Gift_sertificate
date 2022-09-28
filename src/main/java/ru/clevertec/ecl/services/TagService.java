@@ -4,13 +4,12 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dto.TagDTO;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TagService {
 
     TagDTO save(TagDTO tagDTO);
 
-    Set<TagDTO> saveAll(Set<TagDTO> tagDTOSet);
+    List<TagDTO> saveAll(List<TagDTO> tagDTOList);
 
     TagDTO update(Long id, TagDTO tagDTO);
 

@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Value
+@Data
 @Builder
 public class TagDTO {
 
-    Long id;
+    private Long id;
 
     @NotBlank
-    String name;
-    List<CertificateDTO> certificates = new ArrayList<>();
+    private String name;
 }

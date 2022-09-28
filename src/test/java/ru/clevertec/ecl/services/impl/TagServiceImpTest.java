@@ -63,17 +63,11 @@ class TagServiceImpTest {
     void saveAllWhenSetNotNull() {
         given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
         given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
-        Set<TagDTO> tagDTOSet = new HashSet<>();
+        List<TagDTO> tagDTOSet = new ArrayList<>();
         tagDTOSet.add(tagDTO);
-        Set<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
+        List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
         Assertions.assertThat(tagDTOs).isNotNull();
         Assertions.assertThat(tagDTOs.size()).isEqualTo(1);
-    }
-
-    @Test
-    void saveAllWhenSetNull() {
-        Set<TagDTO> tagDTOs = tagService.saveAll(null);
-        Assertions.assertThat(tagDTOs).isNotNull();
     }
 
     @Test

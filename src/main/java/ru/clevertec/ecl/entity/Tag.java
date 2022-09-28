@@ -24,10 +24,5 @@ public class Tag {
 
     @Column
     private String name;
-//
-//    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-//    @ToString.Exclude
-//    @Builder.Default
-//    private List<Certificate> certificates = new ArrayList<>();
 
 }

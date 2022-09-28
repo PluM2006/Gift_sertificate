@@ -13,15 +13,13 @@ public class NotFoundException extends RuntimeException {
     private String dtoName;
     private String fieldName;
     private Object fieldValue;
-    private HttpStatus httpStatus;
-    private Integer errorCode;
+    private HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+    private Integer errorCode = 40004;
 
-    public NotFoundException(String dtoName, String fieldName, Object fieldValue, HttpStatus httpStatus, Integer errorCode) {
+    public NotFoundException(String dtoName, String fieldName, Object fieldValue) {
         super(MessageFormat.format("{0} is not found with {1} = {2}", dtoName, fieldName, fieldValue));
         this.dtoName = dtoName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
-        this.httpStatus = httpStatus;
-        this.errorCode = errorCode;
     }
 }

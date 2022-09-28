@@ -1,27 +1,24 @@
 package ru.clevertec.ecl.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import ru.clevertec.ecl.annatation.CertificateWithoutTags;
-import ru.clevertec.ecl.annatation.TagWithoutCertificates;
+import org.mapstruct.*;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = TagMapper.class)
+@Mapper( imports = {LocalDateTime.class},
+        componentModel = "spring",
+        nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT
+)
 public interface CertificateMapper {
 
-    @Mapping(target = "tags", qualifiedBy = TagWithoutCertificates.class)
     CertificateDTO toCertificateDTO(Certificate certificate);
 
-    @CertificateWithoutTags
-    @Mapping(target = "tags", ignore = true)
-    CertificateDTO toCertificateDTOWithoutTag(Certificate certificate);
-
+    @Mapping(target = "createDate", source = "createDate", defaultExpression = "java(LocalDateTime.now())")
+    @Mapping(target = "lastUpdateDate", source = "lastUpdateDate", defaultExpression = "java(LocalDateTime.now())")
     Certificate toCertificate(CertificateDTO giftCertificate);
 
     List<CertificateDTO> toCertificateDTOList(List<Certificate> certificates);
-
 }

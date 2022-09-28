@@ -15,7 +15,7 @@ public interface CertificateService {
 
     List<CertificateDTO> findAll(Pageable pageable);
 
-    List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description, String[] sort);
+    List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description);
 
     boolean delete(Long id);
 

@@ -16,10 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ru.clevertec.ecl.dto.ApiErrorDTO;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -29,6 +26,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handlerNotFoundException(NotFoundException exc, HttpServletResponse response) {
         return ResponseEntity.status(exc.getHttpStatus())
                 .body(new ApiErrorDTO(exc.getHttpStatus(), exc.getMessage(), String.valueOf(exc.getErrorCode())));
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<?> handlerNoSuchElementException(NoSuchElementException exc, HttpServletResponse response){
+        return null;
     }
 
     @ExceptionHandler(ResponseStatusException.class)

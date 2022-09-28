@@ -40,14 +40,14 @@ public class CertificateController {
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping(params = "id")
+    @GetMapping("/id/{id}")
     public ResponseEntity<CertificateDTO> getById(
-            @RequestParam(required = false) Long id) {
+            @PathVariable Long id) {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
-    @GetMapping(params = "name")
-    public ResponseEntity<CertificateDTO> getByName(@RequestParam String name) {
+    @GetMapping("/name/{name}")
+    public ResponseEntity<CertificateDTO> getByName(@PathVariable String name) {
         return ResponseEntity.ok(certificateService.findByName(name));
     }
 
@@ -55,8 +55,7 @@ public class CertificateController {
     public ResponseEntity<List<CertificateDTO>> getCertificateByTagNameOrDescription(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String tagName,
-            @RequestParam(required = false) String description,
-            @RequestParam(required = false, defaultValue = "name,desc") String[] sort) {
-        return ResponseEntity.ok(certificateService.findByTagOrDescription(pageable, tagName, description, sort));
+            @RequestParam(required = false) String description) {
+        return ResponseEntity.ok(certificateService.findByTagOrDescription(pageable, tagName, description));
     }
 }

@@ -1,13 +1,9 @@
 package ru.clevertec.ecl.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.exception.NotFoundException;
@@ -18,16 +14,13 @@ import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.TagService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CertificateServiceImpl implements CertificateService {
-    private static final String ASC = "asc";
-    private static final String DESC = "desc";
-    private static final String SPLITERATOR = ",";
+
     private final CertificateRepository certificateRepository;
     private final TagService tagService;
     private final CertificateMapper certificateMapper;
@@ -37,10 +30,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toCertificate(certificateDTO);
-        LocalDateTime now = LocalDateTime.now();
-        certificate.setCreateDate(now);
-        certificate.setLastUpdateDate(now);
-        certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
+        certificate.setTags(tagMapper.toTagList(tagService.saveAll(tagMapper.toTagDTOList(certificate.getTags()))));
         return certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -50,14 +40,14 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateMapper.toCertificateDTO(certificateRepository
                 .findById(id)
                 .map(certificate -> certificateRepository.save(certificationToUpdate(certificateDTO, certificate)))
-                .orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404)));
+                .orElseThrow(() -> new NotFoundException("Certificate", "id", id)));
     }
 
     @Override
     public CertificateDTO findById(Long id) {
         return certificateRepository.findById(id)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404));
+                .orElseThrow(() -> new NotFoundException("Certificate", "id", id));
     }
 
     @Override
@@ -67,30 +57,29 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description, String[] sort) {
+    public List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description) {
         return certificateMapper
                 .toCertificateDTOList(certificateRepository.findByTagNameDescription(
                         tagName,
                         description,
-                        PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), getSort(sort))));
+                        pageable));
     }
 
     @Transactional
     @Override
     public boolean delete(Long id) {
         return certificateRepository.findById(id)
-                .map(certificate ->
-                {
+                .map(certificate -> {
                     certificateRepository.delete(certificate);
                     return true;
-                }).orElseThrow(() -> new NotFoundException("Certificate", "id", id, HttpStatus.NOT_FOUND, 404));
+                }).orElseThrow(() -> new NotFoundException("Certificate", "id", id));
     }
 
     @Override
     public CertificateDTO findByName(String name) {
         return certificateRepository.findByName(name)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "name", name, HttpStatus.NOT_FOUND, 404));
+                .orElseThrow(() -> new NotFoundException("Certificate", "name", name));
     }
 
     private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
@@ -99,35 +88,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setDuration(certificateDTO.getDuration());
         certificate.setPrice(certificateDTO.getPrice());
         certificate.setDescription(certificateDTO.getDescription());
-        certificate.setTags(tagMapper.toTagSet(tagService.saveAll(certificateDTO.getTags())));
+        certificate.setTags(tagMapper.toTagList(tagService.saveAll(certificateDTO.getTags())));
         return certificate;
-    }
-
-    private Sort getSort(String[] sort) {
-        List<Sort.Order> orders = new ArrayList<>();
-        try {
-            if (sort[0].contains(SPLITERATOR)) {
-                for (String s : sort) {
-                    String[] _sort = s.split(SPLITERATOR);
-                    orders.add(new Sort.Order(getSort(_sort[1]), sort[0]));
-                }
-            } else {
-                orders.add(new Sort.Order(getSort(sort[1]), sort[0]));
-            }
-        } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sort parameter is bad");
-        }
-        return Sort.by(orders);
-    }
-
-    private Sort.Direction getSort(String direction) {
-        if (direction.equalsIgnoreCase(ASC)) {
-            return Sort.Direction.ASC;
-        } else {
-            if (direction.equalsIgnoreCase(DESC)) {
-                return Sort.Direction.DESC;
-            }
-        }
-        return Sort.Direction.ASC;
     }
 }

@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.dto;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
@@ -10,18 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Value
+@Data
 @Builder
 public class CertificateDTO {
 
-    Long id;
+    private Long id;
 
     @NotBlank
-    String name;
-    String description;
-    BigDecimal price;
-    Integer duration;
-    LocalDateTime createDate;
-    LocalDateTime lastUpdateDate;
-    List<TagDTO> tags= new ArrayList<>();
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private Integer duration;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private List<TagDTO> tags;
 }
