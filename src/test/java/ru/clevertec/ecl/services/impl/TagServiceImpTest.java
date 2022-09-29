@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,13 @@ import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImpTest {
+
     @InjectMocks
     private TagServiceImp tagService;
     @Mock
@@ -68,8 +71,7 @@ class TagServiceImpTest {
         List<TagDTO> tagDTOSet = new ArrayList<>();
         tagDTOSet.add(tagDTO);
         List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
-        assertThat(tagDTOs).isNotNull();
-        assertThat(tagDTOs.size()).isEqualTo(1);
+        assertAll(() -> assertThat(tagDTOs).isNotNull(), () -> assertThat(tagDTOs.size()).isEqualTo(1));
     }
 
     @Test
@@ -106,8 +108,7 @@ class TagServiceImpTest {
         given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
         given(tagMapper.toTagDTOList(Mockito.anyList())).willReturn(tagListDTO);
         List<TagDTO> allTags = tagService.getAllTags(pageable);
-        assertThat(allTags).isNotNull();
-        assertThat(allTags.size()).isEqualTo(2);
+        assertAll(() -> assertThat(allTags).isNotNull(), () -> assertThat(allTags.size()).isEqualTo(2));
     }
 
     @Test
@@ -130,4 +131,5 @@ class TagServiceImpTest {
                 .name("tag")
                 .build();
     }
+
 }

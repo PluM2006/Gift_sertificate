@@ -75,8 +75,7 @@ class CertificateServiceImplTest {
         given(tagMapper.toTagList(any())).willReturn(new ArrayList<>());
         certificateDTO.setName("Certificate 2");
         CertificateDTO update = certificateService.update(1L, certificateDTO);
-        assertThat(update).isNotNull();
-        assertEquals(certificateDTO.getName(), "Certificate 2");
+        assertAll(() -> assertThat(update).isNotNull(), () -> assertEquals(certificateDTO.getName(), "Certificate 2"));
     }
 
     @Test
@@ -110,8 +109,7 @@ class CertificateServiceImplTest {
         given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
         given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
         List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
-        assertThat(certificateDTOS).isNotNull();
-        assertThat(certificateDTOS.size()).isEqualTo(2);
+        assertAll(() -> assertThat(certificateDTOS).isNotNull(), () -> assertThat(certificateDTOS.size()).isEqualTo(2));
     }
 
     @Test
@@ -155,8 +153,7 @@ class CertificateServiceImplTest {
         given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
         given(certificateRepository.findByName(Mockito.any(String.class))).willReturn(Optional.of(certificate));
         CertificateDTO byName = certificateService.getByName("Certificate 1");
-        assertThat(byName).isNotNull();
-        assertEquals(byName.getName(), "Certificate 1");
+        assertAll(() -> assertThat(byName).isNotNull(), () -> assertEquals(byName.getName(), "Certificate 1"));
     }
 
     private Certificate getCertificate() {
