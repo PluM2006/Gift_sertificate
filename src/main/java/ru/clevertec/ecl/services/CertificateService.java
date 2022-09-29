@@ -11,13 +11,13 @@ public interface CertificateService {
 
     CertificateDTO update(Long id, CertificateDTO certificateDTO);
 
-    CertificateDTO findById(Long id);
+    CertificateDTO getById(Long id);
 
-    List<CertificateDTO> findAll(Pageable pageable);
+    List<CertificateDTO> getAll(Pageable pageable);
 
-    List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description);
+    List<CertificateDTO> getByTagOrDescription(Pageable pageable, String tagName, String description);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
-    CertificateDTO findByName(String name);
+    CertificateDTO getByName(String name);
 }

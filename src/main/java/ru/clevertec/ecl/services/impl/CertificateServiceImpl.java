@@ -26,6 +26,32 @@ public class CertificateServiceImpl implements CertificateService {
     private final CertificateMapper certificateMapper;
     private final TagMapper tagMapper;
 
+    @Override
+    public CertificateDTO getById(Long id) {
+        return certificateRepository.findById(id)
+                .map(certificateMapper::toCertificateDTO)
+                .orElseThrow(() -> new NotFoundException("Certificate", "id", id));
+    }
+
+    @Override
+    public List<CertificateDTO> getAll(Pageable pageable) {
+        return certificateMapper.toCertificateDTOList(certificateRepository
+                .findAll(pageable).getContent());
+    }
+
+    @Override
+    public List<CertificateDTO> getByTagOrDescription(Pageable pageable, String tagName, String description) {
+        return certificateMapper
+                .toCertificateDTOList(certificateRepository.findByTagNameDescription(tagName, description, pageable));
+    }
+
+    @Override
+    public CertificateDTO getByName(String name) {
+        return certificateRepository.findByName(name)
+                .map(certificateMapper::toCertificateDTO)
+                .orElseThrow(() -> new NotFoundException("Certificate", "name", name));
+    }
+
     @Transactional
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
@@ -43,40 +69,14 @@ public class CertificateServiceImpl implements CertificateService {
                 .orElseThrow(() -> new NotFoundException("Certificate", "id", id)));
     }
 
-    @Override
-    public CertificateDTO findById(Long id) {
-        return certificateRepository.findById(id)
-                .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "id", id));
-    }
-
-    @Override
-    public List<CertificateDTO> findAll(Pageable pageable) {
-        return certificateMapper.toCertificateDTOList(certificateRepository
-                .findAll(pageable).getContent());
-    }
-
-    @Override
-    public List<CertificateDTO> findByTagOrDescription(Pageable pageable, String tagName, String description) {
-        return certificateMapper
-                .toCertificateDTOList(certificateRepository.findByTagNameDescription(tagName, description, pageable));
-    }
-
     @Transactional
     @Override
-    public boolean delete(Long id) {
-        return certificateRepository.findById(id)
+    public void delete(Long id) {
+        certificateRepository.findById(id)
                 .map(certificate -> {
                     certificateRepository.delete(certificate);
                     return true;
                 }).orElseThrow(() -> new NotFoundException("Certificate", "id", id));
-    }
-
-    @Override
-    public CertificateDTO findByName(String name) {
-        return certificateRepository.findByName(name)
-                .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "name", name));
     }
 
     private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
@@ -88,5 +88,4 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setTags(tagMapper.toTagList(tagService.saveAll(certificateDTO.getTags())));
         return certificate;
     }
-
 }

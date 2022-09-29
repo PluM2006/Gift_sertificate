@@ -19,6 +19,8 @@ import ru.clevertec.ecl.repository.TagRepository;
 
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -46,14 +48,14 @@ class TagServiceImpTest {
         given(tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(Mockito.any(TagDTO.class)))))
                 .willReturn(tagDTO);
         TagDTO save = tagService.save(tagDTO);
-        Assertions.assertThat(save).isNotNull();
+        assertThat(save).isNotNull();
     }
 
     @Test
     @DisplayName("ResponseStatusException test Save")
     void saveNegativeTest() {
         given(tagRepository.existsByName(tagDTO.getName())).willReturn(true);
-        org.junit.jupiter.api.Assertions.assertThrows(
+        assertThrows(
                 ResponseStatusException.class,
                 () -> tagService.save(tagDTO)
         );
@@ -66,8 +68,8 @@ class TagServiceImpTest {
         List<TagDTO> tagDTOSet = new ArrayList<>();
         tagDTOSet.add(tagDTO);
         List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
-        Assertions.assertThat(tagDTOs).isNotNull();
-        Assertions.assertThat(tagDTOs.size()).isEqualTo(1);
+        assertThat(tagDTOs).isNotNull();
+        assertThat(tagDTOs.size()).isEqualTo(1);
     }
 
     @Test
@@ -76,10 +78,8 @@ class TagServiceImpTest {
         given(tagRepository.save(tagMapper.toTag(Mockito.any(TagDTO.class)))).willReturn(tag);
         given(tagMapper.toTagDTO(Mockito.any(Tag.class))).willReturn(tagDTO);
         tagDTO.setName("new Tag");
-        System.out.println(tagDTO);
         TagDTO updateTag = tagService.update(1L, tagDTO);
-        System.out.println(updateTag);
-        Assertions.assertThat(updateTag.getName()).isEqualTo("new Tag");
+        assertThat(updateTag.getName()).isEqualTo("new Tag");
     }
 
     @Test
@@ -87,7 +87,7 @@ class TagServiceImpTest {
         given(tagMapper.toTagDTO(tag)).willReturn(tagDTO);
         given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
         TagDTO byId = tagService.getById(1L);
-        Assertions.assertThat(byId).isNotNull();
+        assertThat(byId).isNotNull();
     }
 
     @Test
@@ -103,13 +103,11 @@ class TagServiceImpTest {
         tagList.add(Tag.builder()
                 .id(2L)
                 .name("Tag2").build());
-        System.out.println(tagListDTO);
         given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
         given(tagMapper.toTagDTOList(Mockito.anyList())).willReturn(tagListDTO);
         List<TagDTO> allTags = tagService.getAllTags(pageable);
-        System.out.println(allTags);
-        Assertions.assertThat(allTags).isNotNull();
-        Assertions.assertThat(allTags.size()).isEqualTo(2);
+        assertThat(allTags).isNotNull();
+        assertThat(allTags.size()).isEqualTo(2);
     }
 
     @Test

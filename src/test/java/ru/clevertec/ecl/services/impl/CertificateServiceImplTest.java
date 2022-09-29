@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.services.impl;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -62,7 +63,7 @@ class CertificateServiceImplTest {
         given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
         given(certificateMapper.toCertificate(any())).willReturn(certificate);
         CertificateDTO saveCertificateDTO = certificateService.save(certificateDTO);
-        Assertions.assertThat(saveCertificateDTO).isNotNull();
+        assertThat(saveCertificateDTO).isNotNull();
     }
 
     @Test
@@ -74,16 +75,16 @@ class CertificateServiceImplTest {
         given(tagMapper.toTagList(any())).willReturn(new ArrayList<>());
         certificateDTO.setName("Certificate 2");
         CertificateDTO update = certificateService.update(1L, certificateDTO);
-        Assertions.assertThat(update).isNotNull();
-        org.junit.jupiter.api.Assertions.assertEquals(certificateDTO.getName(), "Certificate 2");
+        assertThat(update).isNotNull();
+        assertEquals(certificateDTO.getName(), "Certificate 2");
     }
 
     @Test
     void findById() {
         given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
         given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
-        CertificateDTO certificateDTOById = certificateService.findById(1L);
-        Assertions.assertThat(certificateDTOById).isNotNull();
+        CertificateDTO certificateDTOById = certificateService.getById(1L);
+        assertThat(certificateDTOById).isNotNull();
     }
 
     @Test
@@ -108,9 +109,9 @@ class CertificateServiceImplTest {
                 .build());
         given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
         given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
-        List<CertificateDTO> certificateDTOS = certificateService.findAll(pageable);
-        Assertions.assertThat(certificateDTOS).isNotNull();
-        Assertions.assertThat(certificateDTOS.size()).isEqualTo(2);
+        List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
+        assertThat(certificateDTOS).isNotNull();
+        assertThat(certificateDTOS.size()).isEqualTo(2);
     }
 
     @Test
@@ -129,8 +130,8 @@ class CertificateServiceImplTest {
         certificateDTOList.add(certificateDTO);
         given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
         given(certificateRepository.findByTagNameDescription(any(), any(), any())).willReturn(certificateList);
-        List<CertificateDTO> byTagOrDescription = certificateService.findByTagOrDescription(pageable, tagDTO.getName(), "The best");
-        Assertions.assertThat(byTagOrDescription).isNotNull();
+        List<CertificateDTO> byTagOrDescription = certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best");
+        assertThat(byTagOrDescription).isNotNull();
     }
 
     @Test
@@ -138,8 +139,8 @@ class CertificateServiceImplTest {
         TagDTO tagDTO = TagDTO.builder()
                 .id(1L)
                 .name("New Tag").build();
-        org.junit.jupiter.api.Assertions.assertThrows(ResponseStatusException.class,
-                () -> certificateService.findByTagOrDescription(pageable, tagDTO.getName(), "The best"));
+        assertThrows(ResponseStatusException.class,
+                () -> certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best"));
     }
 
     @Test
@@ -153,9 +154,9 @@ class CertificateServiceImplTest {
     void findByName() {
         given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
         given(certificateRepository.findByName(Mockito.any(String.class))).willReturn(Optional.of(certificate));
-        CertificateDTO byName = certificateService.findByName("Certificate 1");
-        Assertions.assertThat(byName).isNotNull();
-        org.junit.jupiter.api.Assertions.assertEquals(byName.getName(), "Certificate 1");
+        CertificateDTO byName = certificateService.getByName("Certificate 1");
+        assertThat(byName).isNotNull();
+        assertEquals(byName.getName(), "Certificate 1");
     }
 
     private Certificate getCertificate() {

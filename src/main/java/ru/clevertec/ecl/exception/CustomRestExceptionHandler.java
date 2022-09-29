@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.clevertec.ecl.dto.ApiErrorDTO;
+import ru.clevertec.ecl.dto.ValidateErrorDTO;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -22,15 +23,12 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private final static String VALID_EXCEPTION = "10005";
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handlerNotFoundException(NotFoundException exc, HttpServletResponse response) {
         return ResponseEntity.status(exc.getHttpStatus())
                 .body(new ApiErrorDTO(exc.getHttpStatus(), exc.getMessage(), String.valueOf(exc.getErrorCode())));
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<?> handlerNoSuchElementException(NoSuchElementException exc, HttpServletResponse response) {
-        return null;
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -46,19 +44,30 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpStatus status,
             @NonNull WebRequest request) {
         List<String> errors = new ArrayList<>();
+        List<ValidateErrorDTO> validateErrorDTOList = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
+            validateErrorDTOList.add(getValidateErrorDTO(ex));
         }
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
-        String field = Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField();
-        String objectName = ex.getBindingResult().getFieldError().getObjectName();
-        String code = ex.getBindingResult().getFieldError().getDefaultMessage();
+        errors.add(VALID_EXCEPTION);
         ApiErrorDTO apiErrorDTO =
-                new ApiErrorDTO(status, String.format("Validation filed.  DTO " + objectName + "field " + field + " " + code), errors);
+                new ApiErrorDTO(status,
+                        String.format("Validation filed. " +validateErrorDTOList.stream()
+                                .map(ValidateErrorDTO::toString)
+                                .collect(Collectors.joining())), errors);
         return handleExceptionInternal(
                 ex, apiErrorDTO, headers, apiErrorDTO.getStatus(), request);
+    }
+
+    private static ValidateErrorDTO getValidateErrorDTO(MethodArgumentNotValidException ex) {
+        return ValidateErrorDTO.builder()
+                .object(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getObjectName())
+                .code(ex.getBindingResult().getFieldError().getDefaultMessage())
+                .field(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField())
+                .build();
     }
 
     @ExceptionHandler({ConstraintViolationException.class})

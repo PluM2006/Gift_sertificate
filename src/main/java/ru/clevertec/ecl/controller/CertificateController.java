@@ -35,20 +35,19 @@ public class CertificateController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
-        return certificateService.delete(id)
-                ? ResponseEntity.ok("delete certificate with id = " + id)
-                : ResponseEntity.notFound().build();
+        certificateService.delete(id);
+        return ResponseEntity.ok("Deleted certificate with id = "+id);
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<CertificateDTO> getById(
             @PathVariable Long id) {
-        return ResponseEntity.ok(certificateService.findById(id));
+        return ResponseEntity.ok(certificateService.getById(id));
     }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<CertificateDTO> getByName(@PathVariable String name) {
-        return ResponseEntity.ok(certificateService.findByName(name));
+        return ResponseEntity.ok(certificateService.getByName(name));
     }
 
     @GetMapping()
@@ -56,6 +55,6 @@ public class CertificateController {
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String description) {
-        return ResponseEntity.ok(certificateService.findByTagOrDescription(pageable, tagName, description));
+        return ResponseEntity.ok(certificateService.getByTagOrDescription(pageable, tagName, description));
     }
 }
