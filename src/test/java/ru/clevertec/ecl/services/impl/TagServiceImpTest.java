@@ -68,6 +68,7 @@ class TagServiceImpTest {
     void saveAllWhenSetNotNull() {
         given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
         given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
+        given(tagMapper.toTag(any())).willReturn(tag);
         List<TagDTO> tagDTOSet = new ArrayList<>();
         tagDTOSet.add(tagDTO);
         List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);

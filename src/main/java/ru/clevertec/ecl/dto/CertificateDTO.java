@@ -22,8 +22,10 @@ public class CertificateDTO {
     @NotBlank
     private String name;
     private String description;
+
     @Min(1)
     private BigDecimal price;
+
     @Min(1)
     private Integer duration;
     private LocalDateTime createDate;

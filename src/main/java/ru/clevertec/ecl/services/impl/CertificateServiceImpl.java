@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.CertificateDTO;
+import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
@@ -15,6 +16,7 @@ import ru.clevertec.ecl.services.TagService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +37,8 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> getAll(Pageable pageable) {
-        return certificateMapper.toCertificateDTOList(certificateRepository
-                .findAll(pageable).getContent());
+        return certificateRepository
+                .findAll(pageable).stream().map(certificateMapper::toCertificateDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -56,7 +58,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO save(CertificateDTO certificateDTO) {
         Certificate certificate = certificateMapper.toCertificate(certificateDTO);
-        certificate.setTags(tagMapper.toTagList(tagService.saveAll(tagMapper.toTagDTOList(certificate.getTags()))));
+        certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
+                .map(tagMapper::toTag)
+                .collect(Collectors.toList()));
         return certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -85,7 +89,9 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setDuration(certificateDTO.getDuration());
         certificate.setPrice(certificateDTO.getPrice());
         certificate.setDescription(certificateDTO.getDescription());
-        certificate.setTags(tagMapper.toTagList(tagService.saveAll(certificateDTO.getTags())));
+        certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
+                .map(tagMapper::toTag)
+                .collect(Collectors.toList()));
         return certificate;
     }
 }

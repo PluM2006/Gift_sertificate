@@ -5,13 +5,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +33,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public List<TagDTO> getAllTags(Pageable pageable) {
-        return tagMapper.toTagDTOList(
-                tagRepository.findAll(pageable).getContent());
+        return tagRepository.findAll(pageable).stream().map(tagMapper::toTagDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -43,9 +45,9 @@ public class TagServiceImp implements TagService {
     @Transactional
     @Override
     public List<TagDTO> saveAll(List<TagDTO> tagDTOList) {
-        return tagMapper.toTagDTOList(tagDTOList.stream().map(tagDTO -> tagRepository.findByName(tagDTO.getName())
-                        .orElseGet(() -> (tagRepository.save(tagMapper.toTag(tagDTO)))))
-                .collect(Collectors.toList()));
+        return tagDTOList.stream().map(tagMapper::toTag)
+                .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
+                .map(tagMapper::toTagDTO).collect(Collectors.toList());
     }
 
     @Transactional
