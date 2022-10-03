@@ -1,8 +1,11 @@
 package ru.clevertec.ecl.entity;
 
 import lombok.*;
+import org.aspectj.weaver.ast.Or;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -20,5 +23,8 @@ public class User {
     private String secondName;
     private String username;
 
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<Order> orderList = new ArrayList<>();
 
 }

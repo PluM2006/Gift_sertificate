@@ -55,16 +55,6 @@ class TagServiceImpTest {
     }
 
     @Test
-    @DisplayName("ResponseStatusException test Save")
-    void saveNegativeTest() {
-        given(tagRepository.existsByName(tagDTO.getName())).willReturn(true);
-        assertThrows(
-                ResponseStatusException.class,
-                () -> tagService.save(tagDTO)
-        );
-    }
-
-    @Test
     void saveAllWhenSetNotNull() {
         given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
         given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
@@ -107,7 +97,6 @@ class TagServiceImpTest {
                 .id(2L)
                 .name("Tag2").build());
         given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
-        given(tagMapper.toTagDTOList(Mockito.anyList())).willReturn(tagListDTO);
         List<TagDTO> allTags = tagService.getAllTags(pageable);
         assertAll(() -> assertThat(allTags).isNotNull(), () -> assertThat(allTags.size()).isEqualTo(2));
     }

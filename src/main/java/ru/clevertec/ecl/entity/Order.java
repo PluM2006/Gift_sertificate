@@ -1,38 +1,40 @@
 package ru.clevertec.ecl.entity;
 
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "orders")
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"purchase_date"})
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
+@Table(name = "orders")
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private UserCertificateKey id;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime purchase_date;
-    private Integer amount;
-    private BigDecimal price;
+    private UUID numberOrder;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @MapsId("userId")
+    @ToString.Exclude
     private User user;
 
-    @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @ManyToOne
+    @MapsId("certificateId")
     @ToString.Exclude
-    private List<OrderCertificate> certificates = new ArrayList<>();
+    private Certificate certificate;
+
+    private BigDecimal price;
+
+    public Order(User user, Certificate certificate){
+        this.id = new UserCertificateKey(user.getId(), certificate.getId());
+        this.user = user;
+        this.certificate = certificate;
+
+    }
 }
