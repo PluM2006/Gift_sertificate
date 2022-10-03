@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
@@ -14,7 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CertificateOrderKey implements Serializable {
 
-    Long certificateId;
-    Long orderId;
+    @Column(name = "certificate_id")
+    private Long certificateId;
+    @Column(name = "order_id")
+    private Long orderId;
 
 }

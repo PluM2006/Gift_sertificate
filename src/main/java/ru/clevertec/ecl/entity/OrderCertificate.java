@@ -13,12 +13,12 @@ public class OrderCertificate {
     @EmbeddedId
     private CertificateOrderKey id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("certificateId")
     @JoinColumn(name = "certificate_id")
     private Certificate certificate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("orderId")
     @JoinColumn(name = "order_id")
     @ToString.Exclude

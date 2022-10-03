@@ -48,8 +48,4 @@ public class Certificate {
     @Builder.Default
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order")
-    @ToString.Exclude
-    private List<OrderCertificate> orders = new ArrayList<>();
-
 }

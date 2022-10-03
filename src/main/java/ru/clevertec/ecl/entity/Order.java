@@ -31,7 +31,8 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "certificate")
+    @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<OrderCertificate> certificates = new ArrayList<>();
 }
