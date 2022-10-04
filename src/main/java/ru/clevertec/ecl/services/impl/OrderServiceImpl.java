@@ -31,10 +31,18 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDTO addOrder(OrderDTO orderDTO) {
-        orderDTO.setCertificateDTO(certificateService.getById(orderDTO.getCertificateDTO().getId()));
-        orderDTO.setUserDTO(userService.getUserByUserName(orderDTO.getUserDTO().getUsername()));
-        orderDTO.setPrice(orderDTO.getCertificateDTO().getPrice());
+//        orderDTO.getOrderCertificates().setCertificateDTO(getCertificate(orderDTO.getCertificateDTO()));
+//        orderDTO.setUserDTO(userService.getUserByUserName(orderDTO.getUserDTO().getUsername()));
+//        orderDTO.getCertificateDTO()
+//                .forEach(certificateDTO -> certificateDTO.setPrice(certificateDTO.getPrice()));
         return orderMapper.toOrderDto(orderRepository.save(orderMapper.toOrder(orderDTO)));
+    }
+
+    private List<CertificateDTO> getCertificate(List<CertificateDTO> certificateDTOS){
+        return certificateDTOS.stream().map(certificateDTO -> certificateService.getByName(certificateDTO.getName()))
+                .collect(Collectors.toList());
+
+
     }
 
     @Override
