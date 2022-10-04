@@ -24,5 +24,4 @@ public interface CertificateMapper {
     Certificate toCertificate(CertificateDTO giftCertificate);
 
     List<CertificateDTO> toCertificateDTOList(List<Certificate> certificates);
-
 }

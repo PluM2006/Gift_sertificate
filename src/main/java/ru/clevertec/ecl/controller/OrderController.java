@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.Order;
 import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.services.OrderService;
@@ -20,12 +22,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> addOrder(@Valid @RequestBody Order order) {
-        return ResponseEntity.ok(orderService.addOrder(order));
+    public ResponseEntity<OrderDTO> addOrder(@Valid @RequestBody OrderDTO orderDTO) {
+        return ResponseEntity.ok(orderService.addOrder(orderDTO));
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> getOrderUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(orderService.getAllUserOrder(user));
+    public ResponseEntity<List<OrderDTO>> getOrderUser(@Valid @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(orderService.getAllUserOrder(userDTO));
     }
 }

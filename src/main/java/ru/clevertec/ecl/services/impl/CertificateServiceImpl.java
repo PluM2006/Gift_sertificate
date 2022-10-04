@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
@@ -16,6 +15,7 @@ import ru.clevertec.ecl.services.TagService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +52,12 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateRepository.findByName(name)
                 .map(certificateMapper::toCertificateDTO)
                 .orElseThrow(() -> new NotFoundException("Certificate", "name", name));
+    }
+
+    @Override
+    public Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable) {
+        return certificateRepository.findByTags_NameIsIn(tagsNames, pageable).stream().map(
+                certificateMapper::toCertificateDTO).collect(Collectors.toSet());
     }
 
     @Transactional

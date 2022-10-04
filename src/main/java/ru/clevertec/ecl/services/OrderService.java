@@ -1,17 +1,16 @@
 package ru.clevertec.ecl.services;
 
-import org.springframework.stereotype.Service;
-import ru.clevertec.ecl.entity.Order;
-import ru.clevertec.ecl.entity.User;
+import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.dto.UserDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
 
-    Order addOrder(Order order);
+    OrderDTO addOrder(OrderDTO orderDTO);
 
-    List<Order> getAllUserOrder(User user);
+    List<OrderDTO> getAllUserOrder(UserDTO userDTO);
 
-    Order getOrderUser(User user, UUID uuid);
+    OrderDTO getOrderByNumberOrder(UUID uuid);
 }

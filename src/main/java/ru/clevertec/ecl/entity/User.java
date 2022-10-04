@@ -25,6 +25,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
+    @Builder.Default
     private List<Order> orderList = new ArrayList<>();
 
 }

@@ -8,6 +8,7 @@ import ru.clevertec.ecl.entity.Certificate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CertificateRepository extends JpaRepository<Certificate, Long> {
 
@@ -21,4 +22,5 @@ public interface CertificateRepository extends JpaRepository<Certificate, Long> 
     @EntityGraph(attributePaths = {"tags"})
     List<Certificate> findByTagNameDescription(String tagName, String description, Pageable pageable);
 
+    List<Certificate> findByTags_NameIsIn(List<String> tags_name, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -14,27 +15,20 @@ import java.util.UUID;
 @Table(name = "orders")
 public class Order {
 
-    @EmbeddedId
-    private UserCertificateKey id;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private UUID numberOrder;
+    private BigDecimal price;
+    private LocalDateTime createDate;
 
-    @ManyToOne
-    @MapsId("userId")
-    @ToString.Exclude
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @MapsId("certificateId")
-    @ToString.Exclude
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "certificate_id")
     private Certificate certificate;
 
-    private BigDecimal price;
 
-    public Order(User user, Certificate certificate){
-        this.id = new UserCertificateKey(user.getId(), certificate.getId());
-        this.user = user;
-        this.certificate = certificate;
-
-    }
 }

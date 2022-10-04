@@ -11,6 +11,7 @@ import ru.clevertec.ecl.services.CertificateService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/certificates")
@@ -56,5 +57,12 @@ public class CertificateController {
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String description) {
         return ResponseEntity.ok(certificateService.getByTagOrDescription(pageable, tagName, description));
+    }
+
+    @GetMapping("/tags")
+    public ResponseEntity<Set<CertificateDTO>> getCertificateByTagsName(
+            @RequestParam List<String> tagsNames,
+            @PageableDefault Pageable pageable){
+        return ResponseEntity.ok(certificateService.getByTagsName(tagsNames, pageable));
     }
 }

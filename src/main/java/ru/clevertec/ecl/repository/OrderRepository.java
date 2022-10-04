@@ -11,4 +11,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByUserOrderByNumberOrder(User user);
 
+    Order findByNumberOrder(UUID uuid);
+
 }

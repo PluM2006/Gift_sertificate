@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.entity.Order;
-import ru.clevertec.ecl.entity.User;
-import ru.clevertec.ecl.mapper.CertificateMapper;
+import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.dto.UserDTO;
+import ru.clevertec.ecl.mapper.OrderMapper;
+import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.OrderRepository;
 import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.OrderService;
@@ -14,6 +15,7 @@ import ru.clevertec.ecl.services.UserService;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,33 +23,28 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-
-    private final CertificateService certificateService;
-
+    private final OrderMapper orderMapper;
     private final UserService userService;
-
-    private final CertificateMapper certificateMapper;
+    private final UserMapper userMapper;
+    private final CertificateService certificateService;
 
     @Transactional
     @Override
-    public Order addOrder(Order order) {
-        CertificateDTO byName = certificateService.getByName(order.getCertificate().getName());
-        User userByUserName = userService.getUserByUserName(order.getUser().getUsername());
-
-        Order order1 = new Order(userByUserName, certificateMapper.toCertificate(byName));
-        order1.setNumberOrder(UUID.randomUUID());
-        order1.setPrice(byName.getPrice());
-        return orderRepository.save(order1);
+    public OrderDTO addOrder(OrderDTO orderDTO) {
+        orderDTO.setCertificateDTO(certificateService.getById(orderDTO.getCertificateDTO().getId()));
+        orderDTO.setUserDTO(userService.getUserByUserName(orderDTO.getUserDTO().getUsername()));
+        orderDTO.setPrice(orderDTO.getCertificateDTO().getPrice());
+        return orderMapper.toOrderDto(orderRepository.save(orderMapper.toOrder(orderDTO)));
     }
 
     @Override
-    public List<Order> getAllUserOrder(User user) {
-        return orderRepository.findAllByUserOrderByNumberOrder(user);
+    public List<OrderDTO> getAllUserOrder(UserDTO userDTO) {
+        return orderRepository.findAllByUserOrderByNumberOrder(userMapper.toUser(userDTO))
+                .stream().map(orderMapper::toOrderDto).collect(Collectors.toList());
     }
 
     @Override
-    public Order getOrderUser(User user, UUID uuid) {
-        return null;
+    public OrderDTO getOrderByNumberOrder(UUID uuid) {
+        return orderMapper.toOrderDto(orderRepository.findByNumberOrder(uuid));
     }
-
 }

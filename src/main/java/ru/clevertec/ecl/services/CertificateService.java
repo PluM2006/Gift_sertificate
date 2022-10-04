@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.CertificateDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CertificateService {
 
@@ -21,4 +22,6 @@ public interface CertificateService {
     void delete(Long id);
 
     CertificateDTO getByName(String name);
+
+    Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable);
 }
