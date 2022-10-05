@@ -3,9 +3,9 @@ package ru.clevertec.ecl.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
+import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.OrderMapper;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.OrderRepository;
@@ -31,20 +31,20 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDTO addOrder(OrderDTO orderDTO) {
-        orderDTO.setCertificateDTO(certificateService.getById(orderDTO.getCertificateDTO().getId()));
-        orderDTO.setUserDTO(userService.getUserByUserName(orderDTO.getUserDTO().getUsername()));
-        orderDTO.setPrice(orderDTO.getCertificateDTO().getPrice());
+        orderDTO.setCertificate(certificateService.getById(orderDTO.getCertificate().getId()));
+        orderDTO.setUser(userService.getUserByUserName(orderDTO.getUser().getUsername()));
+        orderDTO.setPrice(orderDTO.getCertificate().getPrice());
         return orderMapper.toOrderDto(orderRepository.save(orderMapper.toOrder(orderDTO)));
     }
 
     @Override
     public List<OrderDTO> getAllUserOrder(UserDTO userDTO) {
-        return orderRepository.findAllByUserOrderByNumberOrder(userMapper.toUser(userDTO))
+        return orderRepository.findAllByUser(userMapper.toUser(userDTO))
                 .stream().map(orderMapper::toOrderDto).collect(Collectors.toList());
     }
 
     @Override
-    public OrderDTO getOrderByNumberOrder(UUID uuid) {
-        return orderMapper.toOrderDto(orderRepository.findByNumberOrder(uuid));
+    public OrderDTO getOrderById(Long id) {
+        return orderMapper.toOrderDto(orderRepository.findById(id).orElseThrow(()-> new NotFoundException("Order", "id", id)));
     }
 }

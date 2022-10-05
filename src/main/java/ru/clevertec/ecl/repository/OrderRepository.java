@@ -5,12 +5,9 @@ import ru.clevertec.ecl.entity.Order;
 import ru.clevertec.ecl.entity.User;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findAllByUserOrderByNumberOrder(User user);
-
-    Order findByNumberOrder(UUID uuid);
+    List<Order> findAllByUser(User user);
 
 }

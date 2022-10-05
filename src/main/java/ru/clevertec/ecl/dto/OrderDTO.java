@@ -14,7 +14,7 @@ public class OrderDTO {
     private Long id;
     private UUID numberOrder;
     private BigDecimal price;
-    private LocalDateTime createDate;
-    private UserDTO userDTO;
-    private CertificateDTO certificateDTO;
+    private LocalDateTime purchaseDate;
+    private UserDTO user;
+    private CertificateDTO certificate;
 }

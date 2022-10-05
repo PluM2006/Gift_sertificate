@@ -4,7 +4,6 @@ import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface OrderService {
 
@@ -12,5 +11,6 @@ public interface OrderService {
 
     List<OrderDTO> getAllUserOrder(UserDTO userDTO);
 
-    OrderDTO getOrderByNumberOrder(UUID uuid);
+    OrderDTO getOrderById(Long id);
+
 }
