@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.User;
+import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.UserRepository;
 import ru.clevertec.ecl.services.UserService;
@@ -20,7 +21,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserByUserName(String username) {
-        return userMapper.toUserDTO(repository.findUserByUsername(username));
+        return userMapper.toUserDTO(repository.findUserByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User", "username", username)));
     }
 
     @Override

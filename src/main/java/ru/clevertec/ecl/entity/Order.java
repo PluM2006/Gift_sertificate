@@ -3,7 +3,6 @@ package ru.clevertec.ecl.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "numberOrder")
 @Table(name = "orders")
 public class Order {
 
@@ -28,8 +27,9 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
-    private List<OrderCertificate> orderCertificates = new ArrayList<>();
+    private List<OrdersCertificates> ordersCertificates = new ArrayList<>();
+
 }

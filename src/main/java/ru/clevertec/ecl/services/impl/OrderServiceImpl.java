@@ -3,9 +3,10 @@ package ru.clevertec.ecl.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
+import ru.clevertec.ecl.entity.Order;
+import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.OrderMapper;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.OrderRepository;
@@ -26,23 +27,23 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final CertificateMapper certificateMapper;
     private final CertificateService certificateService;
 
     @Transactional
     @Override
     public OrderDTO addOrder(OrderDTO orderDTO) {
-//        orderDTO.getOrderCertificates().setCertificateDTO(getCertificate(orderDTO.getCertificateDTO()));
-//        orderDTO.setUserDTO(userService.getUserByUserName(orderDTO.getUserDTO().getUsername()));
-//        orderDTO.getCertificateDTO()
-//                .forEach(certificateDTO -> certificateDTO.setPrice(certificateDTO.getPrice()));
-        return orderMapper.toOrderDto(orderRepository.save(orderMapper.toOrder(orderDTO)));
-    }
-
-    private List<CertificateDTO> getCertificate(List<CertificateDTO> certificateDTOS){
-        return certificateDTOS.stream().map(certificateDTO -> certificateService.getByName(certificateDTO.getName()))
-                .collect(Collectors.toList());
-
-
+        Order order = orderMapper.toOrder(orderDTO);
+        order.getOrdersCertificates().forEach(oc ->
+        {
+            oc.setCertificate(certificateMapper
+                    .toCertificate(certificateService.getByName(oc.getCertificate().getName())));
+            oc.setPrice(oc.getCertificate().getPrice());
+            oc.setOrder(order);
+        });
+        UserDTO userByUserName = userService.getUserByUserName(orderDTO.getUserDTO().getUsername());
+        order.setUser(userMapper.toUser(userByUserName));
+        return orderMapper.toOrderDto(orderRepository.save(order));
     }
 
     @Override

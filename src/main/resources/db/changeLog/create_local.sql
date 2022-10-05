@@ -27,22 +27,29 @@ CREATE TABLE users
     id          BIGSERIAL PRIMARY KEY NOT NULL,
     first_name  VARCHAR(255),
     second_name VARCHAR(255),
-    username    VARCHAR(25)           NOT NULL
+    username    VARCHAR(25) UNIQUE    NOT NULL
 );
+
 CREATE TABLE orders
 (
-    id                  BIGSERIAL PRIMARY KEY NOT NULL,
-    user_id             BIGINT REFERENCES users (id),
-    price               NUMERIC(10, 2) CHECK (price > 0),
-    purchase_date       TIMESTAMP,
-    amount              INTEGER
+    id            BIGSERIAL PRIMARY KEY NOT NULL,
+    user_id       BIGINT
+        CONSTRAINT user_id_key REFERENCES users (id),
+    number_order  uuid,
+    create_date  timestamp
 );
 
 CREATE TABLE orders_certificates
 (
+    id  BIGSERIAL PRIMARY KEY NOT NULL ,
+    price             NUMERIC(10, 2) CHECK (price > 0),
+    certificate_id    BIGINT CONSTRAINT certificate_id_key REFERENCES gift_certificate (id),
+    order_id          BIGINT CONSTRAINT order_id_key REFERENCES orders (id)
+);
 
-    certificate_id BIGINT REFERENCES gift_certificate(id),
-    order_id BIGINT REFERENCES orders(id),
-    price_certificate NUMERIC(10, 2) CHECK (price_certificate > 0),
-    PRIMARY KEY (certificate_id, order_id)
-)
+INSERT INTO users(first_name, second_name, username)
+VALUES ('Jon', 'Fedor', 'Piksi'),
+       ('Slivestr','Silver','Silver12')
+
+
+
