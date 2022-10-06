@@ -1,6 +1,11 @@
 package ru.clevertec.ecl.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -30,13 +35,16 @@ public class Certificate {
     private BigDecimal price;
     private Integer duration;
 
+
     @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createDate;
 
+
     @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
+
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

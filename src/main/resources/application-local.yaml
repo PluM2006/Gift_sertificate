@@ -5,4 +5,8 @@ spring:
       hibernate:
         format_sql: true
   liquibase:
+<<<<<<< HEAD
     change-log: db/changeLog/create_local.sql
+=======
+    change-log: db/changeLog/db.changelog-master_local.yaml
+>>>>>>> task-2_

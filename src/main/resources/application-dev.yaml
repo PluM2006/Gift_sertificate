@@ -1,3 +1,7 @@
 spring:
   liquibase:
+<<<<<<< HEAD
     change-log: db/changeLog/create.sql
+=======
+    change-log: db/changeLog/db.changelog-master.yaml
+>>>>>>> task-2_

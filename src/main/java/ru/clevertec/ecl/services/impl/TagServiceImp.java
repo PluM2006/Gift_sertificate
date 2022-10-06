@@ -5,16 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
-import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -68,4 +65,5 @@ public class TagServiceImp implements TagService {
                     return true;
                 }).orElseThrow(() -> new NotFoundException("Tag", "id", id));
     }
+
 }

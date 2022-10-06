@@ -28,4 +28,5 @@ public class ApiErrorDTO {
         this.errorMessage = errorMessage;
         errors = Collections.singletonList(error);
     }
+
 }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.UserDTO;
-import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.UserRepository;
@@ -29,4 +28,5 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getAllUsers(Pageable pageable) {
         return repository.findAll(pageable).map(userMapper::toUserDTO).toList();
     }
+
 }

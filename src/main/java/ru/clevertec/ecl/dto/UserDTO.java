@@ -13,5 +13,5 @@ public class UserDTO {
     private String firstName;
     private String secondName;
     private String username;
-    private List<OrderDTO> orderList;
+
 }
