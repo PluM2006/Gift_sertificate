@@ -12,7 +12,6 @@ import java.util.UUID;
 public class OrderDTO {
 
     private Long id;
-    private UUID numberOrder;
     private BigDecimal price;
     private LocalDateTime purchaseDate;
     private UserDTO user;

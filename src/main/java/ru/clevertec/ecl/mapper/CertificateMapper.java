@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(imports = {LocalDateTime.class},
-        componentModel = "spring",
-        nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT
 )
 public interface CertificateMapper {

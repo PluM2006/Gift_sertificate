@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Mapper(imports = {LocalDateTime.class},
-        componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
 public interface OrderMapper {
 
     OrderDTO toOrderDto(Order order);
 
     @Mapping(target = "purchaseDate", source = "purchaseDate", defaultExpression = "java(LocalDateTime.now())")
+    @Mapping(target = "user.orderList", ignore = true)
     Order toOrder(OrderDTO orderDTO);
 }

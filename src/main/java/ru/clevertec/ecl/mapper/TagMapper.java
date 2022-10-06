@@ -6,7 +6,7 @@ import ru.clevertec.ecl.entity.Tag;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface TagMapper {
 
     TagDTO toTagDTO(Tag tag);
