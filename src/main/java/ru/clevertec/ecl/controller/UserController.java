@@ -21,12 +21,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserDTO> getUserForUserName(@PathVariable  String username) {
+    public ResponseEntity<UserDTO> getUserForUserName(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserByUserName(username));
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUser(@PageableDefault Pageable pageable){
+    public ResponseEntity<List<UserDTO>> getAllUser(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
+
 }

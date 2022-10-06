@@ -5,4 +5,4 @@ spring:
       hibernate:
         format_sql: true
   liquibase:
-    change-log: db/changeLog/create_local.sql
+    change-log: db/changeLog/db.changelog-master_local.yaml

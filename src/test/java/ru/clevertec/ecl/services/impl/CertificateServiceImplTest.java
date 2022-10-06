@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -127,7 +129,8 @@ class CertificateServiceImplTest {
         certificateDTOList.add(certificateDTO);
         given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
         given(certificateRepository.findByTagNameDescription(any(), any(), any())).willReturn(certificateList);
-        List<CertificateDTO> byTagOrDescription = certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best");
+        List<CertificateDTO> byTagOrDescription = certificateService.getByTagOrDescription(pageable, tagDTO.getName()
+                , "The best");
         assertThat(byTagOrDescription).isNotNull();
     }
 
@@ -175,4 +178,5 @@ class CertificateServiceImplTest {
                 .tags(new ArrayList<>())
                 .build();
     }
+
 }

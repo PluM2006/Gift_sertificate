@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.OrderDTO;
@@ -14,7 +15,6 @@ import ru.clevertec.ecl.services.OrderService;
 import ru.clevertec.ecl.services.UserService;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,13 +38,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getAllUserOrder(UserDTO userDTO) {
-        return orderRepository.findAllByUser(userMapper.toUser(userDTO))
+    public List<OrderDTO> getAllUserOrder(UserDTO userDTO, Pageable pageable) {
+        return orderRepository.findAllByUser(userMapper.toUser(userDTO), pageable)
                 .stream().map(orderMapper::toOrderDto).collect(Collectors.toList());
     }
 
     @Override
     public OrderDTO getOrderById(Long id) {
-        return orderMapper.toOrderDto(orderRepository.findById(id).orElseThrow(()-> new NotFoundException("Order", "id", id)));
+        return orderMapper.toOrderDto(orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order",
+                "id", id)));
     }
+
 }

@@ -17,13 +17,24 @@ import ru.clevertec.ecl.dto.ApiErrorDTO;
 import ru.clevertec.ecl.dto.ValidateErrorDTO;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final static String VALID_EXCEPTION = "10005";
+
+    private static ValidateErrorDTO getValidateErrorDTO(MethodArgumentNotValidException ex) {
+        return ValidateErrorDTO.builder()
+                .object(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getObjectName())
+                .code(ex.getBindingResult().getFieldError().getDefaultMessage())
+                .field(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField())
+                .build();
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handlerNotFoundException(NotFoundException exc, HttpServletResponse response) {
@@ -55,25 +66,18 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         errors.add(VALID_EXCEPTION);
         ApiErrorDTO apiErrorDTO =
                 new ApiErrorDTO(status,
-                        String.format("Validation filed. " +validateErrorDTOList.stream()
+                        String.format("Validation filed. " + validateErrorDTOList.stream()
                                 .map(ValidateErrorDTO::toString)
                                 .collect(Collectors.joining())), errors);
         return handleExceptionInternal(
                 ex, apiErrorDTO, headers, apiErrorDTO.getStatus(), request);
     }
 
-    private static ValidateErrorDTO getValidateErrorDTO(MethodArgumentNotValidException ex) {
-        return ValidateErrorDTO.builder()
-                .object(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getObjectName())
-                .code(ex.getBindingResult().getFieldError().getDefaultMessage())
-                .field(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField())
-                .build();
-    }
-
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintViolation(
             ConstraintViolationException ex, WebRequest request) {
-        List<String> collect = Arrays.stream(ex.getCause().getLocalizedMessage().split("\\n")).collect(Collectors.toList());
+        List<String> collect =
+                Arrays.stream(ex.getCause().getLocalizedMessage().split("\\n")).collect(Collectors.toList());
         ApiErrorDTO apiErrorDTO =
                 new ApiErrorDTO(HttpStatus.BAD_REQUEST, collect.toString(), "40001");
         return new ResponseEntity<>(
