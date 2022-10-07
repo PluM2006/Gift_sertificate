@@ -45,6 +45,11 @@ public class TagController {
         return ResponseEntity.ok(tagService.getById(id));
     }
 
+    @GetMapping("/popularTag/{username}")
+    public ResponseEntity<TagDTO> getPupularTagUser(@PathVariable String username){
+        return ResponseEntity.ok(tagService.getPupularTagUser(username));
+    }
+
     @GetMapping
     public ResponseEntity<List<TagDTO>> getTags(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(tagService.getAllTags(pageable));

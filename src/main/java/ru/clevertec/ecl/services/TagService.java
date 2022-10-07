@@ -9,6 +9,8 @@ public interface TagService {
 
     TagDTO save(TagDTO tagDTO);
 
+    TagDTO getPupularTagUser(String username);
+
     List<TagDTO> saveAll(List<TagDTO> tagDTOList);
 
     TagDTO update(Long id, TagDTO tagDTO);

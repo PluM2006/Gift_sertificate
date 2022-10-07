@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
@@ -20,6 +21,12 @@ public class TagServiceImp implements TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
+
+    public TagDTO getPupularTagUser(String username){
+        return tagRepository.findPopularTag(username)
+                .map(tagMapper::toTagDTO)
+                .orElseThrow(() -> new NotFoundException("Username", "username", username));
+    }
 
     @Override
     public TagDTO getById(Long id) {
