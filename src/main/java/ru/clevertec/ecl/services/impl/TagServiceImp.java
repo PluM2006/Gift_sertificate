@@ -22,7 +22,7 @@ public class TagServiceImp implements TagService {
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
-    public TagDTO getPupularTagUser(String username){
+    public TagDTO getPopularTagUser(String username){
         return tagRepository.findPopularTag(username)
                 .map(tagMapper::toTagDTO)
                 .orElseThrow(() -> new NotFoundException("Username", "username", username));

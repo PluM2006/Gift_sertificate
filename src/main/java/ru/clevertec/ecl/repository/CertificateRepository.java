@@ -11,16 +11,16 @@ import java.util.Optional;
 
 public interface CertificateRepository extends JpaRepository<Certificate, Long> {
 
-    @EntityGraph(attributePaths = {"tags"})
+    @EntityGraph(attributePaths = {"tags"}, type = EntityGraph.EntityGraphType.LOAD)
     Optional<Certificate> findByName(String name);
 
     @Query("SELECT c, t FROM Certificate c " +
             "LEFT JOIN c.tags t " +
             "WHERE (LOWER(c.description)  LIKE CONCAT('%',LOWER(:description),'%') or :description IS null )" +
             "AND (LOWER(t.name) = LOWER(:tagName) OR :tagName IS null)")
-    @EntityGraph(attributePaths = {"tags"})
+    @EntityGraph(attributePaths = {"tags"}, type = EntityGraph.EntityGraphType.LOAD)
     List<Certificate> findByTagNameDescription(String tagName, String description, Pageable pageable);
 
-    List<Certificate> findByTags_NameIsIn(List<String> tags_name, Pageable pageable);
+    List<Certificate> findByTags_NameIgnoreCaseIsIn(List<String> tags_name, Pageable pageable);
 
 }

@@ -9,7 +9,7 @@ public interface TagService {
 
     TagDTO save(TagDTO tagDTO);
 
-    TagDTO getPupularTagUser(String username);
+    TagDTO getPopularTagUser(String username);
 
     List<TagDTO> saveAll(List<TagDTO> tagDTOList);
 

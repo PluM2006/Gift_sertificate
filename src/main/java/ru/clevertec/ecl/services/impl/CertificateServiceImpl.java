@@ -56,7 +56,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable) {
-        return certificateRepository.findByTags_NameIsIn(tagsNames, pageable).stream().map(
+        return certificateRepository.findByTags_NameIgnoreCaseIsIn(tagsNames, pageable).stream().map(
                 certificateMapper::toCertificateDTO).collect(Collectors.toSet());
     }
 

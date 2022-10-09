@@ -46,8 +46,8 @@ public class TagController {
     }
 
     @GetMapping("/popularTag/{username}")
-    public ResponseEntity<TagDTO> getPupularTagUser(@PathVariable String username){
-        return ResponseEntity.ok(tagService.getPupularTagUser(username));
+    public ResponseEntity<TagDTO> getPopularTagUser(@PathVariable String username){
+        return ResponseEntity.ok(tagService.getPopularTagUser(username));
     }
 
     @GetMapping

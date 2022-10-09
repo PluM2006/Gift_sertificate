@@ -3,17 +3,10 @@ package ru.clevertec.ecl.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.services.CertificateService;
 
@@ -32,7 +25,7 @@ public class CertificateController {
     @PostMapping
     public ResponseEntity<CertificateDTO> addCertificate(
             @Valid @RequestBody CertificateDTO certificateDTO) {
-        return ResponseEntity.ok(certificateService.save(certificateDTO));
+        return new ResponseEntity<>(certificateService.save(certificateDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -67,9 +60,9 @@ public class CertificateController {
         return ResponseEntity.ok(certificateService.getByTagOrDescription(pageable, tagName, description));
     }
 
-    @GetMapping("/tags")
+    @GetMapping("/tags/{tagsNames}")
     public ResponseEntity<Set<CertificateDTO>> getCertificateByTagsName(
-            @RequestParam List<String> tagsNames,
+            @PathVariable List<String> tagsNames,
             @PageableDefault Pageable pageable) {
         return ResponseEntity.ok(certificateService.getByTagsName(tagsNames, pageable));
     }
