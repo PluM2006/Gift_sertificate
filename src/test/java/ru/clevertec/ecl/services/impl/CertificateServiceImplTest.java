@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.services.impl;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,13 +11,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.server.ResponseStatusException;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.CertificateMapper;
-import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.TagService;
 
@@ -30,7 +27,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -45,8 +41,6 @@ class CertificateServiceImplTest {
     private CertificateRepository certificateRepository;
     @Mock
     private CertificateMapper certificateMapper;
-    @Mock
-    private TagMapper tagMapper;
     @Mock
     private TagService tagService;
     private CertificateDTO certificateDTO;
@@ -132,16 +126,6 @@ class CertificateServiceImplTest {
         List<CertificateDTO> byTagOrDescription = certificateService.getByTagOrDescription(pageable, tagDTO.getName()
                 , "The best");
         assertThat(byTagOrDescription).isNotNull();
-    }
-
-    @Test
-    @Disabled
-    void findByTagOrDescriptionOrderNegative() {
-        TagDTO tagDTO = TagDTO.builder()
-                .id(1L)
-                .name("New Tag").build();
-        assertThrows(ResponseStatusException.class,
-                () -> certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best"));
     }
 
     @Test
