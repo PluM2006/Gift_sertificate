@@ -22,5 +22,4 @@ public interface CertificateRepository extends JpaRepository<Certificate, Long> 
     List<Certificate> findByTagNameDescription(String tagName, String description, Pageable pageable);
 
     List<Certificate> findByTags_NameIgnoreCaseIsIn(List<String> tags_name, Pageable pageable);
-
 }

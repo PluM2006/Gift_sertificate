@@ -13,7 +13,8 @@ spring:
     web:
       pageable:
         one-indexed-parameters: true
+  liquibase:
+    change-log: db/changeLog/db.changelog-master.yaml
 server:
   servlet:
     context-path: "/api/v1"
-

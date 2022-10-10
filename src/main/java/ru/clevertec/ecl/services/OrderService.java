@@ -13,5 +13,4 @@ public interface OrderService {
     List<OrderDTO> getAllUserOrder(UserDTO userDTO, Pageable pageable);
 
     OrderDTO getOrderById(Long id);
-
 }

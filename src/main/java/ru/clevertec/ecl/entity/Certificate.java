@@ -29,22 +29,16 @@ public class Certificate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String name;
     private String description;
     private BigDecimal price;
     private Integer duration;
 
-
-    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createDate;
 
-
-    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastUpdateDate;
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -55,5 +49,4 @@ public class Certificate {
     @ToString.Exclude
     @Builder.Default
     private List<Tag> tags = new ArrayList<>();
-
 }

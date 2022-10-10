@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
-import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
@@ -13,6 +12,8 @@ import ru.clevertec.ecl.services.TagService;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class TagServiceImp implements TagService {
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
-    public TagDTO getPopularTagUser(String username){
+    public TagDTO getPopularTagUser(String username) {
         return tagRepository.findPopularTag(username)
                 .map(tagMapper::toTagDTO)
                 .orElseThrow(() -> new NotFoundException("Username", "username", username));
@@ -37,7 +38,9 @@ public class TagServiceImp implements TagService {
 
     @Override
     public List<TagDTO> getAllTags(Pageable pageable) {
-        return tagRepository.findAll(pageable).stream().map(tagMapper::toTagDTO).collect(Collectors.toList());
+        return tagRepository.findAll(pageable).stream()
+                .map(tagMapper::toTagDTO)
+                .collect(toList());
     }
 
     @Transactional
@@ -49,9 +52,11 @@ public class TagServiceImp implements TagService {
     @Transactional
     @Override
     public List<TagDTO> saveAll(List<TagDTO> tagDTOList) {
-        return tagDTOList.stream().map(tagMapper::toTag)
+        return tagDTOList.stream()
+                .map(tagMapper::toTag)
                 .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
-                .map(tagMapper::toTagDTO).collect(Collectors.toList());
+                .map(tagMapper::toTagDTO)
+                .collect(toList());
     }
 
     @Transactional
@@ -72,5 +77,4 @@ public class TagServiceImp implements TagService {
                     return true;
                 }).orElseThrow(() -> new NotFoundException("Tag", "id", id));
     }
-
 }

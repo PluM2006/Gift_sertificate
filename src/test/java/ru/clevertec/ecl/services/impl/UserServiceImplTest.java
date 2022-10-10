@@ -49,8 +49,8 @@ class UserServiceImplTest {
         given(userRepository.findUserByUsername("userName")).willReturn(Optional.of(user));
         given(userMapper.toUserDTO(user)).willReturn(userDTO);
         UserDTO userDTOByUsername = userService.getUserByUserName("userName");
-        assertAll(() -> assertThat(userDTO).isNotNull(), () -> assertEquals(userDTOByUsername.getUsername(),
-                userDTO.getUsername()));
+        assertAll(() -> assertThat(userDTO).isNotNull(),
+                () -> assertEquals(userDTOByUsername.getUsername(), userDTO.getUsername()));
     }
 
     @Test
@@ -71,7 +71,8 @@ class UserServiceImplTest {
         users.add(getUser());
         given(userRepository.findAll(pageable)).willReturn(new PageImpl<>(users));
         List<UserDTO> allUsers = userService.getAllUsers(pageable);
-        assertAll(()->assertThat(allUsers).isNotNull(), ()->assertEquals(allUsers.size(), 2));
+        assertAll(()->assertThat(allUsers).isNotNull(),
+                ()->assertEquals(allUsers.size(), 2));
     }
 
     private User getUser() {

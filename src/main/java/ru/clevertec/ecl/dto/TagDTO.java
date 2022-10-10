@@ -13,5 +13,4 @@ public class TagDTO {
 
     @NotBlank
     private String name;
-
 }

@@ -29,5 +29,4 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUser(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
-
 }

@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name = "users")
 @Data
 @Builder
-@EqualsAndHashCode(of =  "username")
+@EqualsAndHashCode(of = "username")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -32,10 +32,8 @@ public class User {
     private String secondName;
     private String username;
 
-
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
     @Builder.Default
     private List<Order> orderList = new ArrayList<>();
-
 }

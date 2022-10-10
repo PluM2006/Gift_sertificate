@@ -23,5 +23,4 @@ public interface CertificateService {
     CertificateDTO getByName(String name);
 
     Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable);
-
 }

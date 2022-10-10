@@ -20,5 +20,4 @@ public interface TagService {
     List<TagDTO> getAllTags(Pageable pageable);
 
     void delete(Long id);
-
 }

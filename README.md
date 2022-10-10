@@ -86,7 +86,7 @@ Request
 
 Request
 
-    http://localhost:8080/api/v1/certificates/id/{id}
+    http://localhost:8080/api/v1/certificates/{id}
 
 * ***find certificate by NAME***
 

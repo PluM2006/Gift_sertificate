@@ -17,5 +17,4 @@ public interface OrderMapper {
     @Mapping(target = "purchaseDate", source = "purchaseDate", defaultExpression = "java(LocalDateTime.now())")
     @Mapping(target = "user.orderList", ignore = true)
     Order toOrder(OrderDTO orderDTO);
-
 }

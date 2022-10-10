@@ -17,6 +17,8 @@ import ru.clevertec.ecl.services.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,14 +41,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> getAllUserOrder(UserDTO userDTO, Pageable pageable) {
-        return orderRepository.findAllByUser(userMapper.toUser(userDTO), pageable)
-                .stream().map(orderMapper::toOrderDto).collect(Collectors.toList());
+        return orderRepository.findAllByUser(userMapper.toUser(userDTO), pageable).stream()
+                .map(orderMapper::toOrderDto)
+                .collect(toList());
     }
 
     @Override
     public OrderDTO getOrderById(Long id) {
-        return orderMapper.toOrderDto(orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order",
-                "id", id)));
+        return orderMapper.toOrderDto(orderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Order", "id", id)));
     }
-
 }

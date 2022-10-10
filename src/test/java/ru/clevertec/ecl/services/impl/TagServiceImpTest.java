@@ -59,7 +59,8 @@ class TagServiceImpTest {
         List<TagDTO> tagDTOSet = new ArrayList<>();
         tagDTOSet.add(tagDTO);
         List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
-        assertAll(() -> assertThat(tagDTOs).isNotNull(), () -> assertThat(tagDTOs.size()).isEqualTo(1));
+        assertAll(() -> assertThat(tagDTOs).isNotNull(),
+                () -> assertThat(tagDTOs.size()).isEqualTo(1));
     }
 
     @Test
@@ -95,7 +96,8 @@ class TagServiceImpTest {
                 .name("Tag2").build());
         given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
         List<TagDTO> allTags = tagService.getAllTags(pageable);
-        assertAll(() -> assertThat(allTags).isNotNull(), () -> assertThat(allTags.size()).isEqualTo(2));
+        assertAll(() -> assertThat(allTags).isNotNull(),
+                () -> assertThat(allTags.size()).isEqualTo(2));
     }
 
     @Test

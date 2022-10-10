@@ -74,7 +74,8 @@ class OrderServiceImplTest {
         given(orderRepository.findAllByUser(getUser(), pageable)).willReturn(orderList);
         given(userMapper.toUser(getUserDTO())).willReturn(getUser());
         List<OrderDTO> allUserOrder = orderService.getAllUserOrder(getUserDTO(), pageable);
-        assertAll(() -> assertThat(allUserOrder).isNotNull(), () -> assertThat(allUserOrder.size()).isEqualTo(1));
+        assertAll(() -> assertThat(allUserOrder).isNotNull(),
+                () -> assertThat(allUserOrder.size()).isEqualTo(1));
     }
 
     @Test

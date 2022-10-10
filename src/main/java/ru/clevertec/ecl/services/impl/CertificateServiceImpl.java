@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,7 +40,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<CertificateDTO> getAll(Pageable pageable) {
         return certificateRepository
-                .findAll(pageable).stream().map(certificateMapper::toCertificateDTO).collect(Collectors.toList());
+                .findAll(pageable).stream()
+                .map(certificateMapper::toCertificateDTO)
+                .collect(toList());
     }
 
     @Override
@@ -56,8 +60,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable) {
-        return certificateRepository.findByTags_NameIgnoreCaseIsIn(tagsNames, pageable).stream().map(
-                certificateMapper::toCertificateDTO).collect(Collectors.toSet());
+        return certificateRepository.findByTags_NameIgnoreCaseIsIn(tagsNames, pageable).stream()
+                .map(certificateMapper::toCertificateDTO)
+                .collect(toSet());
     }
 
     @Transactional
@@ -66,7 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
         Certificate certificate = certificateMapper.toCertificate(certificateDTO);
         certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
                 .map(tagMapper::toTag)
-                .collect(Collectors.toList()));
+                .collect(toList()));
         return certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     }
 
@@ -97,8 +102,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setDescription(certificateDTO.getDescription());
         certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
                 .map(tagMapper::toTag)
-                .collect(Collectors.toList()));
+                .collect(toList()));
         return certificate;
     }
-
 }

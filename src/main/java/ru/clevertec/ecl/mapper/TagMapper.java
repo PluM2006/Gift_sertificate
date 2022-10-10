@@ -10,5 +10,4 @@ public interface TagMapper {
     TagDTO toTagDTO(Tag tag);
 
     Tag toTag(TagDTO tagDTO);
-
 }

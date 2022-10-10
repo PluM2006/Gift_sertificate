@@ -42,5 +42,4 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id")
     private Certificate certificate;
-
 }

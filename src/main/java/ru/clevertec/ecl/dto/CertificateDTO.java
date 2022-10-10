@@ -27,5 +27,4 @@ public class CertificateDTO {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private List<TagDTO> tags;
-
 }

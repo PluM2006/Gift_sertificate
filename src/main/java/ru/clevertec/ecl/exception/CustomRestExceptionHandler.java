@@ -83,6 +83,5 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 apiErrorDTO, new HttpHeaders(), apiErrorDTO.getStatus());
     }
-
 }
 

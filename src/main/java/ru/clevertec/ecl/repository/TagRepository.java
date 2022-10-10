@@ -23,5 +23,4 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
             "WHERE price = (SELECT max(price) FROM maxprice)\n" +
             "ORDER BY count LIMIT 1", nativeQuery = true)
     Optional<Tag> findPopularTag(String username);
-
 }

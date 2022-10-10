@@ -10,5 +10,4 @@ public interface UserService {
     UserDTO getUserByUserName(String username);
 
     List<UserDTO> getAllUsers(Pageable pageable);
-
 }

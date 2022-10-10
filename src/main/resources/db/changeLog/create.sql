@@ -39,6 +39,3 @@ CREATE TABLE IF NOT EXISTS orders
     price          NUMERIC(10, 2) CHECK (price > 0),
     purchase_date  TIMESTAMP
 );
-INSERT INTO users(first_name, second_name, username)
-VALUES ('Jon', 'Fedor', 'Piksi'),
-       ('Slivestr','Silver','Silver12');
