@@ -5,15 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.services.CertificateService;
 
@@ -40,12 +32,12 @@ public class CertificateController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCertificate(@PathVariable Long id) {
         certificateService.delete(id);
-        return ResponseEntity.ok("Deleted certificate with id = " + id);
     }
 
-    @GetMapping("/git {id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CertificateDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(certificateService.getById(id));
     }
@@ -56,11 +48,11 @@ public class CertificateController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<CertificateDTO>> getCertificateByTagNameOrDescription(
+    public ResponseEntity<List<CertificateDTO>> getCertificateByNameOrDescription(
             @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String tagName,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String description) {
-        return ResponseEntity.ok(certificateService.getByTagOrDescription(pageable, tagName, description));
+        return ResponseEntity.ok(certificateService.getByNameDescription(pageable, name, description));
     }
 
     @GetMapping("/tags/{tagsNames}")

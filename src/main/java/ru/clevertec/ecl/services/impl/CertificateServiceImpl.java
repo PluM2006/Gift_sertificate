@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +18,9 @@ import ru.clevertec.ecl.services.TagService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +48,18 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> getByTagOrDescription(Pageable pageable, String tagName, String description) {
-        return certificateMapper
-                .toCertificateDTOList(certificateRepository.findByTagNameDescription(tagName, description, pageable));
+    public List<CertificateDTO> getByNameDescription(Pageable pageable, String name, String description) {
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        return certificateRepository.findAll(
+                        Example.of(
+                                Certificate.builder()
+                                        .name(name)
+                                        .description(description).build(), exampleMatcher
+                        ), pageable).stream()
+                .map(certificateMapper::toCertificateDTO)
+                .collect(toList());
     }
 
     @Override
@@ -60,7 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Set<CertificateDTO> getByTagsName(List<String> tagsNames, Pageable pageable) {
-        return certificateRepository.findByTags_NameIgnoreCaseIsIn(tagsNames, pageable).stream()
+        return certificateRepository.findByTagsNameIgnoreCaseIsIn(tagsNames, pageable).stream()
                 .map(certificateMapper::toCertificateDTO)
                 .collect(toSet());
     }

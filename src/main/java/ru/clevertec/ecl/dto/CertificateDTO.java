@@ -3,8 +3,8 @@ package ru.clevertec.ecl.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,10 +19,10 @@ public class CertificateDTO {
     private String name;
     private String description;
 
-    @Min(1)
+    @Positive
     private BigDecimal price;
 
-    @Min(1)
+    @Positive
     private Integer duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;

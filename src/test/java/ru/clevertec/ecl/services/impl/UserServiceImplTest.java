@@ -48,7 +48,7 @@ class UserServiceImplTest {
     void getUserByUserName() {
         given(userRepository.findUserByUsername("userName")).willReturn(Optional.of(user));
         given(userMapper.toUserDTO(user)).willReturn(userDTO);
-        UserDTO userDTOByUsername = userService.getUserByUserName("userName");
+        UserDTO userDTOByUsername = userService.getUserById("userName");
         assertAll(() -> assertThat(userDTO).isNotNull(),
                 () -> assertEquals(userDTOByUsername.getUsername(), userDTO.getUsername()));
     }
@@ -56,7 +56,7 @@ class UserServiceImplTest {
     @Test
     void getUserByUserNameNotFoundException() {
         given(userRepository.findUserByUsername("userName")).willReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> userService.getUserByUserName("userName"));
+        assertThrows(NotFoundException.class, () -> userService.getUserById("userName"));
     }
 
     @Test

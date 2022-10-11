@@ -58,7 +58,7 @@ class OrderServiceImplTest {
 
     @Test
     void addOrder() {
-        given(userService.getUserByUserName(any())).willReturn(getUserDTO());
+        given(userService.getUserById(any())).willReturn(getUserDTO());
         given(certificateService.getById(any())).willReturn(getCertificateDTO());
         given(orderMapper.toOrderDto(order)).willReturn(orderDTO);
         given(orderMapper.toOrder(orderDTO)).willReturn(order);

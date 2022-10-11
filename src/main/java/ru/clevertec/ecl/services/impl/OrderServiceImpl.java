@@ -15,7 +15,6 @@ import ru.clevertec.ecl.services.OrderService;
 import ru.clevertec.ecl.services.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -34,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO addOrder(OrderDTO orderDTO) {
         orderDTO.setCertificate(certificateService.getById(orderDTO.getCertificate().getId()));
-        orderDTO.setUser(userService.getUserByUserName(orderDTO.getUser().getUsername()));
+        orderDTO.setUser(userService.getUserById(orderDTO.getUser().getId()));
         orderDTO.setPrice(orderDTO.getCertificate().getPrice());
         return orderMapper.toOrderDto(orderRepository.save(orderMapper.toOrder(orderDTO)));
     }

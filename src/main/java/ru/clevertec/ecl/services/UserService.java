@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService {
 
-    UserDTO getUserByUserName(String username);
+    UserDTO getUserById(Long id);
 
     List<UserDTO> getAllUsers(Pageable pageable);
 }

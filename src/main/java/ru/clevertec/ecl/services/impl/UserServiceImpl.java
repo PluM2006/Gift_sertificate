@@ -19,9 +19,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDTO getUserByUserName(String username) {
-        return userMapper.toUserDTO(repository.findUserByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User", "username", username)));
+    public UserDTO getUserById(Long id) {
+        return userMapper.toUserDTO(repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User", "id", id)));
     }
 
     @Override
