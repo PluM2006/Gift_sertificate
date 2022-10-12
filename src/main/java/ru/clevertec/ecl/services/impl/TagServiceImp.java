@@ -5,13 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
-import ru.clevertec.ecl.exception.NotFoundException;
+import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.services.TagService;
+import ru.clevertec.ecl.utils.Constants;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -23,17 +23,17 @@ public class TagServiceImp implements TagService {
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
 
-    public TagDTO getPopularTagUser(String username) {
-        return tagRepository.findPopularTag(username)
+    public TagDTO getPopularTagUser() {
+        return tagRepository.findPopularTagUser()
                 .map(tagMapper::toTagDTO)
-                .orElseThrow(() -> new NotFoundException("Username", "username", username));
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override
     public TagDTO getById(Long id) {
         return tagRepository.findById(id)
                 .map(tagMapper::toTagDTO)
-                .orElseThrow(() -> new NotFoundException("Tag", "id", id));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.TAG, Constants.FIELD_NAME_ID, id));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TagServiceImp implements TagService {
         return tagMapper.toTagDTO(tagRepository
                 .findById(id)
                 .map(tag -> tagRepository.save(tagMapper.toTag(tagDTO)))
-                .orElseThrow(() -> new NotFoundException("Tag", "id", id)));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.TAG, Constants.FIELD_NAME_ID, id)));
     }
 
     @Transactional
@@ -75,6 +75,6 @@ public class TagServiceImp implements TagService {
                 .map(tag -> {
                     tagRepository.delete(tag);
                     return true;
-                }).orElseThrow(() -> new NotFoundException("Tag", "id", id));
+                }).orElseThrow(() -> new EntityNotFoundException(Constants.TAG, Constants.FIELD_NAME_ID, id));
     }
 }

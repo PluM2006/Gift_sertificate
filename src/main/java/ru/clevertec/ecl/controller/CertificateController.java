@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping("/v1/certificates")
 @RequiredArgsConstructor
 public class CertificateController {
 
@@ -47,7 +47,7 @@ public class CertificateController {
         return ResponseEntity.ok(certificateService.getByName(name));
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<CertificateDTO>> getCertificateByNameOrDescription(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String name,

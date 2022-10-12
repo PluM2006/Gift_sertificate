@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.clevertec.ecl.data.CertificateFactory;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
@@ -50,8 +51,8 @@ class CertificateServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        certificate = getCertificate();
-        certificateDTO = getCertificateDTO();
+        certificate = CertificateFactory.certificate();
+        certificateDTO = CertificateFactory.certificateDTO();
         pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
     }
 
@@ -146,25 +147,4 @@ class CertificateServiceImplTest {
         assertAll(() -> assertThat(byName).isNotNull(),
                 () -> assertEquals(byName.getName(), "Certificate 1"));
     }
-
-    private Certificate getCertificate() {
-        return Certificate.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build();
-    }
-
-    private CertificateDTO getCertificateDTO() {
-        return CertificateDTO.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build();
-    }
-
 }

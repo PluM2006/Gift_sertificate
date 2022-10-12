@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.User;
-import ru.clevertec.ecl.exception.NotFoundException;
+import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.UserRepository;
 
@@ -45,18 +45,18 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserByUserName() {
-        given(userRepository.findUserByUsername("userName")).willReturn(Optional.of(user));
+    void getUserById() {
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
         given(userMapper.toUserDTO(user)).willReturn(userDTO);
-        UserDTO userDTOByUsername = userService.getUserById("userName");
+        UserDTO userDTOByUsername = userService.getUserById(1L);
         assertAll(() -> assertThat(userDTO).isNotNull(),
                 () -> assertEquals(userDTOByUsername.getUsername(), userDTO.getUsername()));
     }
 
     @Test
     void getUserByUserNameNotFoundException() {
-        given(userRepository.findUserByUsername("userName")).willReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> userService.getUserById("userName"));
+        given(userRepository.findById(2L)).willReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> userService.getUserById(2L));
     }
 
     @Test

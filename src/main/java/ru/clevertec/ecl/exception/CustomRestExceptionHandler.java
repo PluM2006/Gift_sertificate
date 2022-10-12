@@ -36,8 +36,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handlerNotFoundException(NotFoundException exc, HttpServletResponse response) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handlerNotFoundException(EntityNotFoundException exc, HttpServletResponse response) {
         return ResponseEntity.status(exc.getHttpStatus())
                 .body(new ApiErrorDTO(exc.getHttpStatus(), exc.getMessage(), String.valueOf(exc.getErrorCode())));
     }

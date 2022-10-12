@@ -1,4 +1,5 @@
-**pageable**
+
+**pageable default**
 
 *size* default = 10
 
@@ -94,13 +95,14 @@ Request
 
     http://localhost:8080/api/v1/certificates/name/{name}
 
-* ***find certificate by name tag or description certificate and sorting by different fields***
+* ***find certificate by name or description certificate and sorting by different fields***
 
 *tagName* and *description* ignoreCase
 
 Request
 
-    http://localhost:8080/api/v1/certificates?page=0&size=10&description=description&tagName=name&sort=name,asc&sort=description,desc
+    http://localhost:8080/api/v1/certificates?page=0&size=10&description=description&name=name&sort=name,asc&sort=description,desc
+    http://localhost:8080/api/v1/certificates?description=partdescription&name=partname
 
 * ***find certificate by names tags***
 
@@ -159,7 +161,7 @@ Request
 
 Request
 
-    http://localhost:8080/api/v1/popularTag/{username}
+    http://localhost:8080/api/v1/popularTag
 
 * ***find all tags***
 

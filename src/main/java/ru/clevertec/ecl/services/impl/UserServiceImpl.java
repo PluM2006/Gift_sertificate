@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.UserDTO;
-import ru.clevertec.ecl.exception.NotFoundException;
+import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.UserRepository;
 import ru.clevertec.ecl.services.UserService;
+import ru.clevertec.ecl.utils.Constants;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         return userMapper.toUserDTO(repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User", "id", id)));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.USER, Constants.FIELD_NAME_ID, id)));
     }
 
     @Override

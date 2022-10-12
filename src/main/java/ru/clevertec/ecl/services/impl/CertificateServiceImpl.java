@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
-import ru.clevertec.ecl.exception.NotFoundException;
+import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.TagService;
+import ru.clevertec.ecl.utils.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +37,7 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO getById(Long id) {
         return certificateRepository.findById(id)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "id", id));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO getByName(String name) {
         return certificateRepository.findByName(name)
                 .map(certificateMapper::toCertificateDTO)
-                .orElseThrow(() -> new NotFoundException("Certificate", "name", name));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_NAME, name));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateMapper.toCertificateDTO(certificateRepository
                 .findById(id)
                 .map(certificate -> certificateRepository.save(certificationToUpdate(certificateDTO, certificate)))
-                .orElseThrow(() -> new NotFoundException("Certificate", "id", id)));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id)));
     }
 
     @Transactional
@@ -102,7 +103,7 @@ public class CertificateServiceImpl implements CertificateService {
                 .map(certificate -> {
                     certificateRepository.delete(certificate);
                     return true;
-                }).orElseThrow(() -> new NotFoundException("Certificate", "id", id));
+                }).orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
     }
 
     private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {

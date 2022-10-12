@@ -20,7 +20,7 @@ import ru.clevertec.ecl.services.TagService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/v1/tags")
 @RequiredArgsConstructor
 public class TagController {
 
@@ -48,9 +48,9 @@ public class TagController {
         return ResponseEntity.ok(tagService.getById(id));
     }
 
-    @GetMapping("/popularTag/{username}")
-    public ResponseEntity<TagDTO> getPopularTagUser(@PathVariable String username) {
-        return ResponseEntity.ok(tagService.getPopularTagUser(username));
+    @GetMapping("/popularTag")
+    public ResponseEntity<TagDTO> getPopularTagUser() {
+        return ResponseEntity.ok(tagService.getPopularTagUser());
     }
 
     @GetMapping
