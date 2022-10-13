@@ -16,7 +16,6 @@ import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.TagService;
 import ru.clevertec.ecl.utils.Constants;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -90,10 +89,12 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
-        return certificateMapper.toCertificateDTO(certificateRepository
+        return certificateRepository
                 .findById(id)
-                .map(certificate -> certificateRepository.save(certificationToUpdate(certificateDTO, certificate)))
-                .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id)));
+                .map(certificate -> certificateMapper.certificateToUpdate(certificateDTO, certificate))
+                .map(certificateMapper::toCertificateDTO)
+                .map(certificateDTOmap -> save(certificateDTO))
+                .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
     }
 
     @Transactional
@@ -104,17 +105,5 @@ public class CertificateServiceImpl implements CertificateService {
                     certificateRepository.delete(certificate);
                     return true;
                 }).orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
-    }
-
-    private Certificate certificationToUpdate(CertificateDTO certificateDTO, Certificate certificate) {
-        certificate.setLastUpdateDate(LocalDateTime.now());
-        certificate.setName(certificateDTO.getName());
-        certificate.setDuration(certificateDTO.getDuration());
-        certificate.setPrice(certificateDTO.getPrice());
-        certificate.setDescription(certificateDTO.getDescription());
-        certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
-                .map(tagMapper::toTag)
-                .collect(toList()));
-        return certificate;
     }
 }

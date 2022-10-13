@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.data.TagFactory;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
@@ -39,8 +40,8 @@ class TagServiceImpTest {
 
     @BeforeEach
     void setUp() {
-        tagDTO = getTagDTO();
-        tag = getTag();
+        tagDTO = TagFactory.tagDTO();
+        tag = TagFactory.tag();
     }
 
     @Test
@@ -80,15 +81,18 @@ class TagServiceImpTest {
         TagDTO byId = tagService.getById(1L);
         assertThat(byId).isNotNull();
     }
+    @Test
+    void getPopularTagUserTest(){
+        given(tagMapper.toTagDTO(tag)).willReturn(tagDTO);
+        given(tagRepository.findPopularTagUser()).willReturn(Optional.of(tag));
+        TagDTO popularTagUser = tagService.getPopularTagUser();
+        assertThat(popularTagUser).isNotNull();
+
+    }
 
     @Test
     void getAllTags() {
         Pageable pageable = Pageable.ofSize(1);
-        List<TagDTO> tagListDTO = new ArrayList<>();
-        tagListDTO.add(tagDTO);
-        tagListDTO.add(TagDTO.builder()
-                .id(2L)
-                .name("Tag2").build());
         List<Tag> tagList = new ArrayList<>();
         tagList.add(tag);
         tagList.add(Tag.builder()
@@ -106,19 +110,4 @@ class TagServiceImpTest {
         tagService.delete(1L);
         verify(tagRepository, times(1)).delete(Mockito.any(Tag.class));
     }
-
-    private TagDTO getTagDTO() {
-        return TagDTO.builder()
-                .id(1L)
-                .name("tag")
-                .build();
-    }
-
-    private Tag getTag() {
-        return Tag.builder()
-                .id(1L)
-                .name("tag")
-                .build();
-    }
-
 }

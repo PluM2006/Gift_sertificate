@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.data.UserFactory;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
@@ -40,8 +41,8 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp() {
         pageable = Pageable.ofSize(1);
-        user = getUser();
-        userDTO = getUserDTO();
+        user = UserFactory.user();
+        userDTO = UserFactory.userDTO();
     }
 
     @Test
@@ -68,28 +69,10 @@ class UserServiceImplTest {
                         .username("userName_2")
                         .secondName("secondName_2")
                         .id(2L).build());
-        users.add(getUser());
+        users.add(user);
         given(userRepository.findAll(pageable)).willReturn(new PageImpl<>(users));
         List<UserDTO> allUsers = userService.getAllUsers(pageable);
-        assertAll(()->assertThat(allUsers).isNotNull(),
-                ()->assertEquals(allUsers.size(), 2));
+        assertAll(() -> assertThat(allUsers).isNotNull(),
+                () -> assertEquals(allUsers.size(), 2));
     }
-
-    private User getUser() {
-        return User.builder()
-                .firstName("firsName")
-                .secondName("secondName")
-                .username("userName")
-                .id(1L)
-                .build();
-    }
-
-    private UserDTO getUserDTO() {
-        return UserDTO.builder()
-                .firstName("firstName")
-                .secondName("secondName")
-                .username("userName")
-                .id(1L).build();
-    }
-
 }
