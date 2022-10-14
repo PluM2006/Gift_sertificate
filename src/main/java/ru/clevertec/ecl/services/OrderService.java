@@ -1,16 +1,15 @@
 package ru.clevertec.ecl.services;
 
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
 
-import java.util.List;
-
 public interface OrderService {
 
-    OrderDTO addOrder(OrderDTO orderDTO);
+  OrderDTO addOrder(OrderDTO orderDTO);
 
-    List<OrderDTO> getAllUserOrder(UserDTO userDTO, Pageable pageable);
+  List<OrderDTO> getAllUserOrders(UserDTO userDTO, Pageable pageable);
 
-    OrderDTO getOrderById(Long id);
+  OrderDTO getOrderById(Long id);
 }

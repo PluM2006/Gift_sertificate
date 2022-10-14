@@ -7,7 +7,7 @@ import ru.clevertec.ecl.entity.Tag;
 @Mapper
 public interface TagMapper {
 
-    TagDTO toTagDTO(Tag tag);
+  TagDTO toTagDTO(Tag tag);
 
-    Tag toTag(TagDTO tagDTO);
+  Tag toTag(TagDTO tagDTO);
 }

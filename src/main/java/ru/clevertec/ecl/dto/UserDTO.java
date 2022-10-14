@@ -1,18 +1,17 @@
 package ru.clevertec.ecl.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
 public class UserDTO {
 
-    private Long id;
-    private String firstName;
-    private String secondName;
+  private Long id;
+  private String firstName;
+  private String secondName;
 
-    @NotBlank
-    private String username;
+  @NotBlank
+  private String username;
 }

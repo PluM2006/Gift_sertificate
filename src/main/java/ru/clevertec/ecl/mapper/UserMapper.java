@@ -8,8 +8,8 @@ import ru.clevertec.ecl.entity.User;
 @Mapper
 public interface UserMapper {
 
-    UserDTO toUserDTO(User user);
+  UserDTO toUserDTO(User user);
 
-    @Mapping(target = "orderList", ignore = true)
-    User toUser(UserDTO userDTO);
+  @Mapping(target = "orderList", ignore = true)
+  User toUser(UserDTO userDTO);
 }

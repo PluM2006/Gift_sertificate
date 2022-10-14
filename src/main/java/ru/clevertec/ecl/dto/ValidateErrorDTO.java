@@ -7,7 +7,7 @@ import lombok.Value;
 @Builder
 public class ValidateErrorDTO {
 
-    String object;
-    String field;
-    String code;
+  String object;
+  String field;
+  String code;
 }
