@@ -16,7 +16,7 @@ public interface CertificateMapper {
 
   CertificateDTO toCertificateDTO(Certificate certificate);
 
-  @Mapping(target = "createDate",expression = "java(LocalDateTime.now())")
+  @Mapping(target = "createDate", expression = "java(LocalDateTime.now())")
   @Mapping(target = "lastUpdateDate", source = "lastUpdateDate", defaultExpression = "java(LocalDateTime.now())")
   Certificate toCertificate(CertificateDTO giftCertificate);
 

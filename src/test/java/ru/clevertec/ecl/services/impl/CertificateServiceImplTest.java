@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,12 +41,19 @@ class CertificateServiceImplTest {
 
   @InjectMocks
   private CertificateServiceImpl certificateService;
+
+  @Mock
+  private CertificateServiceImpl self;
+
   @Mock
   private CertificateRepository certificateRepository;
+
   @Mock
   private CertificateMapper certificateMapper;
+
   @Mock
   private TagService tagService;
+
   @Mock
   private TagMapper tagMapper;
   private CertificateDTO certificateDTO;
@@ -56,13 +62,13 @@ class CertificateServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    certificate = CertificateFactory.certificate();
-    certificateDTO = CertificateFactory.certificateDTO();
+    certificate = CertificateFactory.buildCertificateOne();
+    certificateDTO = CertificateFactory.buildCertificateDTO();
     pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
   }
 
   @Test
-  void save() {
+  void saveSuccessTest() {
     given(certificateRepository.save(any())).willReturn(certificate);
     given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
     given(certificateMapper.toCertificate(any())).willReturn(certificate);
@@ -71,11 +77,11 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void update() {
-    given(certificateMapper.certificateToUpdate(any(), any())).willReturn(certificate);
-    given(certificateRepository.save(certificate)).willReturn(certificate);
-    given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
+  void updateSuccessTest() {
     given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
+    given(certificateMapper.certificateToUpdate(any(), any())).willReturn(certificate);
+    given(self.save(certificateDTO)).willReturn(certificateDTO);
+    given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
     certificateDTO.setName("Certificate 2");
     CertificateDTO update = certificateService.update(1L, certificateDTO);
     assertAll(() -> assertThat(update).isNotNull(),
@@ -83,7 +89,7 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void findById() {
+  void findByIdSuccessTest() {
     given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
     given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
     CertificateDTO certificateDTOById = certificateService.getById(1L);
@@ -91,7 +97,7 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void getByTagsName() {
+  void getByTagsNameSuccessTest() {
     given(certificateMapper.toCertificateDTO(any(Certificate.class))).willReturn(certificateDTO);
     List<String> namesList = Arrays.asList("tag1", "tag2");
     List<Certificate> certificateList = Arrays.asList(certificate);
@@ -101,16 +107,10 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void findAll() {
+  void findAllSuccessTest() {
     List<Certificate> certificateList = new ArrayList<>();
     certificateList.add(certificate);
-    certificateList.add(Certificate.builder()
-        .id(1L)
-        .name("Certificate 2")
-        .description("The best certificate 2")
-        .price(BigDecimal.valueOf(20))
-        .tags(new ArrayList<>())
-        .build());
+    certificateList.add(CertificateFactory.buildCertificateTwo());
     given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
     List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
     assertAll(() -> assertThat(certificateDTOS).isNotNull(),
@@ -118,13 +118,14 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void findByTagOrDescription() {
+  void findByTagOrDescriptionSuccessTest() {
     ExampleMatcher exampleMatcher = ExampleMatcher.matching()
         .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
         .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-    Example<Certificate> certificateExample = Example.of(CertificateFactory.certificateForExample(), exampleMatcher);
-    certificate.getTags().add(TagFactory.tag());
-    certificateDTO.getTags().add(TagFactory.tagDTO());
+    Example<Certificate> certificateExample = Example.of(CertificateFactory.buildCertificateForExample(),
+        exampleMatcher);
+    certificate.getTags().add(TagFactory.buildTagOne());
+    certificateDTO.getTags().add(TagFactory.buildTagDTO());
     List<Certificate> certificateList = new ArrayList<>();
     certificateList.add(certificate);
     Page<Certificate> page = new PageImpl<>(certificateList);
@@ -135,14 +136,14 @@ class CertificateServiceImplTest {
   }
 
   @Test
-  void delete() {
+  void deleteSuccessTest() {
     given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
     certificateService.delete(1L);
     verify(certificateRepository, times(1)).delete(Mockito.any(Certificate.class));
   }
 
   @Test
-  void findByName() {
+  void findByNameSuccessTest() {
     given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
     given(certificateRepository.findByName(Mockito.any(String.class))).willReturn(Optional.of(certificate));
     CertificateDTO byName = certificateService.getByName(certificate.getName());

@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         .orElseThrow(() -> new EntityNotFoundException(Constants.ORDER, Constants.FIELD_NAME_ID, id)));
   }
 
-  private Order toBuildOrder(OrderDTO orderDTO){
+  private Order toBuildOrder(OrderDTO orderDTO) {
     return Order.builder()
         .certificate(certificateMapper.toCertificate(certificateService.getById(orderDTO.getCertificate().getId())))
         .user(userMapper.toUser(userService.getUserById(orderDTO.getUser().getId())))

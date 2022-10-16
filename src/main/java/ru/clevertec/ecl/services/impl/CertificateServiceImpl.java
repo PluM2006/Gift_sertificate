@@ -34,7 +34,6 @@ public class CertificateServiceImpl implements CertificateService {
   @Lazy
   private final CertificateServiceImpl self;
 
-
   @Override
   public CertificateDTO getById(Long id) {
     return certificateRepository.findById(id)

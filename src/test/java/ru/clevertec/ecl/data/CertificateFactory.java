@@ -8,7 +8,7 @@ import ru.clevertec.ecl.entity.Certificate;
 
 public class CertificateFactory {
 
-  public static Certificate certificate() {
+  public static Certificate buildCertificateOne() {
     return Certificate.builder()
         .id(1L)
         .name("Certificate 1")
@@ -20,7 +20,19 @@ public class CertificateFactory {
         .build();
   }
 
-  public static CertificateDTO certificateDTO() {
+  public static Certificate buildCertificateTwo() {
+    return Certificate.builder()
+        .id(2L)
+        .name("Certificate 2")
+        .description("The super best certificate")
+        .createDate(LocalDateTime.now())
+        .lastUpdateDate(LocalDateTime.now())
+        .price(BigDecimal.valueOf(10))
+        .tags(new ArrayList<>())
+        .build();
+  }
+
+  public static CertificateDTO buildCertificateDTO() {
     return CertificateDTO.builder()
         .id(1L)
         .name("Certificate 1")
@@ -32,7 +44,7 @@ public class CertificateFactory {
         .build();
   }
 
-  public static Certificate certificateForExample() {
+  public static Certificate buildCertificateForExample() {
     return Certificate.builder()
         .name("Certificate 1")
         .description("The best certificate")

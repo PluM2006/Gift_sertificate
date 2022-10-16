@@ -26,12 +26,14 @@ import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
-class TagServiceImpTest {
+class TagServiceImplTest {
 
   @InjectMocks
-  private TagServiceImp tagService;
+  private TagServiceImpl tagService;
+
   @Mock
   private TagRepository tagRepository;
+
   @Mock
   private TagMapper tagMapper;
   private TagDTO tagDTO;
@@ -39,19 +41,19 @@ class TagServiceImpTest {
 
   @BeforeEach
   void setUp() {
-    tagDTO = TagFactory.tagDTO();
-    tag = TagFactory.tag();
+    tagDTO = TagFactory.buildTagDTO();
+    tag = TagFactory.buildTagOne();
   }
 
   @Test
-  void saveTest() {
+  void saveSuccessTest() {
     given(tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(Mockito.any(TagDTO.class))))).willReturn(tagDTO);
     TagDTO save = tagService.save(tagDTO);
     assertThat(save).isNotNull();
   }
 
   @Test
-  void saveAllWhenSetNotNull() {
+  void saveAllSuccessTest() {
     given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
     given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
     given(tagMapper.toTag(any())).willReturn(tag);
@@ -63,7 +65,7 @@ class TagServiceImpTest {
   }
 
   @Test
-  void update() {
+  void updateSuccessTest() {
     given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
     given(tagRepository.save(tagMapper.toTag(Mockito.any(TagDTO.class)))).willReturn(tag);
     given(tagMapper.toTagDTO(Mockito.any(Tag.class))).willReturn(tagDTO);
@@ -73,7 +75,7 @@ class TagServiceImpTest {
   }
 
   @Test
-  void getById() {
+  void getByIdSuccessTest() {
     given(tagMapper.toTagDTO(tag)).willReturn(tagDTO);
     given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
     TagDTO byId = tagService.getById(1L);
@@ -81,7 +83,7 @@ class TagServiceImpTest {
   }
 
   @Test
-  void getPopularTagUserTest() {
+  void getPopularTagUserTestSuccessTest() {
     given(tagMapper.toTagDTO(tag)).willReturn(tagDTO);
     given(tagRepository.findPopularTagUser()).willReturn(Optional.of(tag));
     TagDTO popularTagUser = tagService.getPopularTagUser();
@@ -93,9 +95,7 @@ class TagServiceImpTest {
     Pageable pageable = Pageable.ofSize(1);
     List<Tag> tagList = new ArrayList<>();
     tagList.add(tag);
-    tagList.add(Tag.builder()
-        .id(2L)
-        .name("Tag2").build());
+    tagList.add(TagFactory.buildTagTwo());
     given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
     List<TagDTO> allTags = tagService.getAllTags(pageable);
     assertAll(() -> assertThat(allTags).isNotNull(),

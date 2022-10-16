@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +25,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
   private final static String VALID_EXCEPTION = "10005";
 
   @ExceptionHandler(EntityNotFoundException.class)
-  public ResponseEntity<?> handlerNotFoundException(EntityNotFoundException exc, HttpServletResponse response) {
+  public ResponseEntity<?> handlerNotFoundException(EntityNotFoundException exc) {
     return ResponseEntity.status(exc.getHttpStatus())
         .body(new ApiErrorDTO(exc.getHttpStatus(), exc.getMessage(), String.valueOf(exc.getErrorCode())));
   }
@@ -45,13 +44,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     List<String> errors = new ArrayList<>();
     List<ValidateErrorDTO> validateErrorDTOList = new ArrayList<>();
     ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
-          errors.add(fieldError.getField() + ": " + fieldError.getDefaultMessage());
-          validateErrorDTOList.add(getValidateErrorDTO(ex));
-        }
-    );
-    ex.getBindingResult().getGlobalErrors().forEach(objectError ->
-        errors.add(objectError.getObjectName() + ": " + objectError.getDefaultMessage())
-    );
+      errors.add(fieldError.getField() + ": " + fieldError.getDefaultMessage());
+      validateErrorDTOList.add(getValidateErrorDTO(ex));
+    });
+    ex.getBindingResult().getGlobalErrors()
+        .forEach(objectError -> errors.add(objectError.getObjectName() + ": " + objectError.getDefaultMessage()));
     errors.add(VALID_EXCEPTION);
 
     ApiErrorDTO apiErrorDTO = ApiErrorDTO.builder()
@@ -64,7 +61,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({ConstraintViolationException.class})
-  public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+  public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
     List<String> collect = Arrays.stream(ex.getCause().getLocalizedMessage().split("\\n"))
         .collect(Collectors.toList());
     ApiErrorDTO apiErrorDTO = new ApiErrorDTO(HttpStatus.BAD_REQUEST, collect.toString(), "40001");

@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,12 +27,12 @@ public class TagController {
   private final TagService tagService;
 
   @PostMapping
-  public ResponseEntity<TagDTO> saveTage(@RequestBody TagDTO tagDTO) {
+  public ResponseEntity<TagDTO> saveTage(@Valid @RequestBody TagDTO tagDTO) {
     return ResponseEntity.ok(tagService.save(tagDTO));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<TagDTO> updateTag(@PathVariable Long id, @RequestBody TagDTO tagDTO) {
+  public ResponseEntity<TagDTO> updateTag(@PathVariable Long id, @Valid @RequestBody TagDTO tagDTO) {
     return ResponseEntity.ok(tagService.update(id, tagDTO));
   }
 

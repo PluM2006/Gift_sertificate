@@ -6,21 +6,21 @@ import ru.clevertec.ecl.entity.Order;
 
 public class OrderFactory {
 
-  public static OrderDTO orderDTO() {
+  public static OrderDTO buildOrderDTO() {
     return OrderDTO.builder()
         .id(1L)
         .price(new BigDecimal(10))
-        .certificate(CertificateFactory.certificateDTO())
-        .user(UserFactory.userDTO())
+        .certificate(CertificateFactory.buildCertificateDTO())
+        .user(UserFactory.buildUserDTO())
         .build();
   }
 
-  public static Order order() {
+  public static Order buildOrder() {
     return Order.builder()
         .id(1L)
         .price(new BigDecimal(10))
-        .certificate(CertificateFactory.certificate())
-        .user(UserFactory.user())
+        .certificate(CertificateFactory.buildCertificateOne())
+        .user(UserFactory.buildUserOne())
         .build();
   }
 }

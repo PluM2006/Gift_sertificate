@@ -29,8 +29,10 @@ class UserServiceImplTest {
 
   @InjectMocks
   private UserServiceImpl userService;
+
   @Mock
   private UserRepository userRepository;
+
   @Mock
   private UserMapper userMapper;
   private User user;
@@ -40,12 +42,12 @@ class UserServiceImplTest {
   @BeforeEach
   void setUp() {
     pageable = Pageable.ofSize(1);
-    user = UserFactory.user();
-    userDTO = UserFactory.userDTO();
+    user = UserFactory.buildUserOne();
+    userDTO = UserFactory.buildUserDTO();
   }
 
   @Test
-  void getUserById() {
+  void getUserByIdSuccessTest() {
     given(userRepository.findById(1L)).willReturn(Optional.of(user));
     given(userMapper.toUserDTO(user)).willReturn(userDTO);
     UserDTO userDTOByUsername = userService.getUserById(1L);
@@ -54,21 +56,16 @@ class UserServiceImplTest {
   }
 
   @Test
-  void getUserByUserNameNotFoundException() {
+  void getUserByIdNotFoundException() {
     given(userRepository.findById(2L)).willReturn(Optional.empty());
     assertThrows(EntityNotFoundException.class, () -> userService.getUserById(2L));
   }
 
   @Test
-  void getAllUsers() {
+  void getAllUsersSuccessTest() {
     List<User> users = new ArrayList<>();
-    users.add(
-        User.builder()
-            .firstName("firstName_2")
-            .username("userName_2")
-            .secondName("secondName_2")
-            .id(2L).build());
     users.add(user);
+    users.add(UserFactory.buildUserTwo());
     given(userRepository.findAll(pageable)).willReturn(new PageImpl<>(users));
     List<UserDTO> allUsers = userService.getAllUsers(pageable);
     assertAll(() -> assertThat(allUsers).isNotNull(),

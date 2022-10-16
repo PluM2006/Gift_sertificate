@@ -17,7 +17,7 @@ import ru.clevertec.ecl.utils.Constants;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TagServiceImp implements TagService {
+public class TagServiceImpl implements TagService {
 
   private final TagRepository tagRepository;
   private final TagMapper tagMapper;
