@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +26,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import ru.clevertec.ecl.data.CertificateFactory;
-import ru.clevertec.ecl.data.TagFactory;
+import ru.clevertec.ecl.data.CertificateTestData;
+import ru.clevertec.ecl.data.TagTestData;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.mapper.CertificateMapper;
@@ -62,8 +61,8 @@ class CertificateServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    certificate = CertificateFactory.buildCertificateOne();
-    certificateDTO = CertificateFactory.buildCertificateDTO();
+    certificate = CertificateTestData.buildCertificateOne();
+    certificateDTO = CertificateTestData.buildCertificateDTO();
     pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
   }
 
@@ -100,7 +99,7 @@ class CertificateServiceImplTest {
   void getByTagsNameSuccessTest() {
     given(certificateMapper.toCertificateDTO(any(Certificate.class))).willReturn(certificateDTO);
     List<String> namesList = Arrays.asList("tag1", "tag2");
-    List<Certificate> certificateList = Arrays.asList(certificate);
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
     given(certificateRepository.findByTagsNameIgnoreCaseIsIn(namesList, pageable)).willReturn(certificateList);
     Set<CertificateDTO> byTagsName = certificateService.getByTagsName(namesList, pageable);
     assertThat(byTagsName.size()).isEqualTo(1);
@@ -108,9 +107,7 @@ class CertificateServiceImplTest {
 
   @Test
   void findAllSuccessTest() {
-    List<Certificate> certificateList = new ArrayList<>();
-    certificateList.add(certificate);
-    certificateList.add(CertificateFactory.buildCertificateTwo());
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
     given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
     List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
     assertAll(() -> assertThat(certificateDTOS).isNotNull(),
@@ -122,12 +119,11 @@ class CertificateServiceImplTest {
     ExampleMatcher exampleMatcher = ExampleMatcher.matching()
         .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
         .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-    Example<Certificate> certificateExample = Example.of(CertificateFactory.buildCertificateForExample(),
+    Example<Certificate> certificateExample = Example.of(CertificateTestData.buildCertificateForExample(),
         exampleMatcher);
-    certificate.getTags().add(TagFactory.buildTagOne());
-    certificateDTO.getTags().add(TagFactory.buildTagDTO());
-    List<Certificate> certificateList = new ArrayList<>();
-    certificateList.add(certificate);
+    certificate.getTags().add(TagTestData.buildTagOne());
+    certificateDTO.getTags().add(TagTestData.buildTagDTO());
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
     Page<Certificate> page = new PageImpl<>(certificateList);
     given(certificateRepository.findAll(certificateExample, pageable)).willReturn(page);
     List<CertificateDTO> byTagOrDescription = certificateService

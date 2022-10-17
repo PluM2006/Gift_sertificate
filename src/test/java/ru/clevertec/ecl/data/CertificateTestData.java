@@ -3,10 +3,12 @@ package ru.clevertec.ecl.data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.entity.Certificate;
 
-public class CertificateFactory {
+public class CertificateTestData {
 
   public static Certificate buildCertificateOne() {
     return Certificate.builder()
@@ -49,5 +51,9 @@ public class CertificateFactory {
         .name("Certificate 1")
         .description("The best certificate")
         .build();
+  }
+
+  public static List<Certificate> buildCertificates() {
+    return Arrays.asList(buildCertificateOne(), buildCertificateTwo());
   }
 }

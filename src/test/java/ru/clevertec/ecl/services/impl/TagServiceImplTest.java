@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.data.TagFactory;
+import ru.clevertec.ecl.data.TagTestData;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
@@ -41,8 +40,8 @@ class TagServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    tagDTO = TagFactory.buildTagDTO();
-    tag = TagFactory.buildTagOne();
+    tagDTO = TagTestData.buildTagDTO();
+    tag = TagTestData.buildTagOne();
   }
 
   @Test
@@ -57,8 +56,7 @@ class TagServiceImplTest {
     given(tagRepository.findByName(any())).willReturn(Optional.of(tag));
     given(tagMapper.toTagDTO(any())).willReturn(tagDTO);
     given(tagMapper.toTag(any())).willReturn(tag);
-    List<TagDTO> tagDTOSet = new ArrayList<>();
-    tagDTOSet.add(tagDTO);
+    List<TagDTO> tagDTOSet = TagTestData.buildTagsDTO();
     List<TagDTO> tagDTOs = tagService.saveAll(tagDTOSet);
     assertAll(() -> assertThat(tagDTOs).isNotNull(),
         () -> assertThat(tagDTOs.size()).isEqualTo(1));
@@ -93,9 +91,7 @@ class TagServiceImplTest {
   @Test
   void getAllTags() {
     Pageable pageable = Pageable.ofSize(1);
-    List<Tag> tagList = new ArrayList<>();
-    tagList.add(tag);
-    tagList.add(TagFactory.buildTagTwo());
+    List<Tag> tagList = TagTestData.buildTags();
     given(tagRepository.findAll(pageable)).willReturn(new PageImpl<>(tagList));
     List<TagDTO> allTags = tagService.getAllTags(pageable);
     assertAll(() -> assertThat(allTags).isNotNull(),

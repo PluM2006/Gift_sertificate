@@ -1,9 +1,11 @@
 package ru.clevertec.ecl.data;
 
+import java.util.Arrays;
+import java.util.List;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.User;
 
-public class UserFactory {
+public class UserTestData {
 
   public static UserDTO buildUserDTO() {
     return UserDTO.builder()
@@ -30,5 +32,9 @@ public class UserFactory {
         .firstName("firstName 2")
         .username("username 2")
         .build();
+  }
+
+  public static List<User> buildUsers() {
+    return Arrays.asList(buildUserOne(), buildUserTwo());
   }
 }

@@ -92,8 +92,7 @@ public class CertificateServiceImpl implements CertificateService {
   @Transactional
   @Override
   public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
-    return certificateRepository
-        .findById(id)
+    return certificateRepository.findById(id)
         .map(certificate -> certificateMapper.certificateToUpdate(certificateDTO, certificate))
         .map(certificateMapper::toCertificateDTO)
         .map(certificateDTOmap -> self.save(certificateDTO))

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.data.UserFactory;
+import ru.clevertec.ecl.data.UserTestData;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
@@ -42,8 +41,8 @@ class UserServiceImplTest {
   @BeforeEach
   void setUp() {
     pageable = Pageable.ofSize(1);
-    user = UserFactory.buildUserOne();
-    userDTO = UserFactory.buildUserDTO();
+    user = UserTestData.buildUserOne();
+    userDTO = UserTestData.buildUserDTO();
   }
 
   @Test
@@ -63,9 +62,7 @@ class UserServiceImplTest {
 
   @Test
   void getAllUsersSuccessTest() {
-    List<User> users = new ArrayList<>();
-    users.add(user);
-    users.add(UserFactory.buildUserTwo());
+    List<User> users = UserTestData.buildUsers();
     given(userRepository.findAll(pageable)).willReturn(new PageImpl<>(users));
     List<UserDTO> allUsers = userService.getAllUsers(pageable);
     assertAll(() -> assertThat(allUsers).isNotNull(),

@@ -1,17 +1,19 @@
 package ru.clevertec.ecl.data;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.entity.Order;
 
-public class OrderFactory {
+public class OrderTestData {
 
   public static OrderDTO buildOrderDTO() {
     return OrderDTO.builder()
         .id(1L)
         .price(new BigDecimal(10))
-        .certificate(CertificateFactory.buildCertificateDTO())
-        .user(UserFactory.buildUserDTO())
+        .certificate(CertificateTestData.buildCertificateDTO())
+        .user(UserTestData.buildUserDTO())
         .build();
   }
 
@@ -19,8 +21,12 @@ public class OrderFactory {
     return Order.builder()
         .id(1L)
         .price(new BigDecimal(10))
-        .certificate(CertificateFactory.buildCertificateOne())
-        .user(UserFactory.buildUserOne())
+        .certificate(CertificateTestData.buildCertificateOne())
+        .user(UserTestData.buildUserOne())
         .build();
+  }
+
+  public static List<Order> buildOrders(){
+    return Arrays.asList(buildOrder(), buildOrder());
   }
 }

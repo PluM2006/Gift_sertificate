@@ -61,8 +61,7 @@ public class TagServiceImpl implements TagService {
   @Transactional
   @Override
   public TagDTO update(Long id, TagDTO tagDTO) {
-    return tagMapper.toTagDTO(tagRepository
-        .findById(id)
+    return tagMapper.toTagDTO(tagRepository.findById(id)
         .map(tag -> tagRepository.save(tagMapper.toTag(tagDTO)))
         .orElseThrow(() -> new EntityNotFoundException(Constants.TAG, Constants.FIELD_NAME_ID, id)));
   }

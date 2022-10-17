@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.data.CertificateFactory;
-import ru.clevertec.ecl.data.OrderFactory;
-import ru.clevertec.ecl.data.UserFactory;
+import ru.clevertec.ecl.data.CertificateTestData;
+import ru.clevertec.ecl.data.OrderTestData;
+import ru.clevertec.ecl.data.UserTestData;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.entity.Order;
 import ru.clevertec.ecl.mapper.CertificateMapper;
@@ -57,16 +56,16 @@ class OrderServiceImplTest {
   @BeforeEach
   void setUp() {
     pageable = Pageable.ofSize(1);
-    order = OrderFactory.buildOrder();
-    orderDTO = OrderFactory.buildOrderDTO();
+    order = OrderTestData.buildOrder();
+    orderDTO = OrderTestData.buildOrderDTO();
   }
 
   @Test
   void addOrderSuccessTest() {
-    given(userService.getUserById(any())).willReturn(UserFactory.buildUserDTO());
-    given(certificateService.getById(any())).willReturn(CertificateFactory.buildCertificateDTO());
-    given(certificateMapper.toCertificate(any())).willReturn(CertificateFactory.buildCertificateOne());
-    given(userMapper.toUser(any())).willReturn(UserFactory.buildUserOne());
+    given(userService.getUserById(any())).willReturn(UserTestData.buildUserDTO());
+    given(certificateService.getById(any())).willReturn(CertificateTestData.buildCertificateDTO());
+    given(certificateMapper.toCertificate(any())).willReturn(CertificateTestData.buildCertificateOne());
+    given(userMapper.toUser(any())).willReturn(UserTestData.buildUserOne());
     given(orderMapper.toOrderDto(order)).willReturn(orderDTO);
     given(orderRepository.save(order)).willReturn(order);
     OrderDTO saveOrder = orderService.addOrder(orderDTO);
@@ -75,13 +74,12 @@ class OrderServiceImplTest {
 
   @Test
   void getAllUserOrderSuccessTest() {
-    List<Order> orderList = new ArrayList<>();
-    orderList.add(order);
-    given(orderRepository.findAllByUser(UserFactory.buildUserOne(), pageable)).willReturn(orderList);
-    given(userMapper.toUser(UserFactory.buildUserDTO())).willReturn(UserFactory.buildUserOne());
-    List<OrderDTO> allUserOrder = orderService.getAllUserOrders(UserFactory.buildUserDTO(), pageable);
+    List<Order> orderList = OrderTestData.buildOrders();
+    given(orderRepository.findAllByUser(UserTestData.buildUserOne(), pageable)).willReturn(orderList);
+    given(userMapper.toUser(UserTestData.buildUserDTO())).willReturn(UserTestData.buildUserOne());
+    List<OrderDTO> allUserOrder = orderService.getAllUserOrders(UserTestData.buildUserDTO(), pageable);
     assertAll(() -> assertThat(allUserOrder).isNotNull(),
-        () -> assertThat(allUserOrder.size()).isEqualTo(1));
+        () -> assertThat(allUserOrder.size()).isEqualTo(2));
   }
 
   @Test
