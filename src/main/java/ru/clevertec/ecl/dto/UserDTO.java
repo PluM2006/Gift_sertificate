@@ -6,10 +6,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TagDTO {
+public class UserDTO {
 
   private Long id;
+  private String firstName;
+  private String secondName;
 
   @NotBlank
-  private String name;
+  private String username;
 }

@@ -1,21 +1,22 @@
 package ru.clevertec.ecl.services;
 
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dto.TagDTO;
 
-import java.util.List;
-
 public interface TagService {
 
-    TagDTO save(TagDTO tagDTO);
+  TagDTO save(TagDTO tagDTO);
 
-    List<TagDTO> saveAll(List<TagDTO> tagDTOList);
+  TagDTO getPopularTagUser();
 
-    TagDTO update(Long id, TagDTO tagDTO);
+  List<TagDTO> saveAll(List<TagDTO> tagDTOList);
 
-    TagDTO getById(Long id);
+  TagDTO update(Long id, TagDTO tagDTO);
 
-    List<TagDTO> getAllTags(Pageable pageable);
+  TagDTO getById(Long id);
 
-    void delete(Long id);
+  List<TagDTO> getAllTags(Pageable pageable);
+
+  void delete(Long id);
 }

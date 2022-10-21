@@ -1,5 +1,17 @@
 package ru.clevertec.ecl.services.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,172 +19,131 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.server.ResponseStatusException;
+import ru.clevertec.ecl.data.CertificateTestData;
+import ru.clevertec.ecl.data.TagTestData;
 import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Certificate;
-import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.TagService;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceImplTest {
 
-    @InjectMocks
-    private CertificateServiceImpl certificateService;
-    @Mock
-    private CertificateRepository certificateRepository;
-    @Mock
-    private CertificateMapper certificateMapper;
-    @Mock
-    private TagMapper tagMapper;
-    @Mock
-    private TagService tagService;
-    private CertificateDTO certificateDTO;
-    private Certificate certificate;
-    private Pageable pageable;
+  @InjectMocks
+  private CertificateServiceImpl certificateService;
 
-    @BeforeEach
-    void setUp() {
-        certificate = getCertificate();
-        certificateDTO = getCertificateDTO();
-        pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
-    }
+  @Mock
+  private CertificateServiceImpl self;
 
-    @Test
-    void save() {
-        given(certificateRepository.save(any())).willReturn(certificate);
-        given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
-        given(certificateMapper.toCertificate(any())).willReturn(certificate);
-        CertificateDTO saveCertificateDTO = certificateService.save(certificateDTO);
-        assertThat(saveCertificateDTO).isNotNull();
-    }
+  @Mock
+  private CertificateRepository certificateRepository;
 
-    @Test
-    void update() {
-        given(certificateRepository.save(certificate)).willReturn(certificate);
-        given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
-        given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
-        given(tagService.saveAll(certificateDTO.getTags())).willReturn(new ArrayList<>());
-        given(tagMapper.toTagList(any())).willReturn(new ArrayList<>());
-        certificateDTO.setName("Certificate 2");
-        CertificateDTO update = certificateService.update(1L, certificateDTO);
-        assertAll(() -> assertThat(update).isNotNull(), () -> assertEquals(certificateDTO.getName(), "Certificate 2"));
-    }
+  @Mock
+  private CertificateMapper certificateMapper;
 
-    @Test
-    void findById() {
-        given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
-        given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
-        CertificateDTO certificateDTOById = certificateService.getById(1L);
-        assertThat(certificateDTOById).isNotNull();
-    }
+  @Mock
+  private TagService tagService;
 
-    @Test
-    void findAll() {
-        List<CertificateDTO> certificateDTOList = new ArrayList<>();
-        certificateDTOList.add(certificateDTO);
-        certificateDTOList.add(CertificateDTO.builder()
-                .id(1L)
-                .name("Certificate 2")
-                .description("The best certificate 2")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build());
-        List<Certificate> certificateList = new ArrayList<>();
-        certificateList.add(certificate);
-        certificateList.add(Certificate.builder()
-                .id(1L)
-                .name("Certificate 2")
-                .description("The best certificate 2")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build());
-        given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
-        given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
-        List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
-        assertAll(() -> assertThat(certificateDTOS).isNotNull(), () -> assertThat(certificateDTOS.size()).isEqualTo(2));
-    }
+  @Mock
+  private TagMapper tagMapper;
+  private CertificateDTO certificateDTO;
+  private Certificate certificate;
+  private Pageable pageable;
 
-    @Test
-    void findByTagOrDescription() {
-        Tag tag = Tag.builder()
-                .id(1L)
-                .name("New Tag").build();
-        TagDTO tagDTO = TagDTO.builder()
-                .id(1L)
-                .name("New Tag").build();
-        certificate.getTags().add(tag);
-        certificateDTO.getTags().add(tagDTO);
-        List<Certificate> certificateList = new ArrayList<>();
-        certificateList.add(certificate);
-        List<CertificateDTO> certificateDTOList = new ArrayList<>();
-        certificateDTOList.add(certificateDTO);
-        given(certificateMapper.toCertificateDTOList(Mockito.anyList())).willReturn(certificateDTOList);
-        given(certificateRepository.findByTagNameDescription(any(), any(), any())).willReturn(certificateList);
-        List<CertificateDTO> byTagOrDescription = certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best");
-        assertThat(byTagOrDescription).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    certificate = CertificateTestData.buildCertificateOne();
+    certificateDTO = CertificateTestData.buildCertificateDTO();
+    pageable = PageRequest.of(1, 2, Sort.by("name, desc"));
+  }
 
-    @Test
-    void findByTagOrDescriptionOrderNegative() {
-        TagDTO tagDTO = TagDTO.builder()
-                .id(1L)
-                .name("New Tag").build();
-        assertThrows(ResponseStatusException.class,
-                () -> certificateService.getByTagOrDescription(pageable, tagDTO.getName(), "The best"));
-    }
+  @Test
+  void saveSuccessTest() {
+    given(certificateRepository.save(any())).willReturn(certificate);
+    given(certificateMapper.toCertificateDTO(any())).willReturn(certificateDTO);
+    given(certificateMapper.toCertificate(any())).willReturn(certificate);
+    CertificateDTO saveCertificateDTO = certificateService.save(certificateDTO);
+    assertThat(saveCertificateDTO).isNotNull();
+  }
 
-    @Test
-    void delete() {
-        given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
-        certificateService.delete(1L);
-        verify(certificateRepository, times(1)).delete(Mockito.any(Certificate.class));
-    }
+  @Test
+  void updateSuccessTest() {
+    given(certificateMapper.toCertificateDTO(certificate)).willReturn(certificateDTO);
+    given(certificateMapper.certificateToUpdate(any(), any())).willReturn(certificate);
+    given(self.save(certificateDTO)).willReturn(certificateDTO);
+    given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
+    certificateDTO.setName("Certificate 2");
+    CertificateDTO update = certificateService.update(1L, certificateDTO);
+    assertAll(() -> assertThat(update).isNotNull(),
+        () -> assertEquals(certificateDTO.getName(), "Certificate 2"));
+  }
 
-    @Test
-    void findByName() {
-        given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
-        given(certificateRepository.findByName(Mockito.any(String.class))).willReturn(Optional.of(certificate));
-        CertificateDTO byName = certificateService.getByName("Certificate 1");
-        assertAll(() -> assertThat(byName).isNotNull(), () -> assertEquals(byName.getName(), "Certificate 1"));
-    }
+  @Test
+  void findByIdSuccessTest() {
+    given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
+    given(certificateRepository.findById(1L)).willReturn(Optional.of(certificate));
+    CertificateDTO certificateDTOById = certificateService.getById(1L);
+    assertThat(certificateDTOById).isNotNull();
+  }
 
-    private Certificate getCertificate() {
-        return Certificate.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build();
-    }
+  @Test
+  void getByTagsNameSuccessTest() {
+    given(certificateMapper.toCertificateDTO(any(Certificate.class))).willReturn(certificateDTO);
+    List<String> namesList = Arrays.asList("tag1", "tag2");
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
+    given(certificateRepository.findByTagsNameIgnoreCaseIsIn(namesList, pageable)).willReturn(certificateList);
+    Set<CertificateDTO> byTagsName = certificateService.getByTagsName(namesList, pageable);
+    assertThat(byTagsName.size()).isEqualTo(1);
+  }
 
-    private CertificateDTO getCertificateDTO() {
-        return CertificateDTO.builder()
-                .id(1L)
-                .name("Certificate 1")
-                .description("The best certificate")
-                .price(BigDecimal.valueOf(20))
-                .tags(new ArrayList<>())
-                .build();
-    }
+  @Test
+  void findAllSuccessTest() {
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
+    given(certificateRepository.findAll(pageable)).willReturn(new PageImpl<>(certificateList));
+    List<CertificateDTO> certificateDTOS = certificateService.getAll(pageable);
+    assertAll(() -> assertThat(certificateDTOS).isNotNull(),
+        () -> assertThat(certificateDTOS.size()).isEqualTo(2));
+  }
+
+  @Test
+  void findByTagOrDescriptionSuccessTest() {
+    ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+        .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+        .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+    Example<Certificate> certificateExample = Example.of(CertificateTestData.buildCertificateForExample(),
+        exampleMatcher);
+    certificate.getTags().add(TagTestData.buildTagOne());
+    certificateDTO.getTags().add(TagTestData.buildTagDTO());
+    List<Certificate> certificateList = CertificateTestData.buildCertificates();
+    Page<Certificate> page = new PageImpl<>(certificateList);
+    given(certificateRepository.findAll(certificateExample, pageable)).willReturn(page);
+    List<CertificateDTO> byTagOrDescription = certificateService
+        .getByNameDescription(pageable, certificate.getName(), "The best");
+    assertThat(byTagOrDescription).isNotNull();
+  }
+
+  @Test
+  void deleteSuccessTest() {
+    given(certificateRepository.findById(any())).willReturn(Optional.of(certificate));
+    certificateService.delete(1L);
+    verify(certificateRepository, times(1)).delete(Mockito.any(Certificate.class));
+  }
+
+  @Test
+  void findByNameSuccessTest() {
+    given(certificateMapper.toCertificateDTO(Mockito.any(Certificate.class))).willReturn(certificateDTO);
+    given(certificateRepository.findByName(Mockito.any(String.class))).willReturn(Optional.of(certificate));
+    CertificateDTO byName = certificateService.getByName(certificate.getName());
+    assertAll(() -> assertThat(byName).isNotNull(),
+        () -> assertEquals(byName.getName(), certificate.getName()));
+  }
 }
