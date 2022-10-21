@@ -1,10 +1,10 @@
-package ru.clevertec.gift_certificates;
+package ru.clevertec.ecl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GiftCertificatesApplicationTests {
+class CertificatesApplicationTests {
 
     @Test
     void contextLoads() {

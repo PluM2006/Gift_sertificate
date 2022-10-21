@@ -1,13 +1,13 @@
-package ru.clevertec.gift_certificates;
+package ru.clevertec.ecl;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GiftCertificatesApplication {
+public class CertificatesApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GiftCertificatesApplication.class, args);
+        SpringApplication.run(CertificatesApplication.class, args);
     }
 
 }
