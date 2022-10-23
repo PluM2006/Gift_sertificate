@@ -4,16 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.clevertec.ecl.interceptors.GetInterceptor;
+import ru.clevertec.ecl.interceptors.CommonInterceptor;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfiguration implements WebMvcConfigurer {
 
-  private final GetInterceptor getInterceptor;
+  private final CommonInterceptor commonInterceptor;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(getInterceptor);
+    registry.addInterceptor(commonInterceptor).addPathPatterns("/certificates/**", "/users/**", "/tags/*");
   }
 }

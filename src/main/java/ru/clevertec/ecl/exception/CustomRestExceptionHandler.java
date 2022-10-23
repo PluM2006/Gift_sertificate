@@ -1,11 +1,14 @@
 package ru.clevertec.ecl.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,9 +23,11 @@ import ru.clevertec.ecl.dto.ApiErrorDTO;
 import ru.clevertec.ecl.dto.ValidateErrorDTO;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
   private final static String VALID_EXCEPTION = "10005";
+  private final ObjectMapper mapper;
 
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<?> handlerNotFoundException(EntityNotFoundException exc) {
@@ -34,6 +39,13 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<?> handlerResponseStatusException(ResponseStatusException exc) {
     return ResponseEntity.status(exc.getStatus())
         .body(new ApiErrorDTO(exc.getStatus(), exc.getMessage(), String.valueOf(exc.getRawStatusCode())));
+  }
+
+  @ExceptionHandler(ServiceException.class)
+  public ResponseEntity<?> handlerResponseStatusException(ServiceException exc) throws JsonProcessingException {
+    ApiErrorDTO apiErrorDTO = mapper.readValue(exc.getMessage(), ApiErrorDTO.class);
+    return ResponseEntity.status(apiErrorDTO.getStatus())
+        .body(apiErrorDTO);
   }
 
   @NonNull
