@@ -95,7 +95,7 @@ public class CertificateServiceImpl implements CertificateService {
     return certificateRepository.findById(id)
         .map(certificate -> certificateMapper.certificateToUpdate(certificateDTO, certificate))
         .map(certificateMapper::toCertificateDTO)
-        .map(certificateDTOmap -> self.save(certificateDTO))
+        .map(self::save)
         .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
   }
 

@@ -14,6 +14,7 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(commonInterceptor).addPathPatterns("/certificates/**", "/users/**", "/tags/*");
+    registry.addInterceptor(commonInterceptor)
+       ;
   }
 }
