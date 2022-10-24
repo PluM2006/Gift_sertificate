@@ -39,3 +39,8 @@ CREATE TABLE IF NOT EXISTS orders
     price          NUMERIC(10, 2) CHECK (price > 0),
     purchase_date  TIMESTAMP
 );
+CREATE SEQUENCE orders_id
+INCREMENT 1
+START 1
+MINVALUE 1
+OWNED BY orders.id;

@@ -10,4 +10,3 @@ server:
     context-path: "/api"
   host: "localhost"
   sourcePort: 9901, 9902, 9903
-

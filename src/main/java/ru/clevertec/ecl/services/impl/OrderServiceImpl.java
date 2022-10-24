@@ -51,6 +51,11 @@ public class OrderServiceImpl implements OrderService {
         .orElseThrow(() -> new EntityNotFoundException(Constants.ORDER, Constants.FIELD_NAME_ID, id)));
   }
 
+  @Override
+  public long getNextValueSequence() {
+    return orderRepository.getNextSequence();
+  }
+
   private Order toBuildOrder(OrderDTO orderDTO) {
     return Order.builder()
         .certificate(certificateMapper.toCertificate(certificateService.getById(orderDTO.getCertificate().getId())))

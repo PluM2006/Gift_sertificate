@@ -38,4 +38,9 @@ public class OrderController {
   public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.getOrderById(id));
   }
+
+  @GetMapping(value = "/sequence/current")
+  public long getSequenceCurrent(){
+    return orderService.getNextValueSequence();
+  }
 }

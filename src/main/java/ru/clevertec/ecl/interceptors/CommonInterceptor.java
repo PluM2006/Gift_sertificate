@@ -4,9 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import ru.clevertec.ecl.exception.ServiceException;
+import ru.clevertec.ecl.utils.Constants;
 
 @Component
 @EnableConfigurationProperties
@@ -36,10 +34,8 @@ public class CommonInterceptor implements HandlerInterceptor {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     ContentCachingRequestWrapper wrappedReq = (ContentCachingRequestWrapper) request;
     StringBuffer requestURL = new StringBuffer(wrappedReq.getRequestURL());
-    boolean redirect = Boolean.parseBoolean(request.getParameter("redirect"));
+    boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
     String method = wrappedReq.getMethod();
-    Map<?, ?> attribute = (Map<?, ?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-    String idParam = (String) attribute.get("id");
     if (redirect) {
       return true;
     }
@@ -51,7 +47,7 @@ public class CommonInterceptor implements HandlerInterceptor {
       String body = request.getReader().lines().collect(joining(System.lineSeparator()));
       List<Object> saveAll = serverProperties.getSourcePort().stream()
           .map(port -> CompletableFuture.supplyAsync(() -> webClient.post()
-              .uri(uriBuilder -> UriEditor.getRedirectUri(currentPort, port.toString(), requestURL, uriBuilder))
+              .uri(UriEditor.getUriBuilderURIFunction(currentPort, port.toString(), requestURL))
               .contentType(MediaType.APPLICATION_JSON)
               .body(BodyInserters.fromValue(body))
               .retrieve()
@@ -64,12 +60,13 @@ public class CommonInterceptor implements HandlerInterceptor {
           .map(CompletableFuture::join)
           .collect(toList());
       String orderJson = mapper.writeValueAsString(saveAll.get(0));
-      changeResponse(response, orderJson);
+      ResponseEditor.changeResponse(response, orderJson);
     } else if (method.equals(HttpMethod.PUT.name())) {
+
       String body = request.getReader().lines().collect(joining(System.lineSeparator()));
       List<Object> saveAll = serverProperties.getSourcePort().stream()
           .map(port -> CompletableFuture.supplyAsync(() -> webClient.put()
-              .uri(uriBuilder -> UriEditor.getRedirectUri(currentPort, port.toString(), requestURL, uriBuilder))
+              .uri(UriEditor.getUriBuilderURIFunction(currentPort, port.toString(), requestURL))
               .contentType(MediaType.APPLICATION_JSON)
               .body(BodyInserters.fromValue(body))
               .retrieve()
@@ -82,16 +79,24 @@ public class CommonInterceptor implements HandlerInterceptor {
           .map(CompletableFuture::join)
           .collect(toList());
       String orderJson = mapper.writeValueAsString(saveAll.get(0));
-      changeResponse(response, orderJson);
+      ResponseEditor.changeResponse(response, orderJson);
+    } else if (method.equals(HttpMethod.DELETE.name())) {
+      List<Object> collect = serverProperties.getSourcePort().stream()
+          .map(port -> CompletableFuture.supplyAsync(() -> webClient.delete()
+              .uri(UriEditor.getUriBuilderURIFunction(currentPort, port.toString(), requestURL))
+              .retrieve()
+              .onStatus(HttpStatus::is4xxClientError, resp ->
+                  resp.bodyToMono(String.class)
+                      .map(ServiceException::new))
+              .bodyToMono(Object.class)
+              .block())
+          )
+          .map(CompletableFuture::join)
+          .collect(toList());
+      response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     return false;
-  }
-
-  private void changeResponse(HttpServletResponse response, String orderJson) throws IOException {
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setCharacterEncoding("UTF-8");
-    response.getWriter().write(orderJson);
   }
 
 }

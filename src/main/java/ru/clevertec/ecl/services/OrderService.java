@@ -12,4 +12,6 @@ public interface OrderService {
   List<OrderDTO> getAllUserOrders(UserDTO userDTO, Pageable pageable);
 
   OrderDTO getOrderById(Long id);
+
+  long getNextValueSequence();
 }

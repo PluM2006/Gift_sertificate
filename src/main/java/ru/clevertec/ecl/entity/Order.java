@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Order {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id_seq")
+  @SequenceGenerator(name = "orders_id_seq",
+      sequenceName = "orders_id",
+      schema = "public",
+      allocationSize = 1)
   private Long id;
   private BigDecimal price;
 
