@@ -11,7 +11,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   List<Order> findAllByUser(User user, Pageable pageable);
 
+  @Query(value = "SELECT setval('orders_id', :seq) ", nativeQuery = true)
+  long getNextSequence(Long seq);
+
   @Query(value = "SELECT last_value FROM orders_id", nativeQuery = true)
-  long getNextSequence();
+  long getLastValueSequence();
 
 }

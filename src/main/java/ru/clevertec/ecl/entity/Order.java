@@ -27,11 +27,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Order {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id_seq")
-  @SequenceGenerator(name = "orders_id_seq",
-      sequenceName = "orders_id",
-      schema = "public",
-      allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id")
+  @SequenceGenerator(name = "orders_id",
+      allocationSize = 1
+  )
   private Long id;
   private BigDecimal price;
 

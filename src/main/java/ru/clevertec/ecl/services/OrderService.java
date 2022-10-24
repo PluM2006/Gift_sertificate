@@ -13,5 +13,7 @@ public interface OrderService {
 
   OrderDTO getOrderById(Long id);
 
-  long getNextValueSequence();
+  long getNextValueSequence(Long seq);
+
+  long getLastValueSequence();
 }

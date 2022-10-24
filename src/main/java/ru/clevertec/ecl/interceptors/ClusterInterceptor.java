@@ -4,7 +4,7 @@ import static java.util.stream.Collectors.joining;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +24,9 @@ import ru.clevertec.ecl.utils.Constants;
 @RequiredArgsConstructor
 public class ClusterInterceptor implements HandlerInterceptor {
 
-  private final static String REQUEST_MAX_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
-
   private final WebClient webClient;
   private final ServerProperties serverProperties;
   private final ObjectMapper mapper;
-
-  private static String buildURIMaxSiquence(Integer port) {
-    return String.format(REQUEST_MAX_SEQUENCE, port);
-  }
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -52,7 +46,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
 
     if (method.equals(HttpMethod.GET.name())) {
       long id = Long.parseLong(idParam);
-      String redirectPort = serverProperties.getPortById(id);
+      String redirectPort = serverProperties.getPortById(id - 1);
       if (currentPort.contains(redirectPort)) {
         return true;
       }
@@ -65,11 +59,9 @@ public class ClusterInterceptor implements HandlerInterceptor {
       String orderJson = mapper.writeValueAsString(order);
       ResponseEditor.changeResponse(response, orderJson);
     } else if (method.equals(HttpMethod.POST.name())) {
-
-      Long maxSequence = getMaxSequence() + 1;
-      System.out.println("maxSequence = "+maxSequence);
+      Long maxSequence = getMaxSequence();
       String redirectPort = serverProperties.getPortById(maxSequence);
-      System.out.println("redirectPort = "+redirectPort);
+      setSequenceVal(redirectPort, maxSequence);
       if (currentPort.contains(redirectPort)) {
         return true;
       }
@@ -88,16 +80,25 @@ public class ClusterInterceptor implements HandlerInterceptor {
     return false;
   }
 
+  private void setSequenceVal(String port, Long seq) {
+    webClient.post()
+        .uri(UriEditor.buildURINextSequence(port))
+        .body(BodyInserters.fromValue(seq))
+        .retrieve()
+        .bodyToMono(Object.class)
+        .block();
+  }
+
   private Long getMaxSequence() throws Exception {
     return serverProperties.getSourcePort().stream()
-        .map(port -> CompletableFuture.supplyAsync(() -> webClient.get()
-            .uri(buildURIMaxSiquence(port))
+        .map(port -> webClient.get()
+            .uri(UriEditor.buildURIMaxSequence(port))
             .retrieve()
             .bodyToMono(long.class)
-            .block()))
-        .map(CompletableFuture::join)
+            .block())
+        .filter(Objects::nonNull)
         .max(Long::compareTo)
         .orElseThrow(Exception::new);
-
   }
+
 }

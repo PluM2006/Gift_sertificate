@@ -2,11 +2,13 @@ package ru.clevertec.ecl.services.impl;
 
 import static java.util.stream.Collectors.toList;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.Order;
@@ -31,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
   private final UserMapper userMapper;
   private final CertificateService certificateService;
   private final CertificateMapper certificateMapper;
+  private CertificateDTO byId;
 
   @Transactional
   @Override
@@ -51,16 +54,24 @@ public class OrderServiceImpl implements OrderService {
         .orElseThrow(() -> new EntityNotFoundException(Constants.ORDER, Constants.FIELD_NAME_ID, id)));
   }
 
+  @Transactional
   @Override
-  public long getNextValueSequence() {
-    return orderRepository.getNextSequence();
+  public long getNextValueSequence(Long seq) {
+    return orderRepository.getNextSequence(seq);
+  }
+
+  @Override
+  public long getLastValueSequence() {
+    return orderRepository.getLastValueSequence();
   }
 
   private Order toBuildOrder(OrderDTO orderDTO) {
+    CertificateDTO certificateDTObyId = certificateService.getById(orderDTO.getCertificate().getId());
     return Order.builder()
-        .certificate(certificateMapper.toCertificate(certificateService.getById(orderDTO.getCertificate().getId())))
+        .certificate(certificateMapper.toCertificate(certificateDTObyId))
         .user(userMapper.toUser(userService.getUserById(orderDTO.getUser().getId())))
-        .price(orderDTO.getCertificate().getPrice())
+        .price(certificateDTObyId.getPrice())
+        .purchaseDate(LocalDateTime.now())
         .build();
   }
 }

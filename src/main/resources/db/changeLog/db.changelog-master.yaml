@@ -1,3 +1,6 @@
 databaseChangeLog:
   - include:
       file: db/changeLog/create.sql
+  - include:
+      file: db/changeLog/testData.sql
+

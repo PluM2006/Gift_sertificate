@@ -39,8 +39,13 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getOrderById(id));
   }
 
+  @PostMapping(value = "/sequence/next")
+  public long getNextSequence(@RequestBody Long seq) {
+    return orderService.getNextValueSequence(seq);
+  }
+
   @GetMapping(value = "/sequence/current")
-  public long getSequenceCurrent(){
-    return orderService.getNextValueSequence();
+  public long getLastValueSequence() {
+    return orderService.getLastValueSequence();
   }
 }

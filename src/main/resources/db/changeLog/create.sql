@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS orders
     purchase_date  TIMESTAMP
 );
 CREATE SEQUENCE orders_id
-INCREMENT 1
-START 1
-MINVALUE 1
-OWNED BY orders.id;
+    INCREMENT 1
+    START 0
+    MINVALUE 0
+    OWNED BY orders.id;
