@@ -1,9 +1,9 @@
 package ru.clevertec.ecl.interceptors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,17 +40,33 @@ public class ClusterInterceptor implements HandlerInterceptor {
     boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
     String method = wrappedReq.getMethod();
     Map<?, ?> attribute = (Map<?, ?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-    String idParam = (String) attribute.get(Constants.FIELD_NAME_ID);
+
     if (redirect) {
       return true;
     }
+    String idParam = (String) attribute.get(Constants.FIELD_NAME_ID);
     String currentPort = String.valueOf(serverProperties.getPort());
 
     if (method.equals(HttpMethod.GET.name())) {
 
       String body = request.getReader().lines().collect(joining(System.lineSeparator()));
 
-      pageable(2, 5);
+      List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(1, 2, serverProperties.getSourcePort());
+
+      List<Object> collect = urlLimitOffset.stream()
+          .peek(System.out::println)
+          .map(s -> webClient.get()
+              .uri(uriBuilder -> uriBuilder
+                  .path(s.replaceAll(Constants.HTTP, ""))
+                  .build()
+              )
+              .retrieve()
+              .bodyToMono(Object.class)
+              .block()
+          )
+          .collect(toList());
+
+      System.out.println(collect);
 
       long id = Long.parseLong(idParam);
       String redirectPort = serverProperties.getRedirectPort(id);
@@ -58,14 +74,14 @@ public class ClusterInterceptor implements HandlerInterceptor {
       if (currentPort.contains(redirectPort)) {
         return true;
       }
-      Object order = webClient
-          .get()
-          .uri(UriEditor.getUriBuilderURIFunction(currentPort, redirectPort, requestURL))
-          .retrieve()
-          .bodyToMono(Object.class)
-          .block();
-      String orderJson = mapper.writeValueAsString(order);
-      ResponseEditor.changeResponse(response, orderJson);
+////      Object order = webClient
+////          .get()
+////          .uri(UriEditor.getUriBuilderURIFunction(currentPort, redirectPort, requestURL))
+////          .retrieve()
+////          .bodyToMono(Object.class)
+////          .block();
+//      String orderJson = mapper.writeValueAsString(order);
+//      ResponseEditor.changeResponse(response, orderJson);
     } else if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
       String redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
@@ -107,40 +123,6 @@ public class ClusterInterceptor implements HandlerInterceptor {
         .filter(Objects::nonNull)
         .max(Long::compareTo)
         .orElseThrow(Exception::new);
-  }
-
-  private void pageable(Integer page, Integer size) {
-    if (page == 0) {
-      page = 1;
-    }
-    List<Integer> sourcePort = serverProperties.getSourcePort();
-    Integer kol = page / sourcePort.size();
-    Integer ost = page % sourcePort.size();
-    Integer kol_do = size / sourcePort.size();
-    Integer ost_do = size % sourcePort.size();
-    System.out.println(kol + " " + ost);
-    System.out.println(kol_do + " " + ost_do);
-
-    String url = "http://localhost%d/api/v1/orders?limit=%d&offset=%d";
-
-    List<String> urls = new ArrayList<>();
-
-    for (int i = 0; i < sourcePort.size(); i++) {
-      Integer pageGet;
-      Integer sizeGet;
-      if (i != 0 && i <= ost) {
-        pageGet = (kol + 2);
-      } else {
-        pageGet = (kol + 1);
-      }
-      if (i != 0 && i <= ost_do) {
-        sizeGet = kol_do + 1;
-      } else {
-        sizeGet = kol_do;
-      }
-      urls.add(String.format(url, sourcePort.get(i), pageGet, sizeGet));
-    }
-    System.out.println(urls);
   }
 
 }
