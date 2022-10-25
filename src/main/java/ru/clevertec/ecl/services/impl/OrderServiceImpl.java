@@ -12,6 +12,7 @@ import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.Order;
+import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.OrderMapper;
@@ -21,6 +22,7 @@ import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.OrderService;
 import ru.clevertec.ecl.services.UserService;
 import ru.clevertec.ecl.utils.Constants;
+import ru.clevertec.ecl.utils.OffsetLimitPageable;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +51,14 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  public List<OrderDTO> getAllUserOrdersOffset(UserDTO userDTO, int limit, int offset) {
+    Pageable pageable = new OffsetLimitPageable(limit, offset);
+    return orderRepository.findAllByUser(userMapper.toUser(userDTO), pageable).stream()
+        .map(orderMapper::toOrderDto)
+        .collect(toList());
+  }
+
+  @Override
   public OrderDTO getOrderById(Long id) {
     return orderMapper.toOrderDto(orderRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException(Constants.ORDER, Constants.FIELD_NAME_ID, id)));
@@ -56,8 +66,8 @@ public class OrderServiceImpl implements OrderService {
 
   @Transactional
   @Override
-  public long getNextValueSequence(Long seq) {
-    return orderRepository.getNextSequence(seq);
+  public long setSequence(Long seq) {
+    return orderRepository.setSequence(seq);
   }
 
   @Override

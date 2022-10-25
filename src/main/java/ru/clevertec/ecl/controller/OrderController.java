@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
+import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.services.OrderService;
 
 @RestController
@@ -34,14 +36,22 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getAllUserOrders(userDTO, pageable));
   }
 
+  @GetMapping("/offset")
+  public ResponseEntity<List<OrderDTO>> getAllOrderUserOffset(@Valid @RequestBody UserDTO userDTO,
+                                                              @RequestParam(required = false) int limit,
+                                                              @RequestParam(required = false) int offset){
+    return ResponseEntity.ok(orderService.getAllUserOrdersOffset(userDTO, limit, offset));
+
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.getOrderById(id));
   }
 
-  @PostMapping(value = "/sequence/next")
-  public long getNextSequence(@RequestBody Long seq) {
-    return orderService.getNextValueSequence(seq);
+  @PostMapping(value = "/sequence/set")
+  public long setSequence(@RequestBody Long seq) {
+    return orderService.setSequence(seq);
   }
 
   @GetMapping(value = "/sequence/current")

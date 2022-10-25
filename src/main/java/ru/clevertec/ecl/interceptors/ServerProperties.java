@@ -16,9 +16,9 @@ public class ServerProperties {
   private int port;
   private List<Integer> sourcePort;
 
-  public String getPortById(Long id) {
+  public String getRedirectPort(Long value) {
     int portAllSize = sourcePort.size();
-    long portIndex = id % portAllSize;
+    long portIndex = value % portAllSize;
     return sourcePort.get((int) portIndex).toString();
 
   }

@@ -3,6 +3,8 @@ package ru.clevertec.ecl.interceptors;
 import static java.util.stream.Collectors.joining;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     ContentCachingRequestWrapper wrappedReq = (ContentCachingRequestWrapper) request;
     StringBuffer requestURL = new StringBuffer(wrappedReq.getRequestURL());
-    if (requestURL.toString().contains("sequence")) {
+    if (requestURL.toString().contains(Constants.SEQUENCE)) {
       return true;
     }
     boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
@@ -45,8 +47,14 @@ public class ClusterInterceptor implements HandlerInterceptor {
     String currentPort = String.valueOf(serverProperties.getPort());
 
     if (method.equals(HttpMethod.GET.name())) {
+
+      String body = request.getReader().lines().collect(joining(System.lineSeparator()));
+
+      pageable(2, 5);
+
       long id = Long.parseLong(idParam);
-      String redirectPort = serverProperties.getPortById(id - 1);
+      String redirectPort = serverProperties.getRedirectPort(id);
+      System.out.println(serverProperties.getSourcePort());
       if (currentPort.contains(redirectPort)) {
         return true;
       }
@@ -60,7 +68,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
       ResponseEditor.changeResponse(response, orderJson);
     } else if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
-      String redirectPort = serverProperties.getPortById(maxSequence);
+      String redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
       setSequenceVal(redirectPort, maxSequence);
       if (currentPort.contains(redirectPort)) {
         return true;
@@ -99,6 +107,40 @@ public class ClusterInterceptor implements HandlerInterceptor {
         .filter(Objects::nonNull)
         .max(Long::compareTo)
         .orElseThrow(Exception::new);
+  }
+
+  private void pageable(Integer page, Integer size) {
+    if (page == 0) {
+      page = 1;
+    }
+    List<Integer> sourcePort = serverProperties.getSourcePort();
+    Integer kol = page / sourcePort.size();
+    Integer ost = page % sourcePort.size();
+    Integer kol_do = size / sourcePort.size();
+    Integer ost_do = size % sourcePort.size();
+    System.out.println(kol + " " + ost);
+    System.out.println(kol_do + " " + ost_do);
+
+    String url = "http://localhost%d/api/v1/orders?limit=%d&offset=%d";
+
+    List<String> urls = new ArrayList<>();
+
+    for (int i = 0; i < sourcePort.size(); i++) {
+      Integer pageGet;
+      Integer sizeGet;
+      if (i != 0 && i <= ost) {
+        pageGet = (kol + 2);
+      } else {
+        pageGet = (kol + 1);
+      }
+      if (i != 0 && i <= ost_do) {
+        sizeGet = kol_do + 1;
+      } else {
+        sizeGet = kol_do;
+      }
+      urls.add(String.format(url, sourcePort.get(i), pageGet, sizeGet));
+    }
+    System.out.println(urls);
   }
 
 }

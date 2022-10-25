@@ -18,8 +18,8 @@ public class WebConfigurer implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(clusterInterceptor).addPathPatterns("/**/orders/**");
-    registry.addInterceptor(commonInterceptor).addPathPatterns("/**/certificates/**");
+    registry.addInterceptor(clusterInterceptor).addPathPatterns("/**/orders*/**");
+    registry.addInterceptor(commonInterceptor).addPathPatterns("/**/certificates*/**");
 
   }
 }
