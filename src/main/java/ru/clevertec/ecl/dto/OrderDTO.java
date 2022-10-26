@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
+@Jacksonized
 public class OrderDTO {
 
   private Long id;

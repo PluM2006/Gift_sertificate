@@ -13,7 +13,7 @@ public class UriEditor {
 
   private final static String REQUEST_NEXT_SEQUENCE = "http://localhost:%s/api/v1/orders/sequence/set";
   private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
-  private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders?limit=%d&offset=%d&redirect=true";
+  private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d&redirect=true";
 
   public static Function<UriBuilder, URI> getUriBuilderURIFunction(String port, String port2, StringBuffer requestURL) {
     return uriBuilder -> uriBuilder
@@ -21,7 +21,9 @@ public class UriEditor {
         .queryParam(Constants.REDIRECT, true).build();
   }
 
-  public static List<String> buildLimitOffsetUrl(Integer page, Integer size, List<Integer> sourcePort) {
+  public static List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
+    int page = stringPage == null ? 1 : Integer.parseInt(stringPage);
+    int size = stringSize == null ? 10:Integer.parseInt(stringSize);
     if (page == 0) {
       page = 1;
     }
