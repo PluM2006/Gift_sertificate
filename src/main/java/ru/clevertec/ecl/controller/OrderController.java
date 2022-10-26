@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
-import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.services.OrderService;
 
 @RestController

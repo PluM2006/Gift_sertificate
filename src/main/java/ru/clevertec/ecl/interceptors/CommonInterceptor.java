@@ -42,7 +42,6 @@ public class CommonInterceptor implements HandlerInterceptor {
     String currentPort = String.valueOf(serverProperties.getPort());
     if (method.equals(HttpMethod.GET.name())) {
       return true;
-
     } else if (method.equals(HttpMethod.POST.name())) {
       String body = request.getReader().lines().collect(joining(System.lineSeparator()));
       List<Object> saveAll = serverProperties.getSourcePort().stream()
@@ -62,7 +61,6 @@ public class CommonInterceptor implements HandlerInterceptor {
       String orderJson = mapper.writeValueAsString(saveAll.get(0));
       ResponseEditor.changeResponse(response, orderJson);
     } else if (method.equals(HttpMethod.PUT.name())) {
-
       String body = request.getReader().lines().collect(joining(System.lineSeparator()));
       List<Object> saveAll = serverProperties.getSourcePort().stream()
           .map(port -> CompletableFuture.supplyAsync(() -> webClient.put()
@@ -95,7 +93,6 @@ public class CommonInterceptor implements HandlerInterceptor {
           .collect(toList());
       response.setStatus(HttpStatus.NO_CONTENT.value());
     }
-
     return false;
   }
 

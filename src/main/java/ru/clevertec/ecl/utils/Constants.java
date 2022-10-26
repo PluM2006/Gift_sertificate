@@ -14,4 +14,6 @@ public class Constants {
   public static final String REDIRECT = "redirect";
   public static final String HTTP = "http://";
   public static final String SEQUENCE = "sequence";
+  public static final String PAGE = "page";
+  public static final String SIZE = "size";
 }

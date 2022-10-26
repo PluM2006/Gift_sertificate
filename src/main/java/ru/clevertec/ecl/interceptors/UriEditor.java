@@ -23,7 +23,7 @@ public class UriEditor {
 
   public static List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
     int page = stringPage == null ? 1 : Integer.parseInt(stringPage);
-    int size = stringSize == null ? 10:Integer.parseInt(stringSize);
+    int size = stringSize == null ? 10 : Integer.parseInt(stringSize);
     if (page == 0) {
       page = 1;
     }

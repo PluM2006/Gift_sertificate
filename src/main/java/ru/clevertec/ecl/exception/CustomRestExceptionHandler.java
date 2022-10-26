@@ -29,6 +29,14 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
   private final static String VALID_EXCEPTION = "10005";
   private final ObjectMapper mapper;
 
+  private static ValidateErrorDTO getValidateErrorDTO(MethodArgumentNotValidException ex) {
+    return ValidateErrorDTO.builder()
+        .object(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getObjectName())
+        .code(ex.getBindingResult().getFieldError().getDefaultMessage())
+        .field(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField())
+        .build();
+  }
+
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<?> handlerNotFoundException(EntityNotFoundException exc) {
     return ResponseEntity.status(exc.getHttpStatus())
@@ -78,14 +86,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         .collect(Collectors.toList());
     ApiErrorDTO apiErrorDTO = new ApiErrorDTO(HttpStatus.BAD_REQUEST, collect.toString(), "40001");
     return new ResponseEntity<>(apiErrorDTO, new HttpHeaders(), apiErrorDTO.getStatus());
-  }
-
-  private static ValidateErrorDTO getValidateErrorDTO(MethodArgumentNotValidException ex) {
-    return ValidateErrorDTO.builder()
-        .object(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getObjectName())
-        .code(ex.getBindingResult().getFieldError().getDefaultMessage())
-        .field(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField())
-        .build();
   }
 }
 

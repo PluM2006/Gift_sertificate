@@ -49,13 +49,11 @@ public class ClusterInterceptor implements HandlerInterceptor {
     boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
     String method = wrappedReq.getMethod();
     Map<?, ?> attribute = (Map<?, ?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-
     if (redirect) {
       return true;
     }
     String idParam = (String) attribute.get(Constants.FIELD_NAME_ID);
     String currentPort = String.valueOf(serverProperties.getPort());
-
     if (method.equals(HttpMethod.GET.name())) {
       if (idParam==null) return true;
       long id = Long.parseLong(idParam);
@@ -90,7 +88,6 @@ public class ClusterInterceptor implements HandlerInterceptor {
       String orderJson = mapper.writeValueAsString(order);
       ResponseEditor.changeResponse(response, orderJson);
     }
-
     return false;
   }
 

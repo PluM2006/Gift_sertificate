@@ -12,7 +12,6 @@ import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.UserDTO;
 import ru.clevertec.ecl.entity.Order;
-import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.OrderMapper;

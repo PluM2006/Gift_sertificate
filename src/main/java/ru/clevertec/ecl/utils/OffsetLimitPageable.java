@@ -8,7 +8,7 @@ public class OffsetLimitPageable implements Pageable {
 
   private int limit;
   private int offset;
-  private Sort sort = Sort.by(Direction.ASC, "id");
+  private Sort sort = Sort.by(Direction.ASC, Constants.FIELD_NAME_ID);
 
   public OffsetLimitPageable(int limit, int offset) {
     if (offset < 0) {

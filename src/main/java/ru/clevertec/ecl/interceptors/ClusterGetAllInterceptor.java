@@ -38,8 +38,8 @@ public class ClusterGetAllInterceptor implements HandlerInterceptor {
     if (redirect) {
       return true;
     }
-    String page = request.getParameter("page");
-    String size = request.getParameter("size");
+    String page = request.getParameter(Constants.PAGE);
+    String size = request.getParameter(Constants.SIZE);
     User user = mapper.readValue(request.getInputStream(), User.class);
     List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
     List<OrderDTO> collect = urlLimitOffset.stream()
