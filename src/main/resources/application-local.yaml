@@ -2,7 +2,7 @@ spring:
   datasource:
     username: postgres
     password: 18011984
-    url: jdbc:postgresql://localhost/test_1
+    url: jdbc:postgresql://localhost/baseNode${PORT}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,4 +14,4 @@ spring:
       hibernate:
         format_sql: true
 server:
-  port: 9901
+  port: ${PORT}

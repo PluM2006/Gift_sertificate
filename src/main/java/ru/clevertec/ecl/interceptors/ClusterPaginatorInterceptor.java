@@ -3,6 +3,7 @@ package ru.clevertec.ecl.interceptors;
 import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
@@ -25,39 +26,41 @@ import ru.clevertec.ecl.utils.Constants;
 @Component
 @EnableConfigurationProperties
 @RequiredArgsConstructor
-public class ClusterGetAllInterceptor implements HandlerInterceptor {
+public class ClusterPaginatorInterceptor implements HandlerInterceptor {
 
   private final WebClient webClient;
   private final ServerProperties serverProperties;
   private final ObjectMapper mapper;
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+      throws IOException {
 
     boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
     if (redirect) {
       return true;
     }
-    String page = request.getParameter(Constants.PAGE);
-    String size = request.getParameter(Constants.SIZE);
-    User user = mapper.readValue(request.getInputStream(), User.class);
-    List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
-    List<OrderDTO> collect = urlLimitOffset.stream()
-        .map(s -> webClient.method(HttpMethod.GET)
-            .uri(URI.create(s))
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(Mono.just(user), User.class)
-            .retrieve()
-            .bodyToMono(OrderDTO[].class)
-            .block()
-        ).filter(Objects::nonNull)
-        .flatMap(Stream::of)
-        .sorted(Comparator.comparing(OrderDTO::getId))
-        .collect(toList());
+    if (HttpMethod.GET.name().equals(request.getMethod())) {
+      String page = request.getParameter(Constants.PAGE);
+      String size = request.getParameter(Constants.SIZE);
+      User user = mapper.readValue(request.getInputStream(), User.class);
+      List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
+      List<OrderDTO> collect = urlLimitOffset.stream()
+          .map(s -> webClient.method(HttpMethod.GET)
+              .uri(URI.create(s))
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(Mono.just(user), User.class)
+              .retrieve()
+              .bodyToMono(OrderDTO[].class)
+              .block()
+          ).filter(Objects::nonNull)
+          .flatMap(Stream::of)
+          .sorted(Comparator.comparing(OrderDTO::getId))
+          .collect(toList());
 
-    String orderJson = mapper.writeValueAsString(collect);
-    ResponseEditor.changeResponse(response, orderJson);
-    return false;
+      String orderJson = mapper.writeValueAsString(collect);
+      ResponseEditor.changeResponse(response, orderJson);
+    }
+    return true;
   }
 }

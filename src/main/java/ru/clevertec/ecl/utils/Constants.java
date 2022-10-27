@@ -16,4 +16,5 @@ public class Constants {
   public static final String SEQUENCE = "sequence";
   public static final String PAGE = "page";
   public static final String SIZE = "size";
+  public static final String LIMIT_ZERO = "limit=0";
 }

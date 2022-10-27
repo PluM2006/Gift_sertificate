@@ -22,21 +22,19 @@ public class UriEditor {
   }
 
   public static List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
-    int page = stringPage == null ? 1 : Integer.parseInt(stringPage);
-    int size = stringSize == null ? 10 : Integer.parseInt(stringSize);
-    if (page == 0) {
-      page = 1;
-    }
-    int currentMaxElement = page * size;
-    int currentMinElement = currentMaxElement - size;
-    int remainder = page * size - size;
+    PageSize pageSize = new PageSize(stringPage, stringSize);
+    int currentMaxElement = pageSize.getPage() * pageSize.getSize();
+    int currentMinElement = currentMaxElement - pageSize.getSize();
+    int remainder = pageSize.getPage() * pageSize.getSize() - pageSize.getSize();
     Integer divider = sourcePort.size();
     return IntStream.range(0, sourcePort.size())
         .mapToObj(i -> {
           long limit = countModIndex(currentMinElement + 1, currentMaxElement + 1, i, divider);
           long offset = countModIndex(1, remainder + 1, i, divider);
           return String.format(URL_OFFSET_LIMIT_REQUEST, sourcePort.get(i), limit, offset);
-        }).collect(toList());
+        })
+        .filter(s -> !s.contains(Constants.LIMIT_ZERO))
+        .collect(toList());
   }
 
   public static String replaceRedirectPort(String port, String port2, StringBuffer requestURL) {
