@@ -41,26 +41,29 @@ public class ClusterPaginatorInterceptor implements HandlerInterceptor {
       return true;
     }
     if (HttpMethod.GET.name().equals(request.getMethod())) {
-      String page = request.getParameter(Constants.PAGE);
-      String size = request.getParameter(Constants.SIZE);
-      User user = mapper.readValue(request.getInputStream(), User.class);
-      List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
-      List<OrderDTO> collect = urlLimitOffset.stream()
-          .map(s -> webClient.method(HttpMethod.GET)
-              .uri(URI.create(s))
-              .contentType(MediaType.APPLICATION_JSON)
-              .body(Mono.just(user), User.class)
-              .retrieve()
-              .bodyToMono(OrderDTO[].class)
-              .block()
-          ).filter(Objects::nonNull)
-          .flatMap(Stream::of)
-          .sorted(Comparator.comparing(OrderDTO::getId))
-          .collect(toList());
-
-      String orderJson = mapper.writeValueAsString(collect);
-      ResponseEditor.changeResponse(response, orderJson);
+      doGet(request, response);
     }
     return true;
+  }
+
+  private void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String page = request.getParameter(Constants.PAGE);
+    String size = request.getParameter(Constants.SIZE);
+    User user = mapper.readValue(request.getInputStream(), User.class);
+    List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
+    List<OrderDTO> collect = urlLimitOffset.stream()
+        .map(s -> webClient.method(HttpMethod.GET)
+            .uri(URI.create(s))
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(Mono.just(user), User.class)
+            .retrieve()
+            .bodyToMono(OrderDTO[].class)
+            .block()
+        ).filter(Objects::nonNull)
+        .flatMap(Stream::of)
+        .sorted(Comparator.comparing(OrderDTO::getId))
+        .collect(toList());
+    String orderJson = mapper.writeValueAsString(collect);
+    ResponseEditor.changeResponse(response, orderJson);
   }
 }

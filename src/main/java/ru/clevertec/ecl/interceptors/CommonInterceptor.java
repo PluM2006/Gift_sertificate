@@ -45,13 +45,20 @@ public class CommonInterceptor implements HandlerInterceptor {
     String currentPort = String.valueOf(serverProperties.getPort());
     if (HttpMethod.GET.name().equals(method)) {
       return true;
-    } else if (HttpMethod.POST.name().equals(method)) {
+    }
+
+    if (HttpMethod.POST.name().equals(method)) {
       doPost(request, webClient.post(), currentPort, requestURL, response);
-    } else if (HttpMethod.PUT.name().equals(method)) {
+    }
+
+    if (HttpMethod.PUT.name().equals(method)) {
       doPost(request, webClient.put(), currentPort, requestURL, response);
-    } else if (HttpMethod.DELETE.name().equals(method)) {
+    }
+
+    if (HttpMethod.DELETE.name().equals(method)) {
       doDelete(response, requestURL, currentPort);
     }
+
     return false;
   }
 

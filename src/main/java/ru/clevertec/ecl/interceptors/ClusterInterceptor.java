@@ -69,7 +69,9 @@ public class ClusterInterceptor implements HandlerInterceptor {
           .block();
       String orderJson = mapper.writeValueAsString(order);
       ResponseEditor.changeResponse(response, orderJson);
-    } else if (method.equals(HttpMethod.POST.name())) {
+    }
+
+    if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
       String redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
       setSequenceVal(redirectPort, maxSequence);
