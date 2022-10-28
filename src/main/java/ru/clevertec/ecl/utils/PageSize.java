@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.interceptors;
+package ru.clevertec.ecl.utils;
 
 import lombok.Getter;
 

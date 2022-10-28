@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import org.springframework.web.util.UriBuilder;
 import ru.clevertec.ecl.utils.Constants;
+import ru.clevertec.ecl.utils.PageSize;
 
 public class UriEditor {
 
