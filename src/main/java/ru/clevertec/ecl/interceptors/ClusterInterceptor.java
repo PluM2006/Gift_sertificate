@@ -58,7 +58,6 @@ public class ClusterInterceptor implements HandlerInterceptor {
       if (idParam==null) return true;
       long id = Long.parseLong(idParam);
       String redirectPort = serverProperties.getRedirectPort(id);
-      System.out.println(serverProperties.getSourcePort());
       if (currentPort.contains(redirectPort)) {
         return true;
       }
