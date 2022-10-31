@@ -17,4 +17,5 @@ public class Constants {
   public static final String PAGE = "page";
   public static final String SIZE = "size";
   public static final String LIMIT_ZERO = "limit=0";
+  public static final String UTF8 = "UTF-8";
 }

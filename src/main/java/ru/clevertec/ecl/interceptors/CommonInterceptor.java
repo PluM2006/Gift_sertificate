@@ -37,35 +37,40 @@ public class CommonInterceptor implements HandlerInterceptor {
       throws IOException {
     ContentCachingRequestWrapper wrappedReq = (ContentCachingRequestWrapper) request;
     StringBuffer requestURL = new StringBuffer(wrappedReq.getRequestURL());
-    boolean redirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
+    boolean isRedirect = Boolean.parseBoolean(request.getParameter(Constants.REDIRECT));
     String method = wrappedReq.getMethod();
-    if (redirect) {
+    if (isRedirect) {
       return true;
     }
+
     String currentPort = String.valueOf(serverProperties.getPort());
     if (HttpMethod.GET.name().equals(method)) {
       return true;
     }
 
     if (HttpMethod.POST.name().equals(method)) {
-      doPost(request, webClient.post(), currentPort, requestURL, response);
+      Object entity = doPostPut(request, webClient.post(), currentPort, requestURL);
+      ResponseEditor.changeResponse(response, mapper.writeValueAsString(entity), HttpStatus.CREATED);
     }
 
     if (HttpMethod.PUT.name().equals(method)) {
-      doPost(request, webClient.put(), currentPort, requestURL, response);
+      Object entity = doPostPut(request, webClient.put(), currentPort, requestURL);
+      ResponseEditor.changeResponse(response, mapper.writeValueAsString(entity), HttpStatus.OK);
     }
 
     if (HttpMethod.DELETE.name().equals(method)) {
-      doDelete(response, requestURL, currentPort);
+      doDelete(requestURL, webClient.method(HttpMethod.DELETE), currentPort);
+      response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     return false;
   }
 
-  private void doPost(HttpServletRequest request, RequestBodyUriSpec webClient, String currentPort,
-                      StringBuffer requestURL, HttpServletResponse response) throws IOException {
+  private Object doPostPut(HttpServletRequest request, RequestBodyUriSpec webClient, String currentPort,
+                           StringBuffer requestURL) throws IOException {
     String body = request.getReader().lines().collect(joining(System.lineSeparator()));
-    List<Object> saveAll = serverProperties.getSourcePort().stream()
+    System.out.println(requestURL);
+    return serverProperties.getSourcePort().stream()
         .map(port -> CompletableFuture.supplyAsync(() -> webClient
             .uri(UriEditor.getUriBuilderURIFunction(currentPort, port.toString(), requestURL))
             .contentType(MediaType.APPLICATION_JSON)
@@ -78,14 +83,12 @@ public class CommonInterceptor implements HandlerInterceptor {
             .block())
         )
         .map(CompletableFuture::join)
-        .collect(toList());
-    String orderJson = mapper.writeValueAsString(saveAll.get(0));
-    ResponseEditor.changeResponse(response, orderJson);
+        .collect(toList()).get(0);
   }
 
-  private void doDelete(HttpServletResponse response, StringBuffer requestURL, String currentPort) {
+  private void doDelete(StringBuffer requestURL, RequestBodyUriSpec webClient, String currentPort) {
     List<Object> collect = serverProperties.getSourcePort().stream()
-        .map(port -> CompletableFuture.supplyAsync(() -> webClient.delete()
+        .map(port -> CompletableFuture.supplyAsync(() -> webClient
             .uri(UriEditor.getUriBuilderURIFunction(currentPort, port.toString(), requestURL))
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, resp ->
@@ -96,7 +99,6 @@ public class CommonInterceptor implements HandlerInterceptor {
         )
         .map(CompletableFuture::join)
         .collect(toList());
-    response.setStatus(HttpStatus.NO_CONTENT.value());
   }
 
 }

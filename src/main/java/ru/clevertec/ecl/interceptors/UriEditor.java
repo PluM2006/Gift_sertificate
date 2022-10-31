@@ -16,10 +16,14 @@ public class UriEditor {
   private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
   private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d&redirect=true";
 
-  public static Function<UriBuilder, URI> getUriBuilderURIFunction(String port, String port2, StringBuffer requestURL) {
+  public static Function<UriBuilder, URI> getUriBuilderURIFunction(String currentPort, String redirectPort,
+                                                                   StringBuffer requestURL) {
     return uriBuilder -> uriBuilder
-        .path(replaceRedirectPort(port, port2, requestURL))
-        .queryParam(Constants.REDIRECT, true).build();
+        .path(replaceRedirectPort(currentPort, redirectPort, requestURL))
+        .queryParam(Constants.REDIRECT, true)
+        .queryParam("replicate", redirectPort)
+        .build();
+
   }
 
   public static List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
@@ -38,8 +42,8 @@ public class UriEditor {
         .collect(toList());
   }
 
-  public static String replaceRedirectPort(String port, String port2, StringBuffer requestURL) {
-    return requestURL.toString().replaceAll(port, port2).replaceAll(Constants.HTTP, "");
+  public static String replaceRedirectPort(String currentPort, String redirectPort, StringBuffer requestURL) {
+    return requestURL.toString().replaceAll(currentPort, redirectPort).replaceAll(Constants.HTTP, "");
   }
 
   public static String buildURINextSequence(String port) {
@@ -52,7 +56,7 @@ public class UriEditor {
 
   private static long countModIndex(int start, int end, int index, Integer divider) {
     return IntStream.range(start, end)
-        .filter(value1 -> value1 % divider == index)
+        .filter(element -> element % divider == index)
         .count();
   }
 
