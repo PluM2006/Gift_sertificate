@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.interceptors;
 
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,13 +16,20 @@ public class ServerProperties {
 
   private String host;
   private int port;
-  private List<Integer> sourcePort;
+  private Map<Integer, List<Integer>> cluster;
 
-  public String getRedirectPort(Long value) {
-    int portAllSize = sourcePort.size();
+  public Integer getRedirectPort(Long value) {
+    int portAllSize = cluster.size();
     long portIndex = value % portAllSize;
-    return sourcePort.get((int) portIndex).toString();
+    return getPortFromMap(portIndex);
+  }
 
+  private Integer getPortFromMap(long portIndex) {
+    return cluster.keySet().stream()
+        .sorted().skip(portIndex)
+        .limit(1)
+        .findFirst()
+        .orElseThrow(NoSuchElementException::new);
   }
 
 }

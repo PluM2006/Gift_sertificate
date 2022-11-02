@@ -9,4 +9,16 @@ server:
   servlet:
     context-path: "/api"
   host: "localhost"
-  sourcePort: 9901, 9902, 9903
+  cluster:
+    9901:
+      - 9901
+      - 9904
+      - 9905
+    9902:
+      - 9902
+      - 9906
+      - 9907
+    9903:
+      - 9903
+      - 9908
+      - 9909

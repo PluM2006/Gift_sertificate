@@ -6,22 +6,30 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
+import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriBuilder;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.PageSize;
 
+
+@Component
+@RequiredArgsConstructor
 public class UriEditor {
 
   private final static String REQUEST_NEXT_SEQUENCE = "http://localhost:%s/api/v1/orders/sequence/set";
   private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
   private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d&redirect=true";
 
-  public static Function<UriBuilder, URI> getUriBuilderURIFunction(String currentPort, String redirectPort,
-                                                                   StringBuffer requestURL) {
+  public  Function<UriBuilder, URI> getUriBuilderURIFunction(HttpServletRequest request, String redirectPort) {
     return uriBuilder -> uriBuilder
-        .path(replaceRedirectPort(currentPort, redirectPort, requestURL))
-        .queryParam(Constants.REDIRECT, true)
-        .queryParam("replicate", redirectPort)
+        .scheme(request.getScheme())
+        .host(request.getServerName())
+        .port(redirectPort)
+        .path(request.getContextPath())
+        .path(request.getServletPath())
+        .query(request.getQueryString())
         .build();
 
   }
@@ -42,15 +50,11 @@ public class UriEditor {
         .collect(toList());
   }
 
-  public static String replaceRedirectPort(String currentPort, String redirectPort, StringBuffer requestURL) {
-    return requestURL.toString().replaceAll(currentPort, redirectPort).replaceAll(Constants.HTTP, "");
-  }
-
-  public static String buildURINextSequence(String port) {
+  public String buildURINextSequence(String port) {
     return String.format(REQUEST_NEXT_SEQUENCE, port);
   }
 
-  public static String buildURIMaxSequence(Integer port) {
+  public String buildURIMaxSequence(Integer port) {
     return String.format(REQUEST_LAST_VALUE_SEQUENCE, port);
   }
 
