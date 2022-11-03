@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.clevertec.ecl.interceptors.ClusterInterceptor;
 import ru.clevertec.ecl.interceptors.CommonInterceptor;
+import ru.clevertec.ecl.interceptors.ReplicaInterceptor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -13,6 +14,7 @@ public class WebConfigurer implements WebMvcConfigurer {
 
   private final CommonInterceptor commonInterceptor;
   private final ClusterInterceptor clusterInterceptor;
+  private final ReplicaInterceptor replicaInterceptor;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
@@ -21,5 +23,6 @@ public class WebConfigurer implements WebMvcConfigurer {
         .excludePathPatterns("/**/orders/sequence/**");
     registry.addInterceptor(commonInterceptor)
         .addPathPatterns("/**/certificates*/**", "/**/tags*/**", "/**/users*/**");
+    registry.addInterceptor(replicaInterceptor);
   }
 }

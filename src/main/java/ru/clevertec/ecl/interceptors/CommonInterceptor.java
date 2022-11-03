@@ -2,7 +2,6 @@ package ru.clevertec.ecl.interceptors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.ContentCachingRequestWrapper;
+import ru.clevertec.ecl.interceptors.response.ResponseEditor;
+import ru.clevertec.ecl.interceptors.response.ResponseEntityHandler;
 import ru.clevertec.ecl.utils.Constants;
+import ru.clevertec.ecl.utils.ServerProperties;
+import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 
 @Slf4j
 @Component
@@ -29,7 +30,7 @@ public class CommonInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-    CachedBodyHttpServletRequest  requestWrapper = (CachedBodyHttpServletRequest ) request;
+    CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
     String method = requestWrapper.getMethod();
     List<Integer> ports = new ArrayList<>(serverProperties.getCluster().keySet());
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
@@ -52,24 +53,6 @@ public class CommonInterceptor implements HandlerInterceptor {
     }
 
     return false;
-  }
-
-  @Override
-  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                         ModelAndView modelAndView) throws Exception {
-    ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
-    boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
-    int serverPort = request.getServerPort();
-    List<Integer> portsReplica = serverProperties.getCluster().get(serverPort).stream()
-        .filter(port -> serverPort != port).collect(
-            Collectors.toList());
-
-    if (isRedirect) {
-      log.info("Отправляем так же реплики. Текущий порт {}. Нужно еще на {}", request.getServerPort(), portsReplica);
-//      requestSender.doPostPutCommonEntityPost(request, webClient.post());
-    }
-
-    HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
   }
 
 }

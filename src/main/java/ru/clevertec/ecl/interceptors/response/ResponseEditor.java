@@ -1,6 +1,4 @@
-package ru.clevertec.ecl.interceptors;
-
-import static java.util.stream.Collectors.joining;
+package ru.clevertec.ecl.interceptors.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import ru.clevertec.ecl.dto.OrderDTO;
 
 @Component
@@ -35,17 +32,6 @@ public class ResponseEditor {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     try {
       response.getWriter().write(mapper.writeValueAsString(orderDTOList));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public String getBody(ContentCachingRequestWrapper request) {
-    if (request.getContentAsByteArray().length != 0) {
-      return new String(request.getContentAsByteArray());
-    }
-    try {
-      return request.getReader().lines().collect(joining(System.lineSeparator()));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

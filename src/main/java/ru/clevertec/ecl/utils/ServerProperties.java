@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.interceptors;
+package ru.clevertec.ecl.utils;
 
 import java.util.List;
 import java.util.Map;

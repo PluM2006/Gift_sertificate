@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.interceptors;
+package ru.clevertec.ecl.interceptors.filter;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -9,7 +9,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.util.ContentCachingRequestWrapper;
+import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 
 @Component
 @WebFilter(urlPatterns = {"/*"})
@@ -19,8 +19,6 @@ public class WrapperFilter extends GenericFilterBean {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-//    ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
-//    chain.doFilter(requestWrapper, response);
     CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
         new CachedBodyHttpServletRequest((HttpServletRequest) request);
     chain.doFilter(cachedBodyHttpServletRequest, response);

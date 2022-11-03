@@ -1,12 +1,13 @@
-package ru.clevertec.ecl.interceptors;
+package ru.clevertec.ecl.interceptors.response;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.interceptors.sender.RequestSender;
+import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class ResponseEntityHandler {
 
   private final RequestSender requestSender;
 
-  public ResponseEntity<Object> getObjectResponseEntity(CachedBodyHttpServletRequest  requestWrapper,
+  public ResponseEntity<Object> getObjectResponseEntity(CachedBodyHttpServletRequest requestWrapper,
                                                         List<Integer> ports) {
     return requestSender.forwardRequest(requestWrapper, ports)
         .stream()

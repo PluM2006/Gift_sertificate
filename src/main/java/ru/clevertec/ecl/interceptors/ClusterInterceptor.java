@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.interceptors;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.interceptors.response.ResponseEditor;
+import ru.clevertec.ecl.interceptors.response.ResponseEntityHandler;
 import ru.clevertec.ecl.utils.Constants;
+import ru.clevertec.ecl.utils.ServerProperties;
+import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 
 @Slf4j
 @Component
@@ -59,7 +62,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
             .stream()
             .flatMap(o -> Objects.requireNonNull(o.getBody()).stream())
             .sorted(Comparator.comparing(OrderDTO::getId))
-            .collect(Collectors.toList());
+            .collect(toList());
         responseEditor.changeResponse(response, orderDTOList);
 
       } else {
@@ -74,67 +77,26 @@ public class ClusterInterceptor implements HandlerInterceptor {
     if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
       Integer redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
-      setSequenceVal(redirectPort, maxSequence);
+      List<Integer> allPorts = serverProperties.getCluster().entrySet().stream().flatMap(o -> o.getValue().stream())
+          .collect(toList());
+      setSequenceVal(allPorts, maxSequence);
       ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,
           singletonList(redirectPort));
       responseEditor.changeResponse(response, object);
     }
-    return true;
+    return false;
   }
 
-  @Override
-  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                         ModelAndView modelAndView) throws Exception {
-    CachedBodyHttpServletRequest  requestWrapper = (CachedBodyHttpServletRequest ) request;
-    boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
-    int serverPort = request.getServerPort();
-    List<Integer> portsReplica = serverProperties.getCluster().get(serverPort).stream()
-        .filter(port -> serverPort != port).collect(
-            Collectors.toList());
-
-    if (isRedirect && requestWrapper.getMethod().equals(HttpMethod.POST.name())) {
-      log.info("Отправляем так же реплики. Текущий порт {}. Нужно еще на {}", request.getServerPort(), portsReplica);
-//      requestSender.doPostPutCommonEntityPost(request, webClient.post());
-    }
-
-    HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
-  }
-
-//
-//  private List<OrderDTO> doFindAll(HttpServletRequest request) {
-//    String page = request.getParameter(Constants.PAGE);
-//    String size = request.getParameter(Constants.SIZE);
-//    User user;
-//    try {
-//      user = mapper.readValue(request.getInputStream(), User.class);
-//    } catch (IOException e) {
-//      throw new RuntimeException(e);
-//    }
-//    List<String> urlLimitOffset = UriEditor.buildLimitOffsetUrl(page, size, serverProperties.getSourcePort());
-//    return urlLimitOffset.stream()
-//        .map(s -> webClient.method(HttpMethod.GET)
-//            .uri(URI.create(s))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .body(Mono.just(user), User.class)
-//            .retrieve()
-//            .onStatus(HttpStatus::is4xxClientError, resp ->
-//                resp.bodyToMono(String.class)
-//                    .map(ServletException::new))
-//            .bodyToMono(OrderDTO[].class)
-//            .block()
-//        ).filter(Objects::nonNull)
-//        .flatMap(Stream::of)
-//        .sorted(Comparator.comparing(OrderDTO::getId))
-//        .collect(toList());
-//  }
-
-  private void setSequenceVal(Integer port, Long seq) {
-    webClient.post()
-        .uri(uriEditor.buildURINextSequence(port.toString()))
-        .body(BodyInserters.fromValue(seq))
-        .retrieve()
-        .bodyToMono(Object.class)
-        .block();
+  private void setSequenceVal(List<Integer> ports, Long seq) {
+    List<Object> collect = ports.stream().map(port -> CompletableFuture.supplyAsync(() ->
+            webClient.post()
+                .uri(uriEditor.buildURINextSequence(port.toString()))
+                .body(BodyInserters.fromValue(seq))
+                .retrieve()
+                .bodyToMono(Object.class)
+                .block())
+        ).map(CompletableFuture::join)
+        .collect(toList());
   }
 
   private Long getMaxSequence() {

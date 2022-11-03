@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.interceptors;
+package ru.clevertec.ecl.utils.cache;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
