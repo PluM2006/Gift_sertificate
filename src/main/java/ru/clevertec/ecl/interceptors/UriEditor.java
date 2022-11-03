@@ -20,9 +20,9 @@ public class UriEditor {
 
   private final static String REQUEST_NEXT_SEQUENCE = "http://localhost:%s/api/v1/orders/sequence/set";
   private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
-  private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d&redirect=true";
+  private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d";
 
-  public  Function<UriBuilder, URI> getUriBuilderURIFunction(HttpServletRequest request, String redirectPort) {
+  public  Function<UriBuilder, URI> getUrlFunction(HttpServletRequest request, String redirectPort) {
     return uriBuilder -> uriBuilder
         .scheme(request.getScheme())
         .host(request.getServerName())
@@ -31,10 +31,9 @@ public class UriEditor {
         .path(request.getServletPath())
         .query(request.getQueryString())
         .build();
-
   }
 
-  public static List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
+  public List<String> buildLimitOffsetUrl(String stringPage, String stringSize, List<Integer> sourcePort) {
     PageSize pageSize = new PageSize(stringPage, stringSize);
     int currentMaxElement = pageSize.getPage() * pageSize.getSize();
     int currentMinElement = currentMaxElement - pageSize.getSize();

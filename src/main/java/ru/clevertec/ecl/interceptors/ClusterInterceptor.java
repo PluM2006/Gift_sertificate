@@ -1,6 +1,9 @@
 package ru.clevertec.ecl.interceptors;
 
-import java.util.Collections;
+import static java.util.Collections.singletonList;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -20,6 +23,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.ContentCachingRequestWrapper;
+import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.utils.Constants;
 
 @Slf4j
@@ -36,7 +40,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-    ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+    CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
     String method = requestWrapper.getMethod();
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
     if (isRedirect) {
@@ -44,18 +48,25 @@ public class ClusterInterceptor implements HandlerInterceptor {
     }
 
     if (method.equals(HttpMethod.GET.name())) {
-      Map<?, ?> attribute = (Map<?, ?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+      Map<?, ?> attribute = (Map<?, ?>) requestWrapper.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
       String idParam = (String) attribute.get(Constants.FIELD_NAME_ID);
       if (idParam == null) {
-        //todo Сделать запрос getAll order
-//        List<Object> orderDTOS = doFindAll(request);
-//        responseEditor.changeResponse(response, orderJson);
+        String page = requestWrapper.getParameter(Constants.PAGE);
+        String size = requestWrapper.getParameter(Constants.SIZE);
+        List<String> urlLimitOffset = uriEditor.buildLimitOffsetUrl(page, size,
+            new ArrayList<>(serverProperties.getCluster().keySet()));
+        List<OrderDTO> orderDTOList = responseEntityHandler.getOrderDTOResponseEntity(requestWrapper, urlLimitOffset)
+            .stream()
+            .flatMap(o -> Objects.requireNonNull(o.getBody()).stream())
+            .sorted(Comparator.comparing(OrderDTO::getId))
+            .collect(Collectors.toList());
+        responseEditor.changeResponse(response, orderDTOList);
 
       } else {
         long id = Long.parseLong(idParam);
         Integer redirectPort = serverProperties.getRedirectPort(id);
         ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,
-            Collections.singletonList(redirectPort));
+            singletonList(redirectPort));
         responseEditor.changeResponse(response, object);
       }
     }
@@ -64,24 +75,24 @@ public class ClusterInterceptor implements HandlerInterceptor {
       Long maxSequence = getMaxSequence();
       Integer redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
       setSequenceVal(redirectPort, maxSequence);
-      ResponseEntity<Object> object =responseEntityHandler.getObjectResponseEntity(requestWrapper,
-          Collections.singletonList(redirectPort));
+      ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,
+          singletonList(redirectPort));
       responseEditor.changeResponse(response, object);
     }
-    return false;
+    return true;
   }
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                          ModelAndView modelAndView) throws Exception {
-    ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+    CachedBodyHttpServletRequest  requestWrapper = (CachedBodyHttpServletRequest ) request;
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
     int serverPort = request.getServerPort();
     List<Integer> portsReplica = serverProperties.getCluster().get(serverPort).stream()
         .filter(port -> serverPort != port).collect(
             Collectors.toList());
 
-    if (isRedirect) {
+    if (isRedirect && requestWrapper.getMethod().equals(HttpMethod.POST.name())) {
       log.info("Отправляем так же реплики. Текущий порт {}. Нужно еще на {}", request.getServerPort(), portsReplica);
 //      requestSender.doPostPutCommonEntityPost(request, webClient.post());
     }

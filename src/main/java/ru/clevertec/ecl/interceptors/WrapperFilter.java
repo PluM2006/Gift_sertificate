@@ -19,7 +19,10 @@ public class WrapperFilter extends GenericFilterBean {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-    ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
-    chain.doFilter(requestWrapper, response);
+//    ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
+//    chain.doFilter(requestWrapper, response);
+    CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
+        new CachedBodyHttpServletRequest((HttpServletRequest) request);
+    chain.doFilter(cachedBodyHttpServletRequest, response);
   }
 }

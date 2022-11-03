@@ -29,7 +29,7 @@ public class CommonInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-    ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+    CachedBodyHttpServletRequest  requestWrapper = (CachedBodyHttpServletRequest ) request;
     String method = requestWrapper.getMethod();
     List<Integer> ports = new ArrayList<>(serverProperties.getCluster().keySet());
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
