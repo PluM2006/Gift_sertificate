@@ -77,7 +77,9 @@ public class ClusterInterceptor implements HandlerInterceptor {
     if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
       Integer redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
-      List<Integer> allPorts = serverProperties.getCluster().entrySet().stream().flatMap(o -> o.getValue().stream())
+      List<Integer> allPorts = serverProperties.getCluster()
+          .entrySet().stream()
+          .flatMap(o -> o.getValue().stream())
           .collect(toList());
       setSequenceVal(allPorts, maxSequence);
       ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,

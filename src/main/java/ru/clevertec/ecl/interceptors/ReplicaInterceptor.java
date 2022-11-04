@@ -36,8 +36,7 @@ public class ReplicaInterceptor implements HandlerInterceptor {
     CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
     List<Integer> portsReplica = ports.stream()
-        .filter(port -> serverPort != port).collect(
-            Collectors.toList());
+        .filter(port -> serverPort != port).collect(Collectors.toList());
 
     if (isRedirect && requestWrapper.getMethod().equals(HttpMethod.POST.name())) {
       requestSender.forwardRequest(requestWrapper, portsReplica);
