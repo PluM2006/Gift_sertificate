@@ -18,6 +18,8 @@ public class ServerProperties {
   private int port;
   private Map<Integer, List<Integer>> cluster;
 
+  private Map<Integer, List<Integer>> clusterAliveNodes;
+
   public Integer getRedirectPort(Long value) {
     int portAllSize = cluster.size();
     long portIndex = value % portAllSize;

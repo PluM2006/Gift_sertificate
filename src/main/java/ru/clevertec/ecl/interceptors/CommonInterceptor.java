@@ -39,6 +39,7 @@ public class CommonInterceptor implements HandlerInterceptor {
     }
 
     if (HttpMethod.GET.name().equals(method)) {
+      System.out.println(serverProperties.getClusterAliveNodes());
       return true;
     }
 
