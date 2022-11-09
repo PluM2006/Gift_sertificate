@@ -13,10 +13,9 @@ public class SchedulerHealth {
 
   private final HealthCheckService healthCheckService;
 
-  @Scheduled(fixedRate = 5000)
+  @Scheduled(fixedRate = 10000)
   public void test(){
     healthCheckService.checkHealthClusterNodes();
-//    log.info(" тестим");
   }
 
 

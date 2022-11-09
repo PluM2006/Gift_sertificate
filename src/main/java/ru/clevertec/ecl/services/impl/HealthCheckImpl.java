@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
@@ -11,6 +13,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import ru.clevertec.ecl.exception.ServiceException;
 import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.ServerProperties;
 
@@ -24,27 +27,31 @@ public class HealthCheckImpl implements HealthCheckService {
 
   @Override
   public void checkHealthClusterNodes() {
-    Map<Integer, List<Integer>> alivesPorts = new HashMap<>();
-//    System.out.println(serverProperties.getCluster());
-
+    Map<Integer, List<Integer>> workingNodes = new HashMap<>();
     for (Integer port: serverProperties.getCluster().keySet()){
       List<Integer> collect = serverProperties.getCluster().get(port).stream()
-          .filter(p -> serviceHealth(p).getStatus().equals(Status.UP)).collect(Collectors.toList());
-      alivesPorts.put(port, collect);
+          .filter(p -> checkHealthNode(p).getStatus().equals(Status.UP)).collect(Collectors.toList());
+      workingNodes.put(port, collect);
     }
-    serverProperties.setClusterAliveNodes(alivesPorts);
-//    serverProperties.getCluster().entrySet().stream()
-//        .map(shard -> shard.getValue().stream()
-//            .filter(port -> serviceHealth(port).getStatus().equals(Status.UP))
-//            .collect(Collectors.toList())
-//        );
-
-//    System.out.println(alivesPorts);
+    serverProperties.setClusterWorkingNodes(workingNodes);
   }
 
-  private Health serviceHealth(Integer ports) {
+  @Override
+  public boolean isWorking(Integer port){
+    return checkHealthNode(port).getStatus().equals(Status.UP);
+  }
+  @Override
+  public List<Integer> getWorkingClusterShards() {
+    return serverProperties.getCluster().values().stream()
+        .map(l -> l.stream().filter(this::isWorking)
+            .findFirst()
+            .orElseThrow(() -> new ServiceException(String.format("One of the shards is not working %s", l)))
+        ).collect(Collectors.toList());
+  }
+
+  private Health checkHealthNode(Integer port) {
     return webClient.get()
-        .uri(URI.create(String.format(URL_HEALTH, ports)))
+        .uri(URI.create(String.format(URL_HEALTH, port)))
         .retrieve()
         .bodyToMono(Object.class)
         .map(s -> Health.up().build())

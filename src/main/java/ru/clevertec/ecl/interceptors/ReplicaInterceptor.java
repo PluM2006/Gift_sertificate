@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import ru.clevertec.ecl.interceptors.sender.RequestSender;
+import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.ServerProperties;
 import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
@@ -23,6 +24,7 @@ import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 public class ReplicaInterceptor implements HandlerInterceptor {
 
   private final ServerProperties serverProperties;
+  private final HealthCheckService healthCheckService;
   private final RequestSender requestSender;
 
   @Override
@@ -30,15 +32,27 @@ public class ReplicaInterceptor implements HandlerInterceptor {
                          ModelAndView modelAndView) {
     int serverPort = request.getServerPort();
     List<Integer> ports = serverProperties.getCluster().get(serverPort);
+    log.info("server ports {}", request.getServerPort());
+//    List<Integer> ports = serverProperties.getCluster().values()
+//        .stream().filter(p -> p.contains(serverPort))
+//        .flatMap(Collection::stream)
+//        .filter(healthCheckService::isWorking)
+//        .collect(Collectors.toList());
+    CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
+    log.info("replica attribute {}", request.getHeader(Constants.REDIRECT));
     if (ports == null) {
       return;
     }
-    CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
+    log.info("ports {}", ports);
+
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
     List<Integer> portsReplica = ports.stream()
-        .filter(port -> serverPort != port).collect(Collectors.toList());
+        .filter(port -> serverPort != port)
+        .filter(healthCheckService::isWorking)
+        .collect(Collectors.toList());
 
     if (isRedirect && requestWrapper.getMethod().equals(HttpMethod.POST.name())) {
+      requestWrapper.setAttribute(Constants.REPLICATE, String.valueOf(true));
       requestSender.forwardRequest(requestWrapper, portsReplica);
     }
 
