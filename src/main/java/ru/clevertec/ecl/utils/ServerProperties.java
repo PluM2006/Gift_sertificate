@@ -20,13 +20,13 @@ public class ServerProperties {
 
   private Map<Integer, List<Integer>> clusterWorkingNodes;
 
-  public Integer getRedirectPort(Long value) {
+  public Integer getRedirectShard(Long value) {
     int portAllSize = cluster.size();
     long portIndex = value % portAllSize;
-    return getPortFromMap(portIndex);
+    return getShardFromMap(portIndex);
   }
 
-  private Integer getPortFromMap(long portIndex) {
+  private Integer getShardFromMap(long portIndex) {
     return cluster.keySet().stream()
         .sorted().skip(portIndex)
         .limit(1)

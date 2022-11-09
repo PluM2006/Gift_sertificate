@@ -25,6 +25,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.interceptors.response.ResponseEditor;
 import ru.clevertec.ecl.interceptors.response.ResponseEntityHandler;
+import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.ServerProperties;
 import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
@@ -36,6 +37,7 @@ import ru.clevertec.ecl.utils.cache.CachedBodyHttpServletRequest;
 public class ClusterInterceptor implements HandlerInterceptor {
 
   private final WebClient webClient;
+  private final HealthCheckService healthCheckService;
   private final ServerProperties serverProperties;
   private final ResponseEntityHandler responseEntityHandler;
   private final ResponseEditor responseEditor;
@@ -57,7 +59,7 @@ public class ClusterInterceptor implements HandlerInterceptor {
         String page = requestWrapper.getParameter(Constants.PAGE);
         String size = requestWrapper.getParameter(Constants.SIZE);
         List<String> urlLimitOffset = uriEditor.buildLimitOffsetUrl(page, size,
-            new ArrayList<>(serverProperties.getCluster().keySet()));
+            new ArrayList<>(healthCheckService.getWorkingClusterShards()));
         List<OrderDTO> orderDTOList = responseEntityHandler.getOrderDTOResponseEntity(requestWrapper, urlLimitOffset)
             .stream()
             .flatMap(o -> Objects.requireNonNull(o.getBody()).stream())
@@ -67,7 +69,9 @@ public class ClusterInterceptor implements HandlerInterceptor {
 
       } else {
         long id = Long.parseLong(idParam);
-        Integer redirectPort = serverProperties.getRedirectPort(id);
+        Integer redirectShard = serverProperties.getRedirectShard(id);
+        Integer redirectPort = serverProperties.getCluster().get(redirectShard).stream()
+            .filter(healthCheckService::isWorking).findAny().orElseThrow(NoSuchElementException::new);
         ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,
             singletonList(redirectPort));
         responseEditor.changeResponse(response, object);
@@ -76,10 +80,13 @@ public class ClusterInterceptor implements HandlerInterceptor {
 
     if (method.equals(HttpMethod.POST.name())) {
       Long maxSequence = getMaxSequence();
-      Integer redirectPort = serverProperties.getRedirectPort(maxSequence + 1);
+      Integer redirectShard = serverProperties.getRedirectShard(maxSequence + 1);
+      Integer redirectPort = serverProperties.getCluster().get(redirectShard).stream()
+          .filter(healthCheckService::isWorking).findAny().orElseThrow(NoSuchElementException::new);
       List<Integer> allPorts = serverProperties.getCluster()
           .entrySet().stream()
           .flatMap(o -> o.getValue().stream())
+          .filter(healthCheckService::isWorking)
           .collect(toList());
       setSequenceVal(allPorts, maxSequence);
       ResponseEntity<Object> object = responseEntityHandler.getObjectResponseEntity(requestWrapper,
@@ -90,15 +97,13 @@ public class ClusterInterceptor implements HandlerInterceptor {
   }
 
   private void setSequenceVal(List<Integer> ports, Long seq) {
-    List<Object> collect = ports.stream().map(port -> CompletableFuture.supplyAsync(() ->
-            webClient.post()
-                .uri(uriEditor.buildURINextSequence(port.toString()))
-                .body(BodyInserters.fromValue(seq))
-                .retrieve()
-                .bodyToMono(Object.class)
-                .block())
-        ).map(CompletableFuture::join)
-        .collect(toList());
+    ports.forEach(port -> CompletableFuture.supplyAsync(() ->
+        webClient.post()
+            .uri(uriEditor.buildURINextSequence(port.toString()))
+            .body(BodyInserters.fromValue(seq))
+            .retrieve()
+            .bodyToMono(Object.class)
+            .block()));
   }
 
   private Long getMaxSequence() {

@@ -25,6 +25,7 @@ public class WebConfigurer implements WebMvcConfigurer {
         .excludePathPatterns("/**/orders/sequence/**");
     registry.addInterceptor(commonInterceptor)
         .addPathPatterns("/**/certificates*/**", "/**/tags*/**", "/**/users*/**");
-    registry.addInterceptor(replicaInterceptor);
+    registry.addInterceptor(replicaInterceptor)
+        .excludePathPatterns("/**/orders/sequence/**");;
   }
 }

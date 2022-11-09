@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.interceptors;
 
 import io.netty.handler.codec.http.HttpMethod;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -30,23 +31,18 @@ public class ReplicaInterceptor implements HandlerInterceptor {
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                          ModelAndView modelAndView) {
-    int serverPort = request.getServerPort();
-    List<Integer> ports = serverProperties.getCluster().get(serverPort);
-    log.info("server ports {}", request.getServerPort());
-//    List<Integer> ports = serverProperties.getCluster().values()
-//        .stream().filter(p -> p.contains(serverPort))
-//        .flatMap(Collection::stream)
-//        .filter(healthCheckService::isWorking)
-//        .collect(Collectors.toList());
     CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
-    log.info("replica attribute {}", request.getHeader(Constants.REDIRECT));
-    if (ports == null) {
+    int serverPort = request.getServerPort();
+
+    boolean isReplicate = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REPLICATE)));
+    if (isReplicate) {
       return;
     }
-    log.info("ports {}", ports);
-
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
-    List<Integer> portsReplica = ports.stream()
+    List<Integer> portsReplica = serverProperties.getCluster().values()
+        .stream()
+        .filter(c -> c.contains(serverPort))
+        .flatMap(Collection::stream)
         .filter(port -> serverPort != port)
         .filter(healthCheckService::isWorking)
         .collect(Collectors.toList());
