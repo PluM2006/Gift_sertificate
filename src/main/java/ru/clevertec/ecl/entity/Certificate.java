@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +33,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Table(name = "gift_certificate")
 @DynamicUpdate
+@NamedEntityGraphs(value = {
+    @NamedEntityGraph(name = "certificateTag", attributeNodes = {
+        @NamedAttributeNode("tags")
+    })
+})
 public class Certificate {
 
   @Id

@@ -3,6 +3,8 @@ package ru.clevertec.ecl.services.impl;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+import com.cosium.spring.data.jpa.entity.graph.domain2.EntityGraph;
+import com.cosium.spring.data.jpa.entity.graph.domain2.NamedEntityGraph;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +52,7 @@ public class CertificateServiceImpl implements CertificateService {
   }
 
   @Override
-  public List<CertificateDTO> getByNameDescription(Pageable pageable, String name,
-                                                   String description) {
+  public List<CertificateDTO> getByNameDescription(Pageable pageable, String name, String description) {
     ExampleMatcher exampleMatcher = ExampleMatcher.matching()
         .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
         .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
@@ -60,7 +61,7 @@ public class CertificateServiceImpl implements CertificateService {
                 Certificate.builder()
                     .name(name)
                     .description(description).build(), exampleMatcher
-            ), pageable).stream()
+            ), pageable, NamedEntityGraph.loading("certificateTag")).stream()
         .map(certificateMapper::toCertificateDTO)
         .collect(toList());
   }

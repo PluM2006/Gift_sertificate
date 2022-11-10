@@ -33,25 +33,23 @@ public class ReplicaInterceptor implements HandlerInterceptor {
                          ModelAndView modelAndView) {
     CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
     int serverPort = request.getServerPort();
-
     boolean isReplicate = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REPLICATE)));
     if (isReplicate) {
       return;
     }
     boolean isRedirect = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REDIRECT)));
-    List<Integer> portsReplica = serverProperties.getCluster().values()
-        .stream()
-        .filter(c -> c.contains(serverPort))
-        .flatMap(Collection::stream)
-        .filter(port -> serverPort != port)
-        .filter(healthCheckService::isWorking)
-        .collect(Collectors.toList());
-
     if (isRedirect && requestWrapper.getMethod().equals(HttpMethod.POST.name())) {
+      List<Integer> portsReplica = serverProperties.getCluster().values()
+          .stream()
+          .filter(c -> c.contains(serverPort))
+          .flatMap(Collection::stream)
+          .filter(port -> serverPort != port)
+          .filter(healthCheckService::isWorking)
+          .collect(Collectors.toList());
+      log.info("Replicate request {}{} to port {} ", request.getContextPath(), request.getServletPath(), portsReplica);
       requestWrapper.setAttribute(Constants.REPLICATE, String.valueOf(true));
       requestSender.forwardRequest(requestWrapper, portsReplica);
     }
-
   }
 
 }

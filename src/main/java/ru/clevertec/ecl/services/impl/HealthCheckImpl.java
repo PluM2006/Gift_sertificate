@@ -21,7 +21,7 @@ import ru.clevertec.ecl.utils.ServerProperties;
 public class HealthCheckImpl implements HealthCheckService {
 
   private static final String URL_HEALTH = "http://localhost:%s/api/actuator/health";
-  private static final int TIMEOUT = 100;
+  private static final int TIMEOUT = 1000;
   private final ServerProperties serverProperties;
   private final WebClient webClient;
 
@@ -38,7 +38,6 @@ public class HealthCheckImpl implements HealthCheckService {
 
   @Override
   public boolean isWorking(Integer port) {
-    System.out.println(port);
     return checkHealthNode(port).getStatus().equals(Status.UP);
   }
 
@@ -52,7 +51,6 @@ public class HealthCheckImpl implements HealthCheckService {
   }
 
   private Health checkHealthNode(Integer port) {
-
     return webClient.get()
         .uri(URI.create(String.format(URL_HEALTH, port)))
         .retrieve()
