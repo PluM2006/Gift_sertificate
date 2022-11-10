@@ -7,9 +7,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
+@Jacksonized
 public class CertificateDTO {
 
   private Long id;

@@ -3,16 +3,18 @@ package ru.clevertec.ecl.dto;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor
 public class ApiErrorDTO {
 
-  HttpStatus status;
-  String errorMessage;
-  List<String> errors;
+  private HttpStatus status;
+  private String errorMessage;
+  private List<String> errors;
 
   public ApiErrorDTO(HttpStatus status, String errorMessage, List<String> errors) {
     this.status = status;
