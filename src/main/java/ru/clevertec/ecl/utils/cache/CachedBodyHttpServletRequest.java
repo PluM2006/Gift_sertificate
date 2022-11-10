@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -28,6 +29,10 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
   public BufferedReader getReader()  {
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
     return new BufferedReader(new InputStreamReader(byteArrayInputStream));
+  }
+
+  public String getCacheBody(){
+    return getReader().lines().collect(Collectors.joining()).replaceAll("\\s+", "");
   }
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.services.CertificateService;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/certificates")
 @RequiredArgsConstructor
@@ -30,29 +32,42 @@ public class CertificateController {
 
   @PostMapping
   public ResponseEntity<CertificateDTO> addCertificate(@Valid @RequestBody CertificateDTO certificateDTO) {
-    return new ResponseEntity<>(certificateService.save(certificateDTO), HttpStatus.CREATED);
+    log.info("REQUEST: method = POST, path = /v1/certificates, body = {}", certificateDTO);
+    CertificateDTO certificate = certificateService.save(certificateDTO);
+    log.info("RESPONSE: responseBody = {}", certificate);
+    return new ResponseEntity<>(certificate, HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<CertificateDTO> updateCertificate(@PathVariable Long id,
                                                           @Valid @RequestBody CertificateDTO certificateDTO) {
-    return ResponseEntity.ok(certificateService.update(id, certificateDTO));
+    log.info("REQUEST: method = PUT, path = /v1/certificates/{}, body = {}", id, certificateDTO);
+    CertificateDTO certificate = certificateService.update(id, certificateDTO);
+    log.info("RESPONSE: responseBody = {}", certificate);
+    return ResponseEntity.ok(certificate);
   }
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCertificate(@PathVariable Long id) {
+    log.info("REQUEST: method = DELETE, path = /v1/certificates/{}", id);
     certificateService.delete(id);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<CertificateDTO> getById(@PathVariable Long id) {
-    return ResponseEntity.ok(certificateService.getById(id));
+    log.info("REQUEST: method = GET, path = /v1/certificates/{}", id);
+    CertificateDTO certificate = certificateService.getById(id);
+    log.info("RESPONSE: responseBody = {}", certificate);
+    return ResponseEntity.ok(certificate);
   }
 
   @GetMapping("/name/{name}")
   public ResponseEntity<CertificateDTO> getByName(@PathVariable String name) {
-    return ResponseEntity.ok(certificateService.getByName(name));
+    log.info("REQUEST: method = GET, path = /v1/certificates/name/{}", name);
+    CertificateDTO certificate = certificateService.getByName(name);
+    log.info("RESPONSE: responseBody = {}", certificate);
+    return ResponseEntity.ok(certificate);
   }
 
   @GetMapping
@@ -60,12 +75,19 @@ public class CertificateController {
       @PageableDefault Pageable pageable,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String description) {
-    return ResponseEntity.ok(certificateService.getByNameDescription(pageable, name, description));
+    log.info("REQUEST: method = GET, path = /v1/certificates, param = [name = {}, description = {}, pageable = {}]",
+        name, description, pageable);
+    List<CertificateDTO> listCertificate = certificateService.getByNameDescription(pageable, name, description);
+    log.info("RESPONSE: responseBody = {}", listCertificate);
+    return ResponseEntity.ok(listCertificate);
   }
 
   @GetMapping("/tags/{tagsNames}")
   public ResponseEntity<Set<CertificateDTO>> getCertificateByTagsName(@PathVariable List<String> tagsNames,
                                                                       @PageableDefault Pageable pageable) {
-    return ResponseEntity.ok(certificateService.getByTagsName(tagsNames, pageable));
+    log.info("REQUEST: method = GET, path = /v1/certificates/tags/{}, param = [pageable = {}]", tagsNames, pageable);
+    Set<CertificateDTO> setCertificate = certificateService.getByTagsName(tagsNames, pageable);
+    log.info("RESPONSE: responseBody = {}", setCertificate);
+    return ResponseEntity.ok(setCertificate);
   }
 }
