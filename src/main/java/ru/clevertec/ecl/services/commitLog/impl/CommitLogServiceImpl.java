@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.services.impl;
+package ru.clevertec.ecl.services.commitLog.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -6,11 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.AbstractDto;
-import ru.clevertec.ecl.entity.Certificate;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
 import ru.clevertec.ecl.entity.commitLog.Operation;
 import ru.clevertec.ecl.repository.CommitLogRepository;
-import ru.clevertec.ecl.services.CommitLogService;
+import ru.clevertec.ecl.services.commitLog.CommitLogService;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +30,15 @@ public class CommitLogServiceImpl implements CommitLogService{
     return CommitLog.builder()
         .operation(operation)
         .entityId(abstractDto.getId())
-        .tableName(table)
+        .entityName(table)
         .dateTimeOperation(LocalDateTime.now())
         .json(mapper.writeValueAsString(abstractDto))
         .build();
   }
 
-
+  @Override
+  public long getCurrentSequence() {
+    return commitLogRepository.getCurrentSequence();
+  }
 
 }

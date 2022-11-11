@@ -3,7 +3,7 @@ CREATE TABLE commit_log
     id                  BIGSERIAL PRIMARY KEY NOT NULL,
     operation           INT,
     json                VARCHAR(500),
-    table_name          VARCHAR(50),
+    entity_name          VARCHAR(50),
     entity_id           BIGINT,
     date_time_operation TIMESTAMP
 );

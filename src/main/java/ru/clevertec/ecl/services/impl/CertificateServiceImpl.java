@@ -3,7 +3,6 @@ package ru.clevertec.ecl.services.impl;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-import com.cosium.spring.data.jpa.entity.graph.domain2.EntityGraph;
 import com.cosium.spring.data.jpa.entity.graph.domain2.NamedEntityGraph;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,7 @@ import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.CertificateService;
-import ru.clevertec.ecl.services.CommitLogService;
+import ru.clevertec.ecl.services.commitLog.CommitLogService;
 import ru.clevertec.ecl.services.TagService;
 import ru.clevertec.ecl.utils.Constants;
 
@@ -60,14 +59,14 @@ public class CertificateServiceImpl implements CertificateService {
   @Override
   public List<CertificateDTO> getByNameDescription(Pageable pageable, String name, String description) {
     ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-        .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-        .withMatcher("description", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        .withMatcher(Constants.FIELD_NAME_NAME, ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+        .withMatcher(Constants.FIELD_NAME_DESCRIPTION, ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
     return certificateRepository.findAll(
             Example.of(
                 Certificate.builder()
                     .name(name)
                     .description(description).build(), exampleMatcher
-            ), pageable, NamedEntityGraph.loading("certificateTag")).stream()
+            ), pageable, NamedEntityGraph.loading(Constants.ENTITY_GRAPH_NAME_CERTIFICATE_TAG)).stream()
         .map(certificateMapper::toCertificateDTO)
         .collect(toList());
   }
@@ -93,32 +92,37 @@ public class CertificateServiceImpl implements CertificateService {
     certificate.setTags(tagService.saveAll(certificateDTO.getTags()).stream()
         .map(tagMapper::toTag)
         .collect(toList()));
-    CertificateDTO save = certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
+    CertificateDTO saveCertificate = certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     log.info("CommitLog: save Certificate");
-    CommitLog commitLog = commitLogService.buildCommitLog(Operation.SAVE, save, Constants.CERTIFICATE);
+    CommitLog commitLog = commitLogService.buildCommitLog(Operation.SAVE, saveCertificate, Constants.CERTIFICATE);
     log.info("Result commitLog: {}", commitLog);
     commitLogService.write(commitLog);
-    return save;
+    return saveCertificate;
   }
 
   @Transactional
   @Override
   public CertificateDTO update(Long id, CertificateDTO certificateDTO) {
-    return certificateRepository.findById(id)
+    CertificateDTO updateCertificate = certificateRepository.findById(id)
         .map(certificate -> certificateMapper.certificateToUpdate(certificateDTO, certificate))
         .map(certificateMapper::toCertificateDTO)
         .map(self::save)
         .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
+    log.info("CommitLog: update Certificate");
+    CommitLog commitLog = commitLogService.buildCommitLog(Operation.UPDATE, updateCertificate, Constants.CERTIFICATE);
+    log.info("Result commitLog: {}", commitLog);
+    return updateCertificate;
   }
 
   @Transactional
   @Override
   public void delete(Long id) {
-    certificateRepository.findById(id)
-        .map(certificate -> {
-          certificateRepository.delete(certificate);
-          return true;
-        })
+    Certificate deleteCertificate = certificateRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
+    certificateRepository.delete(deleteCertificate);
+    log.info("CommitLog: delete Certificate");
+    CommitLog commitLog = commitLogService.buildCommitLog(Operation.DELETE,
+        certificateMapper.toCertificateDTO(deleteCertificate), Constants.CERTIFICATE);
+    log.info("Result commitLog: {}", commitLog);
   }
 }

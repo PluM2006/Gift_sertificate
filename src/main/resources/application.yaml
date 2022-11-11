@@ -9,6 +9,7 @@ server:
   servlet:
     context-path: "/api"
   host: "localhost"
+  port: ${PORT}
   cluster:
     9901:
       - 9901

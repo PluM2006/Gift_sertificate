@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"json", "table"})
+@EqualsAndHashCode(of = {"json", "entityName"})
 public class CommitLog {
 
   @Id
@@ -27,7 +27,7 @@ public class CommitLog {
   private Long id;
   private Operation operation;
   private String json;
-  private String tableName;
+  private String entityName;
   private Long entityId;
   private LocalDateTime dateTimeOperation;
 }

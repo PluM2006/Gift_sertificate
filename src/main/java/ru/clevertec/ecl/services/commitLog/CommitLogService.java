@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.services;
+package ru.clevertec.ecl.services.commitLog;
 
 import ru.clevertec.ecl.dto.AbstractDto;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
@@ -8,6 +8,5 @@ public interface CommitLogService {
 
   CommitLog write(CommitLog commitLog);
   CommitLog buildCommitLog(Operation operation, AbstractDto abstractDto, String table);
-
-
+  long getCurrentSequence();
 }

@@ -21,7 +21,7 @@ import ru.clevertec.ecl.utils.ServerProperties;
 public class HealthCheckImpl implements HealthCheckService {
 
   private static final String URL_HEALTH = "http://localhost:%s/api/actuator/health";
-  private static final int TIMEOUT = 1000;
+  private static final int TIMEOUT = 2000;
   private final ServerProperties serverProperties;
   private final WebClient webClient;
 
