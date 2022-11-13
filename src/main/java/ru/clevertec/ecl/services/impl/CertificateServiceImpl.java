@@ -95,8 +95,7 @@ public class CertificateServiceImpl implements CertificateService {
     CertificateDTO saveCertificate = certificateMapper.toCertificateDTO(certificateRepository.save(certificate));
     log.info("CommitLog: save Certificate");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.SAVE, saveCertificate, Constants.CERTIFICATE);
-    log.info("Result commitLog: {}", commitLog);
-    commitLogService.write(commitLog);
+    log.info("Result commitLog: save Certificate{}", commitLogService.write(commitLog));
     return saveCertificate;
   }
 
@@ -110,7 +109,7 @@ public class CertificateServiceImpl implements CertificateService {
         .orElseThrow(() -> new EntityNotFoundException(Constants.CERTIFICATE, Constants.FIELD_NAME_ID, id));
     log.info("CommitLog: update Certificate");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.UPDATE, updateCertificate, Constants.CERTIFICATE);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: update {}", commitLogService.write(commitLog));
     return updateCertificate;
   }
 
@@ -123,6 +122,6 @@ public class CertificateServiceImpl implements CertificateService {
     log.info("CommitLog: delete Certificate");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.DELETE,
         certificateMapper.toCertificateDTO(deleteCertificate), Constants.CERTIFICATE);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: delete {}", commitLogService.write(commitLog));
   }
 }

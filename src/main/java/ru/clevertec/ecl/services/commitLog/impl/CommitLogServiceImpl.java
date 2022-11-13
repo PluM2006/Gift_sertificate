@@ -2,6 +2,8 @@ package ru.clevertec.ecl.services.commitLog.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,11 @@ public class CommitLogServiceImpl implements CommitLogService{
   public long getCurrentSequence() {
     return commitLogRepository.getCurrentSequence();
   }
+
+  @Override
+  public List<CommitLog> getRecoveryData(int limit) {
+    return commitLogRepository.findRecoveryData(limit);
+  }
+
 
 }

@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
     OrderDTO saveOrder = orderMapper.toOrderDto(orderRepository.save(toBuildOrder(orderDTO)));
     log.info("CommitLog: save Order");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.SAVE, saveOrder, Constants.ORDER);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: {}", commitLogService.write(commitLog));
     return saveOrder;
   }
 

@@ -55,7 +55,7 @@ public class TagServiceImpl implements TagService {
     TagDTO saveTag = tagMapper.toTagDTO(tagRepository.save(tagMapper.toTag(tagDTO)));
     log.info("CommitLog: save Tag");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.SAVE, saveTag, Constants.TAG);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: save Tag {}", commitLogService.write(commitLog));
     return saveTag;
   }
 
@@ -77,7 +77,7 @@ public class TagServiceImpl implements TagService {
         .orElseThrow(() -> new EntityNotFoundException(Constants.TAG, Constants.FIELD_NAME_ID, id)));
     log.info("CommitLog: update Tag");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.UPDATE, updateTag, Constants.TAG);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: update Tag{}", commitLogService.write(commitLog));
     return updateTag;
   }
 
@@ -90,6 +90,6 @@ public class TagServiceImpl implements TagService {
     log.info("CommitLog: delete Tag");
     CommitLog commitLog = commitLogService.buildCommitLog(Operation.DELETE,
         tagMapper.toTagDTO(deleteTag), Constants.TAG);
-    log.info("Result commitLog: {}", commitLog);
+    log.info("Result commitLog: delete Tag {}", commitLogService.write(commitLog));
   }
 }

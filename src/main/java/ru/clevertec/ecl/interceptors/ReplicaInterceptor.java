@@ -29,8 +29,7 @@ public class ReplicaInterceptor implements HandlerInterceptor {
   private final RequestSender requestSender;
 
   @Override
-  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                         ModelAndView modelAndView) {
+  public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
     CachedBodyHttpServletRequest requestWrapper = (CachedBodyHttpServletRequest) request;
     int serverPort = request.getServerPort();
     boolean isReplicate = Boolean.parseBoolean(String.valueOf(requestWrapper.getHeader(Constants.REPLICATE)));
