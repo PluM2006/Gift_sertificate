@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
-import ru.clevertec.ecl.entity.commitLog.Operation;
+import ru.clevertec.ecl.commitlog.Operation;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;

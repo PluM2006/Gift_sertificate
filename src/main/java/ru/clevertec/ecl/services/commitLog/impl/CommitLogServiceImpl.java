@@ -3,13 +3,12 @@ package ru.clevertec.ecl.services.commitLog.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import ru.clevertec.ecl.dto.AbstractDto;
+import ru.clevertec.ecl.dto.AbstractDTO;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
-import ru.clevertec.ecl.entity.commitLog.Operation;
+import ru.clevertec.ecl.commitlog.Operation;
 import ru.clevertec.ecl.repository.CommitLogRepository;
 import ru.clevertec.ecl.services.commitLog.CommitLogService;
 
@@ -28,7 +27,7 @@ public class CommitLogServiceImpl implements CommitLogService{
 
   @Override
   @SneakyThrows
-  public CommitLog buildCommitLog(Operation operation, AbstractDto abstractDto, String table) {
+  public CommitLog buildCommitLog(Operation operation, AbstractDTO abstractDto, String table) {
     return CommitLog.builder()
         .operation(operation)
         .entityId(abstractDto.getId())

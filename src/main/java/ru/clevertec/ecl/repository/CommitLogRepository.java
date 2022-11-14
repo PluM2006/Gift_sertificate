@@ -12,7 +12,7 @@ public interface CommitLogRepository extends JpaRepository<CommitLog, Long> {
 
   @Query(nativeQuery = true,
       value = "SELECT c.id, c.date_time_operation, c.entity_id, c.json, c.operation, c.entity_name  "
-          + "FROM  commit_log c ORDER BY c.id limit :limits")
+          + "FROM  commit_log c ORDER BY c.id DESC limit :limits")
   List<CommitLog> findRecoveryData(int limits);
 
 }

@@ -24,7 +24,7 @@ public class ResponseEntityHandler {
         .orElseThrow(NoSuchElementException::new);
   }
 
-  public List<ResponseEntity<List<OrderDTO>>> getOrderDTOResponseEntity(CachedBodyHttpServletRequest  requestWrapper,
+  public List<ResponseEntity<List<OrderDTO>>> getOrderDTOResponseEntity(CachedBodyHttpServletRequest requestWrapper,
                                                                         List<String> urls) {
     return requestSender.forwardRequestList(requestWrapper, urls);
   }

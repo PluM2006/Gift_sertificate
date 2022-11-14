@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.entity.commitLog;
+package ru.clevertec.ecl.commitlog;
 
 public enum Operation {
   SAVE,

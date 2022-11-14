@@ -1,6 +1,5 @@
-package ru.clevertec.ecl.entity.commitLog;
+package ru.clevertec.ecl.commitlog;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Comparator;
@@ -11,16 +10,17 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import ru.clevertec.ecl.commitlog.impl.RecoveryEntityImpl;
 import ru.clevertec.ecl.dto.CertificateDTO;
-import ru.clevertec.ecl.services.CertificateService;
+import ru.clevertec.ecl.dto.OrderDTO;
+import ru.clevertec.ecl.dto.TagDTO;
+import ru.clevertec.ecl.entity.commitLog.CommitLog;
 import ru.clevertec.ecl.services.HealthCheckService;
-import ru.clevertec.ecl.services.commitLog.CommitLogService;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.ServerProperties;
 
@@ -34,9 +34,7 @@ public class DataRecovery {
   private final ServerProperties serverProperties;
   private final HealthCheckService healthCheckService;
   private final WebClient webClient;
-  private final CommitLogService commitLogService;
-  private final CertificateService certificateService;
-  private final ObjectMapper mapper;
+  private final RecoveryEntityImpl recoveryEntityImpl;
 
   @EventListener(ApplicationReadyEvent.class)
   public void restore() {
@@ -54,56 +52,33 @@ public class DataRecovery {
     Integer sequenceRecoveryPort = maxSequencePort.getValue();
     if (sequenceCurrenPort < sequenceRecoveryPort) {
       log.info("Start recovery data");
-
       int limitData = sequenceRecoveryPort - sequenceCurrenPort;
-      List<CommitLog> recoveryData = webClient.get()
-          .uri(URI.create(String.format(URL_RECOVERY_DATA, maxSequencePort.getKey(), limitData)))
-          .retrieve()
-          .bodyToFlux(CommitLog.class)
-          .collect(Collectors.toList())
-          .share()
-          .block();
-
+      List<CommitLog> recoveryData = getRecoveryData(maxSequencePort, limitData);
       List<CommitLog> commitLogCertificate = recoveryData.stream()
           .filter(s -> s.getEntityName().equals(Constants.CERTIFICATE))
           .collect(Collectors.toList());
       List<CommitLog> commitLogTag = recoveryData.stream()
           .filter(s -> s.getEntityName().equals(Constants.TAG))
           .collect(Collectors.toList());
-      ;
       List<CommitLog> commitLogOrder = recoveryData.stream()
           .filter(s -> s.getEntityName().equals(Constants.ORDER))
           .collect(Collectors.toList());
-      ;
 
-      restoreCertificate(commitLogCertificate);
-//      restoreTag(commitLogTag);
-//      restoreOrder(commitLogOrder);
-
-      log.info("Данные для восттановления {}", recoveryData);
+      recoveryEntityImpl.recoveryEntity(commitLogCertificate, CertificateDTO.class);
+      recoveryEntityImpl.recoveryEntity(commitLogOrder, OrderDTO.class);
+      recoveryEntityImpl.recoveryEntity(commitLogTag, TagDTO.class);
     }
 
   }
 
-  private void restoreCertificate(List<CommitLog> commitLogCertificate) {
-    commitLogCertificate.stream()
-        .filter(s -> s.getOperation().equals(Operation.SAVE) || s.getOperation().equals(Operation.UPDATE))
-        .sorted(Comparator.comparing(CommitLog::getDateTimeOperation))
-        .forEach(this::saveOrUpdateCertificate);
-    commitLogCertificate.stream()
-        .filter(s -> s.getOperation().equals(Operation.DELETE))
-        .sorted(Comparator.comparing(CommitLog::getDateTimeOperation))
-        .forEach(this::deleteCertificate);
-  }
-
-  @SneakyThrows
-  private void saveOrUpdateCertificate(CommitLog commitLog) {
-    certificateService.save(mapper.readValue(commitLog.getJson(), CertificateDTO.class));
-  }
-
-  @SneakyThrows
-  private void deleteCertificate(CommitLog commitLog) {
-    certificateService.delete(mapper.readValue(commitLog.getJson(), CertificateDTO.class).getId());
+  private List<CommitLog> getRecoveryData(Entry<Integer, Integer> maxSequencePort, int limitData) {
+    return webClient.get()
+        .uri(URI.create(String.format(URL_RECOVERY_DATA, maxSequencePort.getKey(), limitData)))
+        .retrieve()
+        .bodyToFlux(CommitLog.class)
+        .collect(Collectors.toList())
+        .share()
+        .block();
   }
 
   private Integer getShards() {

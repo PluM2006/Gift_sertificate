@@ -13,7 +13,6 @@ import org.springframework.web.util.UriBuilder;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.PageSize;
 
-
 @Component
 @RequiredArgsConstructor
 public class UriEditor {
@@ -22,7 +21,7 @@ public class UriEditor {
   private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
   private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d";
 
-  public  Function<UriBuilder, URI> getUrlFunction(HttpServletRequest request, String redirectPort) {
+  public Function<UriBuilder, URI> getUrlFunction(HttpServletRequest request, String redirectPort) {
     return uriBuilder -> uriBuilder
         .scheme(request.getScheme())
         .host(request.getServerName())

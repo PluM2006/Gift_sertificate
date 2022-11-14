@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 import ru.clevertec.ecl.interceptors.sender.RequestSender;
 import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.Constants;

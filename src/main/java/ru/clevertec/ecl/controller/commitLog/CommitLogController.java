@@ -24,7 +24,7 @@ public class CommitLogController {
   }
 
   @GetMapping(value = "/recovery/{limit}")
-  public List<CommitLog> getRecoveryData(@PathVariable int limit){
+  public List<CommitLog> getRecoveryData(@PathVariable int limit) {
     return commitLogService.getRecoveryData(limit);
   }
 
