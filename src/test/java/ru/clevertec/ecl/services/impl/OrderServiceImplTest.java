@@ -25,12 +25,16 @@ import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.repository.OrderRepository;
 import ru.clevertec.ecl.services.CertificateService;
 import ru.clevertec.ecl.services.UserService;
+import ru.clevertec.ecl.services.commitLog.CommitLogService;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
 
   @InjectMocks
   private OrderServiceImpl orderService;
+
+  @Mock
+  private CommitLogService commitLogService;
 
   @Mock
   private OrderRepository orderRepository;
