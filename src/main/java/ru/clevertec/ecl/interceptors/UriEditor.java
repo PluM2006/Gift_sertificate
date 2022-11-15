@@ -12,19 +12,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriBuilder;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.PageSize;
+import ru.clevertec.ecl.utils.ServerProperties;
 
 @Component
 @RequiredArgsConstructor
 public class UriEditor {
 
-  private final static String REQUEST_NEXT_SEQUENCE = "http://localhost:%s/api/v1/orders/sequence/set";
-  private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://localhost:%d/api/v1/orders/sequence/current";
-  private static final String URL_OFFSET_LIMIT_REQUEST = "http://localhost:%d/api/v1/orders/offset?limit=%d&offset=%d";
+  private final static String REQUEST_NEXT_SEQUENCE = "http://%s:%s/api/v1/orders/sequence/set";
+  private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://%s:%d/api/v1/orders/sequence/current";
+  private static final String URL_OFFSET_LIMIT_REQUEST = "http://%s:%d/api/v1/orders/offset?limit=%d&offset=%d";
+  private final ServerProperties serverProperties;
+
+  private static long countModIndex(int start, int end, int index, Integer divider) {
+    return IntStream.range(start, end)
+        .filter(element -> element % divider == index)
+        .count();
+  }
 
   public Function<UriBuilder, URI> getUrlFunction(HttpServletRequest request, String redirectPort) {
     return uriBuilder -> uriBuilder
         .scheme(request.getScheme())
-        .host(request.getServerName())
+        .host(serverProperties.getHost())
         .port(redirectPort)
         .path(request.getContextPath())
         .path(request.getServletPath())
@@ -42,24 +50,18 @@ public class UriEditor {
         .mapToObj(i -> {
           long limit = countModIndex(currentMinElement + 1, currentMaxElement + 1, i, divider);
           long offset = countModIndex(1, remainder + 1, i, divider);
-          return String.format(URL_OFFSET_LIMIT_REQUEST, sourcePort.get(i), limit, offset);
+          return String.format(URL_OFFSET_LIMIT_REQUEST, serverProperties.getHost(), sourcePort.get(i), limit, offset);
         })
         .filter(s -> !s.contains(Constants.LIMIT_ZERO))
         .collect(toList());
   }
 
   public String buildURINextSequence(String port) {
-    return String.format(REQUEST_NEXT_SEQUENCE, port);
+    return String.format(REQUEST_NEXT_SEQUENCE, serverProperties.getHost(), port);
   }
 
   public String buildURIMaxSequence(Integer port) {
-    return String.format(REQUEST_LAST_VALUE_SEQUENCE, port);
-  }
-
-  private static long countModIndex(int start, int end, int index, Integer divider) {
-    return IntStream.range(start, end)
-        .filter(element -> element % divider == index)
-        .count();
+    return String.format(REQUEST_LAST_VALUE_SEQUENCE, serverProperties.getHost(), port);
   }
 
 }

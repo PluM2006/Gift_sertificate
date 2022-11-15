@@ -29,8 +29,8 @@ import ru.clevertec.ecl.utils.ServerProperties;
 @RequiredArgsConstructor
 public class DataRecovery {
 
-  private final static String URL_SEQUENCE = "localhost:%s/api/commitlog/current";
-  private final static String URL_RECOVERY_DATA = "localhost:%s/api/commitlog/recovery/%d";
+  private final static String URL_SEQUENCE = "%s:%s/api/commitlog/current";
+  private final static String URL_RECOVERY_DATA = "%s:%s/api/commitlog/recovery/%d";
   private final ServerProperties serverProperties;
   private final HealthCheckService healthCheckService;
   private final WebClient webClient;
@@ -73,7 +73,8 @@ public class DataRecovery {
 
   private List<CommitLog> getRecoveryData(Entry<Integer, Integer> maxSequencePort, int limitData) {
     return webClient.get()
-        .uri(URI.create(String.format(URL_RECOVERY_DATA, maxSequencePort.getKey(), limitData)))
+        .uri(URI.create(
+            String.format(URL_RECOVERY_DATA, serverProperties.getHost(), maxSequencePort.getKey(), limitData)))
         .retrieve()
         .bodyToFlux(CommitLog.class)
         .collect(Collectors.toList())
@@ -93,7 +94,7 @@ public class DataRecovery {
         .map(s -> CompletableFuture.supplyAsync(() ->
             {
               Integer block = webClient.get()
-                  .uri(URI.create(String.format(URL_SEQUENCE, s)))
+                  .uri(URI.create(String.format(URL_SEQUENCE, serverProperties.getHost(), s)))
                   .retrieve()
                   .bodyToMono(Integer.class)
                   .block();
