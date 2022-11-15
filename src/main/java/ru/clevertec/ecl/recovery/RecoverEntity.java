@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.commitlog;
+package ru.clevertec.ecl.recovery;
 
 import java.util.List;
 import ru.clevertec.ecl.dto.AbstractDTO;

@@ -1,6 +1,5 @@
-package ru.clevertec.ecl.commitlog;
+package ru.clevertec.ecl.recovery;
 
-import java.net.URI;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Comparator;
 import java.util.List;
@@ -15,11 +14,12 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.clevertec.ecl.commitlog.impl.RecoveryEntityImpl;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;
 import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
+import ru.clevertec.ecl.interceptors.UriEditor;
+import ru.clevertec.ecl.recovery.impl.RecoveryEntityImpl;
 import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.Constants;
 import ru.clevertec.ecl.utils.ServerProperties;
@@ -29,20 +29,24 @@ import ru.clevertec.ecl.utils.ServerProperties;
 @RequiredArgsConstructor
 public class DataRecovery {
 
-  private final static String URL_SEQUENCE = "%s:%s/api/commitlog/current";
-  private final static String URL_RECOVERY_DATA = "%s:%s/api/commitlog/recovery/%d";
   private final ServerProperties serverProperties;
   private final HealthCheckService healthCheckService;
   private final WebClient webClient;
   private final RecoveryEntityImpl recoveryEntityImpl;
+  private final UriEditor uriEditor;
 
   @EventListener(ApplicationReadyEvent.class)
   public void restore() {
     Integer shard = getShards();
     healthCheckService.checkHealthClusterNodes();
     List<Integer> ports = serverProperties.getClusterWorkingNodes().get(shard);
+    int i = 0;
     while (ports.size() != 3) {
       ports = serverProperties.getClusterWorkingNodes().get(shard);
+      i++;
+      if (i == 10000) {
+        return;
+      }
     }
     Map<Integer, Integer> portSequence = getPortSequence(ports);
     Entry<Integer, Integer> maxSequencePort = portSequence.entrySet().stream()
@@ -55,26 +59,21 @@ public class DataRecovery {
       int limitData = sequenceRecoveryPort - sequenceCurrenPort;
       List<CommitLog> recoveryData = getRecoveryData(maxSequencePort, limitData);
       List<CommitLog> commitLogCertificate = recoveryData.stream()
-          .filter(s -> s.getEntityName().equals(Constants.CERTIFICATE))
-          .collect(Collectors.toList());
+          .filter(s -> s.getEntityName().equals(Constants.CERTIFICATE)).collect(Collectors.toList());
       List<CommitLog> commitLogTag = recoveryData.stream()
-          .filter(s -> s.getEntityName().equals(Constants.TAG))
-          .collect(Collectors.toList());
+          .filter(s -> s.getEntityName().equals(Constants.TAG)).collect(Collectors.toList());
       List<CommitLog> commitLogOrder = recoveryData.stream()
-          .filter(s -> s.getEntityName().equals(Constants.ORDER))
-          .collect(Collectors.toList());
+          .filter(s -> s.getEntityName().equals(Constants.ORDER)).collect(Collectors.toList());
 
       recoveryEntityImpl.recoveryEntity(commitLogCertificate, CertificateDTO.class);
       recoveryEntityImpl.recoveryEntity(commitLogOrder, OrderDTO.class);
       recoveryEntityImpl.recoveryEntity(commitLogTag, TagDTO.class);
     }
-
   }
 
-  private List<CommitLog> getRecoveryData(Entry<Integer, Integer> maxSequencePort, int limitData) {
+  private List<CommitLog> getRecoveryData(Entry<Integer, Integer> port, int limitData) {
     return webClient.get()
-        .uri(URI.create(
-            String.format(URL_RECOVERY_DATA, serverProperties.getHost(), maxSequencePort.getKey(), limitData)))
+        .uri(uriEditor.buildUrlRecoveryDate(port.getKey(), limitData))
         .retrieve()
         .bodyToFlux(CommitLog.class)
         .collect(Collectors.toList())
@@ -91,14 +90,14 @@ public class DataRecovery {
 
   private Map<Integer, Integer> getPortSequence(List<Integer> ports) {
     return ports.stream()
-        .map(s -> CompletableFuture.supplyAsync(() ->
+        .map(port -> CompletableFuture.supplyAsync(() ->
             {
               Integer block = webClient.get()
-                  .uri(URI.create(String.format(URL_SEQUENCE, serverProperties.getHost(), s)))
+                  .uri(uriEditor.buildUrlSequenceCommitLog(port))
                   .retrieve()
                   .bodyToMono(Integer.class)
                   .block();
-              return new SimpleEntry<>(s, block);
+              return new SimpleEntry<>(port, block);
             }
         ))
         .map(CompletableFuture::join)

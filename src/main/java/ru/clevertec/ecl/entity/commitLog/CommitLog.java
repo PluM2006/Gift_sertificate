@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ru.clevertec.ecl.commitlog.Operation;
+import ru.clevertec.ecl.recovery.Operation;
 
 @Entity
 @Data

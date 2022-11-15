@@ -26,6 +26,13 @@ public class ServerProperties {
     return getShardFromMap(portIndex);
   }
 
+  public String getHost(String port){
+    return host+port;
+  }
+  public String getHost(Integer port){
+    return host+port;
+  }
+
   private Integer getShardFromMap(long portIndex) {
     return cluster.keySet().stream()
         .sorted().skip(portIndex)

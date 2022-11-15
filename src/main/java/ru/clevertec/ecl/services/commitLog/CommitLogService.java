@@ -1,7 +1,7 @@
 package ru.clevertec.ecl.services.commitLog;
 
 import java.util.List;
-import ru.clevertec.ecl.commitlog.Operation;
+import ru.clevertec.ecl.recovery.Operation;
 import ru.clevertec.ecl.dto.AbstractDTO;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
 

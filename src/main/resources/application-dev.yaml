@@ -1,3 +1,5 @@
+server:
+  host: node
 spring:
   datasource:
     username: ${POSTGRES_USER}

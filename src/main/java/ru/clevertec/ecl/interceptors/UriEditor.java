@@ -18,10 +18,25 @@ import ru.clevertec.ecl.utils.ServerProperties;
 @RequiredArgsConstructor
 public class UriEditor {
 
-  private final static String REQUEST_NEXT_SEQUENCE = "http://%s:%s/api/v1/orders/sequence/set";
-  private final static String REQUEST_LAST_VALUE_SEQUENCE = "http://%s:%d/api/v1/orders/sequence/current";
-  private static final String URL_OFFSET_LIMIT_REQUEST = "http://%s:%d/api/v1/orders/offset?limit=%d&offset=%d";
   private final ServerProperties serverProperties;
+
+  public Function<UriBuilder, URI> buildUrlSequenceCommitLog(Integer port) {
+    return uriBuilder -> uriBuilder
+        .scheme(Constants.SCHEME_HTTP)
+        .host(serverProperties.getHost(port))
+        .port(port)
+        .path(Constants.URL_SEQUENCE)
+        .build();
+  }
+
+  public Function<UriBuilder, URI> buildUrlRecoveryDate(Integer port, int limit) {
+    return uriBuilder -> uriBuilder
+        .scheme(Constants.SCHEME_HTTP)
+        .host(serverProperties.getHost(port))
+        .port(port)
+        .path(Constants.URL_RECOVERY_DATA)
+        .build(limit);
+  }
 
   private static long countModIndex(int start, int end, int index, Integer divider) {
     return IntStream.range(start, end)
@@ -32,7 +47,7 @@ public class UriEditor {
   public Function<UriBuilder, URI> getUrlFunction(HttpServletRequest request, String redirectPort) {
     return uriBuilder -> uriBuilder
         .scheme(request.getScheme())
-        .host(serverProperties.getHost())
+        .host(serverProperties.getHost(redirectPort))
         .port(redirectPort)
         .path(request.getContextPath())
         .path(request.getServletPath())
@@ -50,18 +65,38 @@ public class UriEditor {
         .mapToObj(i -> {
           long limit = countModIndex(currentMinElement + 1, currentMaxElement + 1, i, divider);
           long offset = countModIndex(1, remainder + 1, i, divider);
-          return String.format(URL_OFFSET_LIMIT_REQUEST, serverProperties.getHost(), sourcePort.get(i), limit, offset);
+          return String.format(Constants.URL_OFFSET_LIMIT_REQUEST, serverProperties.getHost(sourcePort.get(i)),
+              sourcePort.get(i), limit, offset);
         })
         .filter(s -> !s.contains(Constants.LIMIT_ZERO))
         .collect(toList());
   }
 
-  public String buildURINextSequence(String port) {
-    return String.format(REQUEST_NEXT_SEQUENCE, serverProperties.getHost(), port);
+  public Function<UriBuilder, URI> buildURINextSequence(String port) {
+    return uriBuilder -> uriBuilder
+        .scheme(Constants.SCHEME_HTTP)
+        .host(serverProperties.getHost(port))
+        .port(port)
+        .path(Constants.REQUEST_NEXT_SEQUENCE)
+        .build();
   }
 
-  public String buildURIMaxSequence(Integer port) {
-    return String.format(REQUEST_LAST_VALUE_SEQUENCE, serverProperties.getHost(), port);
+  public Function<UriBuilder, URI> buildURIMaxSequence(Integer port) {
+    return uriBuilder -> uriBuilder
+        .scheme(Constants.SCHEME_HTTP)
+        .host(serverProperties.getHost(port))
+        .port(port)
+        .path(Constants.REQUEST_LAST_VALUE_SEQUENCE)
+        .build();
+  }
+
+  public Function<UriBuilder, URI> buildURIHealth(Integer port) {
+    return uriBuilder -> uriBuilder
+        .scheme(Constants.SCHEME_HTTP)
+        .host(serverProperties.getHost(port))
+        .port(port)
+        .path(Constants.URL_HEALTH)
+        .build();
   }
 
 }

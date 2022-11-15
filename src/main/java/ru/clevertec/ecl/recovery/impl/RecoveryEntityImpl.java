@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.commitlog.impl;
+package ru.clevertec.ecl.recovery.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Comparator;
@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.clevertec.ecl.commitlog.Operation;
-import ru.clevertec.ecl.commitlog.RecoverEntity;
+import ru.clevertec.ecl.recovery.Operation;
+import ru.clevertec.ecl.recovery.RecoverEntity;
 import ru.clevertec.ecl.dto.AbstractDTO;
 import ru.clevertec.ecl.dto.CertificateDTO;
 import ru.clevertec.ecl.dto.OrderDTO;

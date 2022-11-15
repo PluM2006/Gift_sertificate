@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dto.AbstractDTO;
 import ru.clevertec.ecl.entity.commitLog.CommitLog;
-import ru.clevertec.ecl.commitlog.Operation;
+import ru.clevertec.ecl.recovery.Operation;
 import ru.clevertec.ecl.repository.CommitLogRepository;
 import ru.clevertec.ecl.services.commitLog.CommitLogService;
 

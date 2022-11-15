@@ -1,0 +1,91 @@
+version: "3.8"
+services:
+  node9901:
+    build: .
+    container_name: node9901
+    environment:
+      PORT: 9901
+      DB_URL: jdbc:postgresql://baseNode9901:5432/postgres
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    depends_on:
+      - baseNode9901
+    ports:
+      - "9901:9901"
+    networks:
+      - internet
+      - localnet
+
+  baseNode9901:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    networks:
+      - localnet
+      
+  node9902:
+    build: .
+    container_name: node9902
+    environment:
+      PORT: 9902
+      DB_URL: jdbc:postgresql://baseNode9902:5432/postgres
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    depends_on:
+      - baseNode9902
+    ports:
+      - "9902:9902"
+    networks:
+      - internet
+      - localnet
+
+  baseNode9902:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    networks:
+      - localnet
+      
+  node9903:
+    build: .
+    container_name: node9903
+    environment:
+      PORT: 9903
+      DB_URL: jdbc:postgresql://baseNode9903:5432/postgres
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    depends_on:
+      - baseNode9903
+    ports:
+      - "9903:9903"
+    networks:
+      - internet
+      - localnet
+
+  baseNode9903:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 18011984
+      POSTGRES_USER: postgres
+    networks:
+      - localnet
+
+networks:
+  localnet:
+    name: localnet
+    driver: bridge
+  internet:
+    name: internet
+    driver: bridge
+
+
+
+
+
+
+

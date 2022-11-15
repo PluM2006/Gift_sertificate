@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.services.impl;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.clevertec.ecl.exception.ServiceException;
+import ru.clevertec.ecl.interceptors.UriEditor;
 import ru.clevertec.ecl.services.HealthCheckService;
 import ru.clevertec.ecl.utils.ServerProperties;
 
@@ -20,10 +20,10 @@ import ru.clevertec.ecl.utils.ServerProperties;
 @RequiredArgsConstructor
 public class HealthCheckImpl implements HealthCheckService {
 
-  private static final String URL_HEALTH = "http://%s:%s/api/actuator/health";
-  private static final int TIMEOUT = 2000;
+  private static final int TIMEOUT = 3000;
   private final ServerProperties serverProperties;
   private final WebClient webClient;
+  private final UriEditor uriEditor;
 
   @Override
   public void checkHealthClusterNodes() {
@@ -52,7 +52,7 @@ public class HealthCheckImpl implements HealthCheckService {
 
   private Health checkHealthNode(Integer port) {
     return webClient.get()
-        .uri(URI.create(String.format(URL_HEALTH, serverProperties.getHost(), port)))
+        .uri(uriEditor.buildURIHealth(port))
         .retrieve()
         .bodyToMono(Object.class)
         .timeout(Duration.ofMillis(TIMEOUT))

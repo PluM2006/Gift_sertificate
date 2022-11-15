@@ -25,4 +25,12 @@ public class Constants {
   public static final String ENTITY_GRAPH_NAME_CERTIFICATE_TAG = "certificateTag";
   public static final String ENTITY_ATTRIBUTE_TAG = "tags";
 
+  public static final String SCHEME_HTTP = "http";
+
+  public static final String URL_HEALTH = "/api/actuator/health";
+  public static final String URL_SEQUENCE = "/api/commitlog/current";
+  public static final String URL_RECOVERY_DATA = "/api/commitlog/recovery/{limit}}";
+  public static final String REQUEST_NEXT_SEQUENCE = "/api/v1/orders/sequence/set";
+  public static final String REQUEST_LAST_VALUE_SEQUENCE = "/api/v1/orders/sequence/current";
+  public static final String URL_OFFSET_LIMIT_REQUEST = "http://node%s:%d/api/v1/orders/offset?limit=%d&offset=%d";
 }
