@@ -29,7 +29,7 @@ public class Constants {
 
   public static final String URL_HEALTH = "/api/actuator/health";
   public static final String URL_SEQUENCE = "/api/commitlog/current";
-  public static final String URL_RECOVERY_DATA = "/api/commitlog/recovery/{limit}}";
+  public static final String URL_RECOVERY_DATA = "/api/commitlog/recovery/{limit}";
   public static final String REQUEST_NEXT_SEQUENCE = "/api/v1/orders/sequence/set";
   public static final String REQUEST_LAST_VALUE_SEQUENCE = "/api/v1/orders/sequence/current";
   public static final String URL_OFFSET_LIMIT_REQUEST = "http://node%s:%d/api/v1/orders/offset?limit=%d&offset=%d";
