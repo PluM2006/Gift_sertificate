@@ -10,8 +10,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9901
-      - node9904
-      - node9905
     ports:
       - "9901:9901"
     networks:
@@ -37,8 +35,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9902
-      - node9906
-      - node9907
     ports:
       - "9902:9902"
     networks:
@@ -64,8 +60,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9903
-      - node9908
-      - node9909
     ports:
       - "9903:9903"
     networks:
@@ -91,8 +85,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9904
-      - node9901
-      - node9905
     ports:
       - "9904:9904"
     networks:
@@ -118,8 +110,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9905
-      - node9901
-      - node9904
     ports:
       - "9905:9905"
     networks:
@@ -145,8 +135,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9906
-      - node9902
-      - node9907
     ports:
       - "9906:9906"
     networks:
@@ -172,8 +160,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9907
-      - node9902
-      - node9906
     ports:
       - "9907:9907"
     networks:
@@ -199,8 +185,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9908
-      - node9903
-      - node9909
     ports:
       - "9908:9908"
     networks:
@@ -226,8 +210,6 @@ services:
       POSTGRES_USER: postgres
     depends_on:
       - baseNode9909
-      - node9903
-      - node9908
     ports:
       - "9909:9909"
     networks:
