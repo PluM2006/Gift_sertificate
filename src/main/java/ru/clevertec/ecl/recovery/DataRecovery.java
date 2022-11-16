@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,6 +28,7 @@ import ru.clevertec.ecl.utils.ServerProperties;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile(value = "dev")
 public class DataRecovery {
 
   private final ServerProperties serverProperties;
@@ -40,13 +42,8 @@ public class DataRecovery {
     Integer shard = getShards();
     healthCheckService.checkHealthClusterNodes();
     List<Integer> ports = serverProperties.getClusterWorkingNodes().get(shard);
-    int i = 0;
-    while (ports.size() != 3) {
+    while (ports.size() != serverProperties.getCluster().keySet().size()) {
       ports = serverProperties.getClusterWorkingNodes().get(shard);
-      i++;
-      if (i == 10000) {
-        return;
-      }
     }
     Map<Integer, Integer> portSequence = getPortSequence(ports);
     Entry<Integer, Integer> maxSequencePort = portSequence.entrySet().stream()
