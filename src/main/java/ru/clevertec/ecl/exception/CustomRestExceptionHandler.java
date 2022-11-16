@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -54,6 +55,12 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     ApiErrorDTO apiErrorDTO = mapper.readValue(exc.getMessage(), ApiErrorDTO.class);
     return ResponseEntity.status(apiErrorDTO.getStatus())
         .body(apiErrorDTO);
+  }
+
+  @ExceptionHandler(NoSuchElementException.class)
+  public ResponseEntity<?> handlerResponseStatusException(NoSuchElementException exc) throws JsonProcessingException {
+    ApiErrorDTO apiErrorDTO = mapper.readValue(exc.getMessage(), ApiErrorDTO.class);
+    return ResponseEntity.status(apiErrorDTO.getStatus()).body(apiErrorDTO);
   }
 
   @NonNull

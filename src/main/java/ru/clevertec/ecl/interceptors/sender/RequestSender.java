@@ -56,6 +56,7 @@ public class RequestSender {
         .bodyValue(wrapperRequest.getReader().lines().collect(Collectors.joining()))
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .header(Constants.REDIRECT, String.valueOf(true))
+        .header(Constants.REPLICATE, getReplicateAttribute(wrapperRequest))
         .retrieve()
         .onStatus(HttpStatus::is4xxClientError, resp ->
             resp.bodyToMono(String.class)
@@ -71,12 +72,18 @@ public class RequestSender {
         .bodyValue(wrapperRequest.getReader().lines().collect(Collectors.joining()))
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .header(Constants.REDIRECT, String.valueOf(true))
+        .header(Constants.REPLICATE, getReplicateAttribute(wrapperRequest))
         .retrieve()
         .onStatus(HttpStatus::is4xxClientError, resp ->
             resp.bodyToMono(String.class)
                 .map(ServiceException::new))
         .toEntityList(OrderDTO.class)
         .block();
+  }
+
+  private String getReplicateAttribute(CachedBodyHttpServletRequest wrapperRequest) {
+    return wrapperRequest.getAttribute(Constants.REPLICATE) == null ? String.valueOf(false)
+        : wrapperRequest.getAttribute(Constants.REPLICATE).toString();
   }
 
 }

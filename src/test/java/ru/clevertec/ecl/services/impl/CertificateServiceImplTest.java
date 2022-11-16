@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.cosium.spring.data.jpa.entity.graph.domain2.NamedEntityGraph;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +35,17 @@ import ru.clevertec.ecl.mapper.CertificateMapper;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.CertificateRepository;
 import ru.clevertec.ecl.services.TagService;
+import ru.clevertec.ecl.services.commitLog.CommitLogService;
+import ru.clevertec.ecl.utils.Constants;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceImplTest {
 
   @InjectMocks
   private CertificateServiceImpl certificateService;
+
+  @Mock
+  private CommitLogService commitLogService;
 
   @Mock
   private CertificateServiceImpl self;
@@ -125,7 +131,8 @@ class CertificateServiceImplTest {
     certificateDTO.getTags().add(TagTestData.buildTagDTO());
     List<Certificate> certificateList = CertificateTestData.buildCertificates();
     Page<Certificate> page = new PageImpl<>(certificateList);
-    given(certificateRepository.findAll(certificateExample, pageable)).willReturn(page);
+    given(certificateRepository.findAll(certificateExample, pageable,
+        NamedEntityGraph.loading(Constants.ENTITY_GRAPH_NAME_CERTIFICATE_TAG))).willReturn(page);
     List<CertificateDTO> byTagOrDescription = certificateService
         .getByNameDescription(pageable, certificate.getName(), "The best");
     assertThat(byTagOrDescription).isNotNull();

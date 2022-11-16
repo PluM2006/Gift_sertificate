@@ -23,12 +23,16 @@ import ru.clevertec.ecl.dto.TagDTO;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.repository.TagRepository;
+import ru.clevertec.ecl.services.commitLog.CommitLogService;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
 
   @InjectMocks
   private TagServiceImpl tagService;
+
+  @Mock
+  private CommitLogService commitLogService;
 
   @Mock
   private TagRepository tagRepository;

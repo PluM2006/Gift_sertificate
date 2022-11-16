@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.clevertec.ecl.utils.Constants;
 
 @Entity
 @Data
@@ -28,8 +32,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "gift_certificate")
+@Table(name = Constants.TABLE_CERTIFICATE_NAME)
 @DynamicUpdate
+@NamedEntityGraphs(value = {
+    @NamedEntityGraph(name = Constants.ENTITY_GRAPH_NAME_CERTIFICATE_TAG, attributeNodes = {
+        @NamedAttributeNode(Constants.ENTITY_ATTRIBUTE_TAG)
+    })
+})
 public class Certificate {
 
   @Id

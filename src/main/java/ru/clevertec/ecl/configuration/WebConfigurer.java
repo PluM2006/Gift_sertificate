@@ -2,6 +2,7 @@ package ru.clevertec.ecl.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.clevertec.ecl.interceptors.ClusterInterceptor;
@@ -9,6 +10,7 @@ import ru.clevertec.ecl.interceptors.CommonInterceptor;
 import ru.clevertec.ecl.interceptors.ReplicaInterceptor;
 
 @Configuration
+@EnableScheduling
 @RequiredArgsConstructor
 public class WebConfigurer implements WebMvcConfigurer {
 
@@ -23,6 +25,7 @@ public class WebConfigurer implements WebMvcConfigurer {
         .excludePathPatterns("/**/orders/sequence/**");
     registry.addInterceptor(commonInterceptor)
         .addPathPatterns("/**/certificates*/**", "/**/tags*/**", "/**/users*/**");
-    registry.addInterceptor(replicaInterceptor);
+    registry.addInterceptor(replicaInterceptor)
+        .excludePathPatterns("/**/orders/sequence/**");
   }
 }
