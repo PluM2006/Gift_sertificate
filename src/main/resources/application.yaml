@@ -1,1 +1,24 @@
-
+spring:
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  liquibase:
+    change-log: db/changeLog/db.changelog-master.yaml
+server:
+  servlet:
+    context-path: "/api"
+  port: ${PORT}
+  cluster:
+    9901:
+      - 9901
+      - 9904
+      - 9905
+    9902:
+      - 9902
+      - 9906
+      - 9907
+    9903:
+      - 9903
+      - 9908
+      - 9909

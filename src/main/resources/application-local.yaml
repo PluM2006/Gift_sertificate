@@ -1,0 +1,17 @@
+server:
+  host: "localhost"
+spring:
+  datasource:
+    username: postgres
+    password: 18011984
+    url: jdbc:postgresql://localhost/baseNode${PORT}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
